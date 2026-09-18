@@ -1,0 +1,28 @@
+/* Identidad Cyberfusion. Un solo sitio para el PDF y la web del analyzer.
+   Si la marca cambia, se cambia aqui y no en dos plantillas distintas. */
+:root {
+  /* Marca */
+  --cf-ink:        #08080b;   /* negro de portada */
+  --cf-ink-soft:   #16161c;
+  --cf-crimson:    #f63b2f;   /* rojo principal */
+  --cf-crimson-dp: #8b0d08;
+
+  /* Interior del documento: claro, legible, imprimible */
+  --cf-paper:      #ffffff;
+  --cf-paper-warm: #faf9f9;
+  --cf-text:       #17171c;
+  --cf-muted:      #6a6a76;
+  --cf-rule:       #e3e3e8;
+
+  /* Severidades. Deliberadamente NO cinco rojos: el ojo debe
+     distinguir critico de bajo de un vistazo. */
+  --sev-critical:  #8b0d08;
+  --sev-high:      #f63b2f;
+  --sev-medium:    #b8730a;
+  --sev-low:       #7a7a86;
+  --sev-info:      #9b9ba6;
+  --sev-ok:        #1f7a4d;
+
+  --font-body:     'Plus Jakarta Sans', sans-serif;
+  --font-display:  'Space Grotesk', sans-serif;
+}

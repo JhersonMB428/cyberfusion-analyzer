@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Leads — Cyberfusion Analyzer</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#070709;--card:rgba(18,18,22,.75);--line:rgba(255,255,255,.08);
+  --red:#f63b2f;--txt:#f0f0f5;--mut:#9e9ea7;--dim:#646470;--green:#2ed573;--amber:#ffa502;
+  --fm:'Plus Jakarta Sans',sans-serif;--fh:'Space Grotesk',sans-serif}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--txt);font-family:var(--fm);font-size:14px}
+.wrap{max-width:1180px;margin:0 auto;padding:28px 20px 70px}
+h1{font-family:var(--fh);font-size:1.5rem}
+.top{display:flex;align-items:center;justify-content:space-between;gap:16px;
+  flex-wrap:wrap;padding-bottom:18px;border-bottom:1px solid var(--line);margin-bottom:22px}
+.btn{background:linear-gradient(135deg,#f63b2f,#990f0a);color:#fff;border:0;border-radius:8px;
+  padding:11px 20px;font:600 14px var(--fh);cursor:pointer;text-decoration:none;display:inline-block}
+.btn.ghost{background:rgba(255,255,255,.05);border:1px solid var(--line)}
+input{background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:8px;
+  padding:11px 14px;color:#fff;font:14px var(--fm);outline:none;min-width:260px}
+input:focus{border-color:var(--red)}
+
+/* Pantalla de acceso */
+#gate{max-width:420px;margin:12vh auto;text-align:center}
+#gate h1{margin-bottom:8px}
+#gate p{color:var(--mut);margin-bottom:22px;font-size:13.5px}
+#gate .row{display:flex;gap:10px}
+.err{color:var(--red);font-size:13px;min-height:20px;margin-top:12px}
+
+/* Resumen */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  gap:14px;margin-bottom:24px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+.stat .l{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut)}
+.stat .v{font-family:var(--fh);font-size:1.5rem;font-weight:700;margin-top:4px}
+
+table{width:100%;border-collapse:collapse}
+th{text-align:left;font-size:11px;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--mut);font-weight:600;padding:0 12px 10px 0;border-bottom:1px solid var(--line)}
+td{padding:13px 12px 13px 0;border-bottom:1px solid var(--line);vertical-align:top}
+tbody tr:hover{background:rgba(255,255,255,.02)}
+td a{color:var(--red);text-decoration:none}
+td a:hover{text-decoration:underline}
+.name{font-weight:600}
+.sub{color:var(--dim);font-size:12.5px}
+.g{font-family:var(--fh);font-weight:700}
+.g.A,.g.B{color:var(--green)}.g.C{color:var(--amber)}.g.D,.g.F{color:var(--red)}
+.g.none{color:var(--dim);font-weight:400;font-size:12.5px}
+.empty{text-align:center;color:var(--dim);padding:60px 20px}
+@media(max-width:820px){
+  .hide-sm{display:none}
+  input{min-width:0;width:100%}
+  #gate .row{flex-direction:column}
+}
+</style>
+</head>
+<body>
+
+<div id="gate">
+  <h1>Leads del analizador</h1>
+  <p>Introduzca el token de acceso. Se guarda solo en esta pestaña.</p>
+  <div class="row">
+    <input type="password" id="tok" placeholder="Token de acceso" autocomplete="off">
+    <button class="btn" id="enter">Entrar</button>
+  </div>
+  <div class="err" id="gerr"></div>
+</div>
+
+<div class="wrap" id="app" style="display:none">
+  <div class="top">
+    <h1>Leads del analizador</h1>
+    <div style="display:flex;gap:10px;align-items:center">
+      <input type="search" id="q" placeholder="Buscar por nombre, empresa o dominio">
+      <a class="btn ghost" id="csv" href="#">Descargar CSV</a>
+      <button class="btn ghost" id="out">Salir</button>
+    </div>
+  </div>
+  <div class="stats" id="stats"></div>
+  <div id="tableWrap"></div>
+</div>
+
+<script>
+const API = window.CF_API || "http://localhost:8000";
+const $ = id => document.getElementById(id);
+let LEADS = [];
+
+const esc = s => String(s ?? "").replace(/[<>&"]/g,
+  c => ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c]));
+
+// sessionStorage y no localStorage: el token muere al cerrar la pestaña.
+// Es la lista de contactos y las vulnerabilidades de clientes; no debe
+// quedarse guardada en un equipo compartido.
+const tok = () => sessionStorage.getItem('cf_leads_token') || '';
+
+async function load(){
+  const res = await fetch(`${API}/leads/list.json`, {headers:{'X-Leads-Token': tok()}});
+  if(res.status === 403) throw new Error('Token incorrecto');
+  if(!res.ok) throw new Error('No se pudo cargar la lista');
+  const data = await res.json();
+  LEADS = data.leads || [];
+  render();
+}
+
+function render(){
+  const q = ($('q').value || '').toLowerCase().trim();
+  const rows = LEADS.filter(l => !q ||
+    [l.name, l.company, l.domain, l.email].join(' ').toLowerCase().includes(q));
+
+  const hoy = new Date().toISOString().slice(0,10);
+  const conRiesgo = LEADS.filter(l => l.score !== null && l.score < 70).length;
+  $('stats').innerHTML = [
+    ['Total de leads', LEADS.length],
+    ['Hoy', LEADS.filter(l => (l.at||'').startsWith(hoy)).length],
+    ['Con nota C o peor', conRiesgo],
+    ['Mostrando', rows.length]
+  ].map(([l,v]) => `<div class="stat"><div class="l">${l}</div><div class="v">${v}</div></div>`).join('');
+
+  if(!rows.length){
+    $('tableWrap').innerHTML = `<div class="empty">${LEADS.length
+      ? 'Ningún lead coincide con la búsqueda.'
+      : 'Todavía no hay leads. Aparecerán aquí en cuanto alguien pida su informe.'}</div>`;
+    return;
+  }
+
+  $('tableWrap').innerHTML = `<table><thead><tr>
+      <th>Contacto</th><th>Sitio analizado</th><th>Nota</th>
+      <th class="hide-sm">Teléfono</th><th class="hide-sm">Fecha</th>
+    </tr></thead><tbody>` + rows.map(l => {
+    const host = esc((l.domain||'').replace(/^https?:\/\//,'').replace(/\/$/,''));
+    const g = l.grade ? `<span class="g ${esc(l.grade)}">${esc(l.grade)}</span>
+                         <span class="sub">${l.score}/100</span>`
+                      : `<span class="g none">parcial</span>`;
+    const f = l.at ? new Date(l.at).toLocaleString('es-PE',
+                {day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '';
+    return `<tr>
+      <td><div class="name">${esc(l.name)}</div>
+          <div class="sub">${esc(l.company)}</div>
+          <div><a href="mailto:${esc(l.email)}">${esc(l.email)}</a></div></td>
+      <td>${host}</td>
+      <td>${g}</td>
+      <td class="hide-sm"><a href="tel:${esc(l.phone)}">${esc(l.phone)}</a></td>
+      <td class="hide-sm sub">${esc(f)}</td>
+    </tr>`;
+  }).join('') + `</tbody></table>`;
+}
+
+async function enter(){
+  const v = $('tok').value.trim();
+  if(!v){ $('gerr').textContent = 'Introduzca el token.'; return; }
+  sessionStorage.setItem('cf_leads_token', v);
+  try{
+    await load();
+    $('gate').style.display = 'none';
+    $('app').style.display = 'block';
+    $('csv').href = `${API}/leads/export.csv?token=${encodeURIComponent(v)}`;
+  }catch(e){
+    sessionStorage.removeItem('cf_leads_token');
+    $('gerr').textContent = e.message;
+  }
+}
+
+$('enter').onclick = enter;
+$('tok').addEventListener('keydown', e => { if(e.key === 'Enter') enter(); });
+$('q').addEventListener('input', render);
+$('out').onclick = () => { sessionStorage.removeItem('cf_leads_token'); location.reload(); };
+
+// Si ya hay token en esta pestaña, entra directo.
+if(tok()){ $('tok').value = tok(); enter(); }
+</script>
+</body>
+</html>

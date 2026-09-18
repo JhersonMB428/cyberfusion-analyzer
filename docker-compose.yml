@@ -1,0 +1,72 @@
+services:
+  redis:
+    image: redis:7-alpine
+    # appendonly: sin esto un reinicio se lleva la cola y la cache.
+    command: redis-server --appendonly yes --appendfsync everysec
+    volumes:
+      - redis-data:/data
+
+  api:
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+    ports: ["8000:8000"]
+    environment:
+      ALLOWED_ORIGINS: "${ALLOWED_ORIGINS:-http://localhost:3000}"
+      REDIS_URL: redis://redis:6379/0
+      PUBLIC_API_URL: "http://localhost:8000"
+      VERIFY_SECRET: "${VERIFY_SECRET}"
+      # Token para descargar /leads/export.csv. Sin el, el endpoint da 403.
+      LEADS_TOKEN: "${LEADS_TOKEN}"
+      LEADS_PATH: "/data/leads.jsonl"
+      # Buzon interno que recibe un aviso con cada lead nuevo.
+      SALES_EMAIL: "${SALES_EMAIL}"
+      # --- Antiabuso ---
+      # Claves en https://dash.cloudflare.com -> Turnstile (gratis)
+      TURNSTILE_SITE_KEY: "${TURNSTILE_SITE_KEY}"
+      TURNSTILE_SECRET: "${TURNSTILE_SECRET}"
+      SCANS_PER_IP_PER_DAY: "5"
+      # Activar SOLO cuando haya un proxy delante (Azure, Cloudflare).
+      TRUST_PROXY: "${TRUST_PROXY}"
+      # --- Correo ---
+      # cPanel          : mail.cyberfusion.pe  puerto 465
+      # Microsoft 365   : smtp.office365.com   puerto 587
+      # Google Workspace: smtp.gmail.com       puerto 587 (clave de aplicacion)
+      SMTP_HOST: "mail.cyberfusion.pe"
+      SMTP_PORT: "465"
+      SMTP_USER: "scanner@cyberfusion.pe"
+      SMTP_PASS: "${SMTP_PASS}"
+      SMTP_FROM: "scanner@cyberfusion.pe"
+    volumes:
+      # Los leads sobreviven a 'docker compose down'. Sin esto se pierden.
+      - leads-data:/data
+    depends_on: [redis]
+
+  worker:
+    build:
+      context: .
+      dockerfile: worker/Dockerfile
+    environment:
+      REDIS_URL: redis://redis:6379/0
+      NUCLEI_TIMEOUT: "600"
+      NUCLEI_TEMPLATES: "/opt/nuclei-templates"
+    volumes:
+      # Las plantillas sobreviven a las reconstrucciones y se comparten
+      # entre las dos replicas: solo se descargan una vez.
+      - nuclei-templates:/opt/nuclei-templates
+    depends_on: [redis]
+    deploy:
+      replicas: 2
+
+  web:
+    image: python:3.12-slim
+    working_dir: /web
+    volumes:
+      - ./web:/web
+    command: python -m http.server 3000
+    ports: ["3000:3000"]
+
+volumes:
+  redis-data:
+  leads-data:
+  nuclei-templates:
