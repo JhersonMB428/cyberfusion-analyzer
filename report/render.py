@@ -104,7 +104,7 @@ EV_LABEL = {
     "days_left":         lambda v: f"Vence en {v} días",
     "years_unsupported": lambda v: f"{v} años sin recibir parches",
     "checked":           lambda v: f"{v} rutas sensibles comprobadas",
-    "header":            lambda v: f"Cabecera ausente: {v}",
+    "header":            lambda v: f"Cabecera: {v}",
     "record":            lambda v: f"Registro publicado: {v}",
     "policy":            lambda v: f"Política actual: p={v}",
     "sp":                lambda v: f"Política de subdominios: sp={v}",

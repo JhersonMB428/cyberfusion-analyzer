@@ -23,6 +23,8 @@
   "findings.cms.user_enumeration.fix": "Restrinja /wp-json/wp/v2/users a usuarios autenticados.",
   "findings.dns.dmarc.not_enforced.title": "DMARC en cuarentena, aún no en rechazo",
   "findings.dns.dmarc.not_enforced.fix": "Su política está en p=quarantine, lo cual ya protege. Cuando los informes rua no muestren envíos legítimos bloqueados, suba a p=reject.",
+  "findings.dns.dmarc.monitor_only.title": "DMARC solo observa, todavía no protege",
+  "findings.dns.dmarc.monitor_only.fix": "Su registro está en p=none: recoge informes pero no bloquea nada, así que hoy cualquiera puede suplantar su dominio en correos. Revise los informes rua durante dos semanas y, cuando confirme que sus envíos legítimos pasan, suba a p=quarantine y después a p=reject.",
   "findings.dns.dmarc.subdomain_unprotected.title": "Los subdominios no están protegidos por DMARC",
   "findings.dns.dmarc.subdomain_unprotected.fix": "Su registro tiene sp=none, así que un atacante puede suplantar correo desde cualquier subdominio. Cambie sp=quarantine o elimine la etiqueta sp para que herede la política principal.",
   "findings.dns.dnssec.missing.title": "DNSSEC no está activo",
@@ -97,5 +99,15 @@
   "findings.headers.missing.nosniff.title": "El navegador puede adivinar el tipo de archivo",
   "findings.headers.missing.nosniff.fix": "Añada X-Content-Type-Options: nosniff. Evita que el navegador interprete un archivo como algo distinto de lo que el servidor declara, una vía habitual para ejecutar código subido por un usuario.",
   "findings.headers.missing.referrer.title": "Sin control sobre la información que se filtra al navegar",
-  "findings.headers.missing.referrer.fix": "Añada Referrer-Policy: strict-origin-when-cross-origin. Sin ella, al salir de su web hacia otra se envía la URL completa de origen, que puede incluir datos internos."
+  "findings.headers.missing.referrer.fix": "Añada Referrer-Policy: strict-origin-when-cross-origin. Sin ella, al salir de su web hacia otra se envía la URL completa de origen, que puede incluir datos internos.",
+  "findings.cms.core_security_patch_missing.title": "Falta una actualización de seguridad de WordPress",
+  "findings.cms.core_security_patch_missing.fix": "Su WordPress está en la rama correcta pero le falta la última versión de parche, y esas son justamente las que corrigen vulnerabilidades. Actualice desde Escritorio → Actualizaciones. Si tiene actualizaciones automáticas desactivadas, vale la pena reactivarlas al menos para versiones menores.",
+  "findings.dns.spf.permissive.title": "Su SPF es demasiado permisivo",
+  "findings.dns.spf.permissive.fix": "El registro termina en ~all o +all, que pide al receptor aceptar el correo aunque venga de un servidor no autorizado. Cambie el final a -all cuando esté seguro de que todos sus remitentes legítimos están listados.",
+  "findings.headers.no_https_redirect.title": "El sitio no redirige a HTTPS",
+  "findings.headers.no_https_redirect.fix": "Quien escriba su dirección sin https:// viaja sin cifrar hasta que el navegador cambie de protocolo. Configure una redirección permanente de HTTP a HTTPS en el servidor o en el .htaccess.",
+  "findings.tls.protocol.obsolete.title": "El servidor acepta versiones antiguas de TLS",
+  "findings.tls.protocol.obsolete.fix": "TLS 1.0 y 1.1 tienen debilidades conocidas y ya no se consideran seguros. Desactívelos en la configuración del servidor y deje solo TLS 1.2 y 1.3.",
+  "findings.tls.unreachable.title": "No pudimos establecer una conexión segura",
+  "findings.tls.unreachable.fix": "El servidor no respondió al intento de conexión cifrada. Puede ser un firewall que nos bloquea, un certificado mal instalado o que el sitio no acepte HTTPS. Compruebe que su sitio abre correctamente con https:// desde varios dispositivos."
 }
