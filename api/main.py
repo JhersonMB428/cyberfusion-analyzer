@@ -11,7 +11,16 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import httpx
 
-app = FastAPI(title="Cyberfusion Analyzer API")
+# En produccion el esquema de la API no aporta nada al cliente y si le
+# dice a cualquiera que ruta atacar. En local sigue disponible, que es
+# donde /docs realmente sirve para probar endpoints a mano.
+OCULTAR_DOCS = os.getenv("HIDE_DOCS", "").strip().lower() in ("1", "true", "yes")
+app = FastAPI(
+    title="Cyberfusion Analyzer API",
+    docs_url=None if OCULTAR_DOCS else "/docs",
+    redoc_url=None if OCULTAR_DOCS else "/redoc",
+    openapi_url=None if OCULTAR_DOCS else "/openapi.json",
+)
 ALLOWED_ORIGINS = [o.strip() for o in os.getenv("ALLOWED_ORIGINS", "").split(",") if o.strip()]
 app.add_middleware(
     CORSMiddleware,
