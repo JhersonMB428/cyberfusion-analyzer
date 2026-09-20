@@ -33,6 +33,8 @@ UI = {
         "verdict_sub_partial": "Sobre las {ok} de 7 capas que pudimos analizar.",
         "no_score_headline": "No emitimos puntuación: el análisis no cubrió "
                              "suficientes capas para calificar este sitio.",
+        "no_score_headline_waf": "Su sitio bloqueó nuestro escáner. "
+                                 "Es buena señal: tiene protección activa.",                             
         "summary": "Resumen ejecutivo",
         "coverage": "Alcance del análisis",
         "coverage_intro": "Qué se revisó, qué se pudo determinar y qué no. "
@@ -155,21 +157,6 @@ def _evidence_line(ev: dict, finding_key: str = "") -> str:
         fmt = EV_LABEL.get(k)
         parts.append(fmt(v) if fmt else f"{k}: {v}")
     return " · ".join(parts)[:320]
-    """Una linea legible por una persona. El JSON crudo no va en un
-    informe que se vende: 'days_left: 87' no es evidencia, es depuracion."""
-    if not ev:
-        return ""
-    parts = []
-    for k in ORDER_EV:
-        if k in EV_HIDE or k not in ev:
-            continue
-        v = ev[k]
-        if v in (None, "", [], {}):
-            continue
-        fmt = EV_LABEL.get(k)
-        parts.append(fmt(v) if fmt else f"{k}: {v}")
-    return " · ".join(parts)[:320]
-
 
 def _summary(res: dict, ui: dict) -> str:
     c = res.get("counts") or {}
@@ -180,8 +167,14 @@ def _summary(res: dict, ui: dict) -> str:
              if v.get("result") in ("undetermined", "partial")]
 
     if res.get("score") is None:
-        s = (f"El análisis de {host} no pudo completarse. "
-             f"Se revisaron {7 - len(undet)} de 7 capas.")
+        if (res.get("integrity") or {}).get("reason") == "waf_blocked":
+            s = (f"El sitio {host} tiene un firewall de aplicación activo que "
+                 f"detuvo el análisis automatizado. Eso es buena señal: significa "
+                 f"que está protegido frente a herramientas como esta. Se revisaron "
+                 f"{7 - len(undet)} de 7 capas, las que no dependen de acceso HTTP.")
+        else:
+            s = (f"El análisis de {host} no pudo completarse. "
+                 f"Se revisaron {7 - len(undet)} de 7 capas.")
     elif urgent:
         verbo = "requiere" if urgent == 1 else "requieren"
         s = (f"Se detectaron {n} puntos de mejora en {host}, de los cuales "
@@ -209,7 +202,8 @@ def build_context(res: dict, lang: str = "es") -> dict:
     n_ok = sum(1 for c in cov.values() if c.get("result") == "ok")
     ui["verdict_sub"] = (ui["verdict_sub_full"] if n_ok == len(cov) and cov
                          else ui["verdict_sub_partial"].format(ok=n_ok))
-
+    if (res.get("integrity") or {}).get("reason") == "waf_blocked":
+        ui["no_score_headline"] = ui["no_score_headline_waf"]
     def txt(key, default=""):
         return loc.get(key, default)
 
