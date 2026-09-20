@@ -104,7 +104,6 @@ EV_LABEL = {
     "days_left":         lambda v: f"Vence en {v} días",
     "years_unsupported": lambda v: f"{v} años sin recibir parches",
     "checked":           lambda v: f"{v} rutas sensibles comprobadas",
-    "header":            lambda v: f"Cabecera: {v}",
     "record":            lambda v: f"Registro publicado: {v}",
     "policy":            lambda v: f"Política actual: p={v}",
     "sp":                lambda v: f"Política de subdominios: sp={v}",
@@ -134,7 +133,28 @@ ORDER_EV = ("days_left", "years_unsupported", "eol_date", "version",
             "domain", "product", "checked", "value", "name")
 
 
-def _evidence_line(ev: dict) -> str:
+def _evidence_line(ev: dict, finding_key: str = "") -> str:
+    """Una linea legible por una persona. El JSON crudo no va en un
+    informe que se vende: 'days_left: 87' no es evidencia, es depuracion."""
+    if not ev:
+        return ""
+    parts = []
+    for k in ORDER_EV:
+        if k in EV_HIDE or k not in ev:
+            continue
+        v = ev[k]
+        if v in (None, "", [], {}):
+            continue
+        if k == "header":
+            # La misma clave sirve para "falta esta cabecera" y para
+            # "esta cabecera esta puesta". Decir siempre "ausente"
+            # contradecia al titulo en los hallazgos de cabecera presente.
+            ausente = "missing" in finding_key or finding_key.startswith("headers.no_")
+            parts.append(f"Cabecera {'ausente' if ausente else 'presente'}: {v}")
+            continue
+        fmt = EV_LABEL.get(k)
+        parts.append(fmt(v) if fmt else f"{k}: {v}")
+    return " · ".join(parts)[:320]
     """Una linea legible por una persona. El JSON crudo no va en un
     informe que se vende: 'days_left: 87' no es evidencia, es depuracion."""
     if not ev:
@@ -203,11 +223,11 @@ def build_context(res: dict, lang: str = "es") -> dict:
             "cve": f.get("cve") or [],
             "title": txt(f["title_key"], f["finding_key"]),
             "fix": txt(f["remediation_key"]),
-            "evidence_line": _evidence_line(f.get("evidence")),
+            "evidence_line": _evidence_line(f.get("evidence"), f.get("finding_key", "")),
         })
 
     strengths = [{"title": txt(s["title_key"], s["finding_key"]),
-                  "evidence_line": _evidence_line(s.get("evidence"))}
+                  "evidence_line": _evidence_line(s.get("evidence"), s.get("finding_key", ""))}
                  for s in res.get("strengths", [])]
 
     counts_rows = [{"label": ui["sev"][k], "n": v, "color": SEV_COLOR[k]}
