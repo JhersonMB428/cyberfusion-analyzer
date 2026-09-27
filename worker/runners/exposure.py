@@ -11,9 +11,28 @@ PATHS = [
     ("/.svn/entries", "svn_repo", "high", None),
     ("/phpinfo.php", "phpinfo", "high", "phpinfo()"),
     ("/server-status", "apache_status", "medium", "Apache Server Status"),
-    ("/xmlrpc.php", "wp_xmlrpc", "medium", "XML-RPC"),
     ("/.DS_Store", "ds_store", "low", None),
 ]
+
+# WordPress responde a un GET en xmlrpc.php con 405 y este texto exacto.
+# Por eso la sonda generica (que exige 200) nunca lo detectaba.
+XMLRPC_MARK = "xml-rpc server accepts post requests only"
+
+
+async def _probe_xmlrpc(client: httpx.AsyncClient, base: str) -> Finding | None:
+    try:
+        r = await client.get(base.rstrip("/") + "/xmlrpc.php")
+    except Exception:
+        return None
+    if r.status_code in (200, 405) and XMLRPC_MARK in r.text[:500].lower():
+        return Finding(
+            finding_key="exposure.wp_xmlrpc",
+            layer="surface", source="exposure",
+            severity="medium", confidence="confirmed", effort="low",
+            evidence={"path": "/xmlrpc.php", "status": r.status_code,
+                      "snippet": r.text[:120]},
+        )
+    return None
 
 
 async def _probe(client: httpx.AsyncClient, base: str, path: str,
@@ -46,6 +65,7 @@ async def _probe(client: httpx.AsyncClient, base: str, path: str,
 
 async def run(target: str, client: httpx.AsyncClient) -> list[Finding]:
     tasks = [_probe(client, target, p, k, s, m) for p, k, s, m in PATHS]
+    tasks.append(_probe_xmlrpc(client, target))
     results = await asyncio.gather(*tasks, return_exceptions=True)
     found = [r for r in results if isinstance(r, Finding)]
     if not found:
@@ -53,6 +73,6 @@ async def run(target: str, client: httpx.AsyncClient) -> list[Finding]:
             finding_key="ok.exposure.clean",
             layer="surface", source="exposure",
             severity="info", confidence="firm", effort="low",
-            evidence={"checked": len(PATHS)},
+            evidence={"checked": len(PATHS) + 1},
         ))
     return found
