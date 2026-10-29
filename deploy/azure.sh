@@ -27,7 +27,7 @@ EGRESS_IP=pip-analyzer-egress   # LA IP que los clientes pondran en lista blanca
 STORAGE=stcyberfusion$RANDOM    # debe ser unico en todo Azure, solo minusculas
 SHARE=leads
 ENVSTORAGE=leadsstore           # nombre del storage DENTRO del entorno
-ORIGENES_WEB="https://cyberfusion.pe,https://www.cyberfusion.pe,https://analyzer.cyberfusion.pe"
+ORIGENES_WEB="https://cyberfusion.global,https://www.cyberfusion.global,https://cyberfusion.pe,https://www.cyberfusion.pe,https://analyzer.cyberfusion.pe"
 
 # Fallar temprano y con un mensaje claro es mejor que desplegar una API
 # sin captcha y descubrirlo con la factura de trafico automatizado.
