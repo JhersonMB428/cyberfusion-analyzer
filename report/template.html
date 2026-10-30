@@ -110,6 +110,7 @@ table { width:100%; border-collapse:collapse; }
 .cta h3 { font-family:var(--font-display); font-size:10.5pt; margin:0; color:#fff; }
 .cta p { margin:1.2mm 0 0; font-size:8.2pt; color:#c9c9d2; line-height:1.45; }
 .cta p b { color:#fff; }
+.cta p.cta-c { margin-top:1.8mm; color:#fff; }
 
 .foot-note { margin-top:4mm; padding-top:2.5mm; border-top:1px solid var(--cf-rule);
              font-size:7.2pt; line-height:1.45; color:var(--cf-muted); page-break-inside:avoid; }
@@ -202,7 +203,8 @@ table { width:100%; border-collapse:collapse; }
 
 <section class="cta">
   <h3>{{ t.cta_title }}</h3>
-  <p>{{ t.cta_body }} <b>{{ contact_email }}</b> · <b>{{ contact_page }}</b></p>
+  <p>{{ t.cta_body }}</p>
+  <p class="cta-c">{{ t.cta_contact }} <b>{{ contact_email }}</b> &nbsp;|&nbsp; <b>{{ contact_page }}</b></p>
 </section>
 
 <div class="foot-note">

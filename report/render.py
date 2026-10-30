@@ -46,10 +46,10 @@ UI = {
         "strengths": "Lo que este sitio hace bien",
         "notes": "Observaciones",
         "tier": "Análisis automatizado · Nivel básico",
-        "cta_title": "¿Prefiere que lo corrijamos nosotros?",
-        "cta_body": "Podemos corregir estos hallazgos, hacer un análisis "
-                    "profundo con revisión de un especialista o vigilar su "
-                    "sitio de forma continua. Escríbanos:",
+        "cta_title": "¡Nosotros podemos ayudarte!",
+        "cta_body": "Corregimos los hallazgos identificados y solucionamos "
+                    "las brechas de tu web.",
+        "cta_contact": "Contáctanos a",
         "minor_title": "Mejoras menores y observaciones",
         "cta_items": [
             "Análisis profundo: vulnerabilidades conocidas de su CMS y sus extensiones, "
@@ -57,7 +57,6 @@ UI = {
             "Corrección de los hallazgos de este informe, con validación posterior.",
             "Monitoreo continuo con aviso cuando aparezca un problema nuevo.",
         ],
-        "cta_contact": "Escríbanos a",
         "site_url": BRAND["SITE_URL"],
         "contact": BRAND["CONTACT_EMAIL"],
         "effort": "Esfuerzo",
@@ -244,7 +243,8 @@ def build_context(res: dict, lang: str = "es") -> dict:
         "scanned_human": dt.strftime("%d/%m/%Y %H:%M UTC"),
         "validity_note": ui["validity_note"].format(fecha=dt.strftime("%d/%m/%Y")),
         "contact_email": BRAND["SALES_EMAIL_PUBLIC"],
-        "contact_page": BRAND["CONTACT_PAGE"],
+        # En el PDF la web se lee mejor sin el https://
+        "contact_page": BRAND["CONTACT_PAGE"].split("://")[-1],
         "summary_text": _summary(res, ui),
         "counts_rows": counts_rows, "coverage_rows": coverage_rows,
         "findings": findings, "notes": notes, "strengths": strengths,

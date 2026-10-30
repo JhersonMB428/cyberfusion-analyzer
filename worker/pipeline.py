@@ -8,7 +8,7 @@ from .runners.nuclei import run as nuclei_run
 from . import brand
 from .schema import Finding, score, grade
 
-ENGINE_VERSION = "0.13.2"
+ENGINE_VERSION = "0.14.0"
 
 HEADERS = {"User-Agent": brand.USER_AGENT}
 ORDER = {"critical": 0, "high": 1, "medium": 2, "low": 3, "info": 4}

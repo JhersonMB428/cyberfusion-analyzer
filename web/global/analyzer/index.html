@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="es"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Analiza la seguridad de tu sitio web · CYBERFUSION</title>
+<meta name="description" content="Analiza la seguridad de tu sitio web. Identifica riesgos visibles que podrían afectar la confianza, reputación y percepción profesional de tu organización.">
+<link rel="canonical" href="https://cyberfusion.global/analyzer/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Manrope:wght@300;400;500;600;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#060203;color:#F4EFEE;font-family:'Manrope',sans-serif;-webkit-font-smoothing:antialiased}
+html{scroll-behavior:smooth}
+a{color:#FF2D2D}a:hover{color:#F4EFEE}
+:focus-visible{outline:2px solid #FF2D2D;outline-offset:3px}
+@keyframes cfPulse{0%,100%{opacity:.55}50%{opacity:1}}
+@keyframes cfDrift{0%{stroke-dashoffset:0}100%{stroke-dashoffset:-240}}
+.pl{animation:cfPulse 6s ease-in-out infinite}
+.dr{stroke-dasharray:120 120;animation:cfDrift 9s linear infinite}
+.mono{font-family:'JetBrains Mono',monospace}
+.eb{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.3em;color:#FF2D2D}
+.sec{padding:clamp(64px,8vw,112px) clamp(20px,6vw,96px);border-top:1px solid rgba(255,255,255,.06)}
+.wrap{max-width:1240px;margin:0 auto}
+h1,h2,h3{margin:0;font-weight:800}
+.hb{position:absolute;right:-6%;top:6%;width:72%;height:92%;pointer-events:none}
+.sk{position:absolute;left:-999px;top:8px;background:#E5161F;color:#fff;padding:10px 16px;border-radius:8px;z-index:50}.sk:focus{left:12px}
+header{position:fixed;top:0;left:0;right:0;z-index:30;height:68px;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:0 clamp(20px,4vw,56px);background:rgba(6,2,3,.78);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,.07)}
+.logo{display:inline-flex;align-items:center;gap:11px;text-decoration:none;color:#F4EFEE;font-weight:800;letter-spacing:.08em;font-size:15px}
+.nv{display:flex;gap:4px}
+.nv a{white-space:nowrap;color:#B9AEB0;text-decoration:none;font-size:13.5px;padding:8px 12px;border-radius:8px}
+.nv a:hover,.nv a[aria-current]{color:#F4EFEE;background:rgba(255,255,255,.06)}
+.btn{background:#E5161F;color:#fff;text-decoration:none;font-weight:600;font-size:13.5px;padding:11px 18px;border-radius:10px;white-space:nowrap;transition:all .5s cubic-bezier(.2,.7,.2,1)}
+.btn:hover{background:#FF2D2D;color:#fff;box-shadow:0 8px 30px rgba(255,45,45,.45)}
+.card{padding:clamp(24px,2.6vw,34px);border-radius:24px;background:linear-gradient(160deg,rgba(255,45,45,.08),#0D0507 55%);border:1px solid rgba(255,255,255,.09);display:flex;flex-direction:column;justify-content:space-between;gap:56px;min-height:280px;transition:all .6s cubic-bezier(.2,.7,.2,1)}
+.card:hover{border-color:rgba(255,45,45,.5);transform:translateY(-6px)}
+.fg{display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:clamp(32px,6vw,96px)}
+.sf{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}
+.fl{color:#B9AEB0;text-decoration:none;font-size:15px;line-height:1.4}.fl:hover{color:#F4EFEE}
+.so{display:flex;width:40px;height:40px;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,.16);border-radius:50%;color:#B9AEB0;transition:all .4s cubic-bezier(.2,.7,.2,1)}.so:hover{color:#fff;border-color:#FF2D2D;background:rgba(229,22,31,.18)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:clamp(32px,6vw,96px)}
+.gm{display:grid;grid-template-columns:1fr 1.7fr;gap:clamp(28px,5vw,72px);align-items:center;margin-top:clamp(32px,5vw,56px)}
+.reg{list-style:none;margin:28px 0 0;padding:0;display:grid;gap:0;border-top:1px solid rgba(255,255,255,.14)}
+.reg li{display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid rgba(255,255,255,.1);font-size:16px;color:#D4C9C9}
+.reg i{width:8px;height:8px;border-radius:50%;background:#E5161F;flex:none}
+.reg li:first-child i{background:#fff;box-shadow:0 0 12px 3px rgba(255,45,45,.7)}
+#map path.c{fill:#150a0c;stroke:rgba(255,255,255,.07);stroke-width:.5}
+#map path.on{fill:rgba(143,18,32,.55);stroke:rgba(255,45,45,.45)}
+#map path.pe{fill:#E5161F;stroke:#FF2D2D;filter:drop-shadow(0 0 8px rgba(255,45,45,.9))}
+#map .arc{fill:none;stroke:#FF2D2D;stroke-width:1.2;opacity:.85}
+#map text{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.15em;fill:#F4EFEE}
+@media(max-width:1000px){.nv{display:none}}
+@media(max-width:860px){.hb{width:130%;right:-30%;top:34%;height:66%;opacity:.7}.g2,.gm,.fg{grid-template-columns:1fr}}
+@media(max-width:700px){.sf{justify-content:center;text-align:center;flex-direction:column}}
+@media(prefers-reduced-motion:reduce){.pl,.dr{animation:none}html{scroll-behavior:auto}}
+
+.az{display:flex;gap:8px;padding:8px;border-radius:20px;background:rgba(13,5,7,.85);border:1px solid rgba(255,255,255,.16);box-shadow:0 30px 90px -30px rgba(229,22,31,.6);backdrop-filter:blur(8px);transition:border-color .4s,box-shadow .4s}
+.az:focus-within{border-color:#FF2D2D;box-shadow:0 30px 90px -20px rgba(229,22,31,.8)}
+.az input{flex:1;min-width:0;background:transparent;border:0;color:#F4EFEE;font:500 clamp(16px,1.6vw,19px) 'Manrope',sans-serif;padding:16px 18px;outline:0}
+.az input::placeholder{color:#7d7173}
+.az button{flex:none;border:0;cursor:pointer;background:#E5161F;color:#fff;font:800 clamp(14px,1.3vw,16px) 'Manrope',sans-serif;letter-spacing:.06em;padding:0 clamp(20px,3vw,36px);border-radius:14px;transition:all .5s cubic-bezier(.2,.7,.2,1);box-shadow:0 0 30px rgba(229,22,31,.45)}
+.az button:hover{background:#FF2D2D;box-shadow:0 10px 44px rgba(255,45,45,.65)}
+.az button:disabled{opacity:.6;cursor:progress}
+.tk{display:flex;flex-wrap:wrap;justify-content:center;gap:10px 28px;margin:28px 0 0;padding:0;list-style:none;font-size:15px;color:#D4C9C9}
+.tk li{display:flex;align-items:center;gap:9px}.tk svg{color:#E5161F}
+#er{min-height:22px;margin-top:12px;font-size:14px;color:#FF2D2D;text-align:left}
+#sc{display:none;margin:28px auto 0;max-width:760px;text-align:left;padding:22px 26px;border-radius:20px;background:rgba(13,5,7,.85);border:1px solid rgba(255,255,255,.1)}
+#sc.on{display:block}
+.pb{height:3px;border-radius:2px;background:rgba(255,255,255,.1);overflow:hidden}.pb i{display:block;height:100%;width:0;background:linear-gradient(90deg,#8f1220,#FF2D2D,#fff);box-shadow:0 0 14px #FF2D2D;transition:width .5s linear}
+.st{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px 24px;margin:18px 0 0;padding:0;list-style:none}
+.st li{display:flex;gap:10px;align-items:center;font-size:14px;color:#6e6264;transition:color .4s}
+.st li i{width:8px;height:8px;border-radius:50%;border:1px solid #6e6264;flex:none;transition:all .4s}
+.st li.on{color:#F4EFEE}.st li.on i{border-color:#FF2D2D;background:#E5161F;box-shadow:0 0 10px #FF2D2D}
+#res{display:none}#res.on{display:block}
+.gc{padding:clamp(24px,3vw,40px);border-radius:28px;background:linear-gradient(160deg,rgba(143,18,32,.3),#0D0507 65%);border:1px solid rgba(255,45,45,.3);text-align:center}
+.rk{display:inline-block;margin-top:18px;padding:8px 18px;border-radius:999px;font:500 12px 'JetBrains Mono',monospace;letter-spacing:.25em}
+.rk.b{border:1px solid rgba(255,255,255,.5);color:#F4EFEE}.rk.m{border:1px solid #FF2D2D;color:#FF2D2D}.rk.a{background:#E5161F;color:#fff;border:1px solid #E5161F;box-shadow:0 0 24px rgba(229,22,31,.6)}
+.lv{display:flex;gap:6px;justify-content:center;margin-top:18px}.lv i{width:44px;height:4px;border-radius:2px;background:rgba(255,255,255,.12)}.lv i.on{background:#E5161F;box-shadow:0 0 10px #FF2D2D}
+.fd{display:flex;gap:16px;align-items:flex-start;padding:20px 22px;border-radius:18px;background:#0D0507;border:1px solid rgba(255,255,255,.09);transition:all .5s cubic-bezier(.2,.7,.2,1)}
+.fd:hover{transform:translateY(-4px);border-color:rgba(255,45,45,.4)}
+.fd.w{border-color:rgba(255,45,45,.28);background:linear-gradient(160deg,rgba(255,45,45,.08),#0D0507 60%)}
+.fd .ib{flex:none;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,.3);color:#F4EFEE}
+.fd.w .ib{border-color:#FF2D2D;color:#FF2D2D;background:rgba(229,22,31,.12)}
+.fd h3{font-size:16.5px;line-height:1.35;letter-spacing:-.01em}
+.fd span{display:block;margin-top:6px;font:500 10.5px 'JetBrains Mono',monospace;letter-spacing:.18em;color:#9A8E90}.fd.w span{color:#FF2D2D}
+.fm{padding:clamp(24px,3vw,40px);border-radius:28px;background:#0D0507;border:1px solid rgba(255,255,255,.1);display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.fm label{display:grid;gap:8px;font:500 11px 'JetBrains Mono',monospace;letter-spacing:.15em;color:#B9AEB0}
+.fm input,.fm select{width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.14);border-radius:12px;color:#F4EFEE;font:500 15.5px 'Manrope',sans-serif;padding:15px 16px;outline:0;color-scheme:dark;transition:border-color .3s}
+.fm input:focus,.fm select:focus{border-color:#FF2D2D}
+.fm .full{grid-column:1/-1}
+.fm .ck2{display:flex;gap:12px;align-items:flex-start;font:400 14px/1.5 'Manrope',sans-serif;letter-spacing:0;color:#C9BEBF}
+.fm .ck2 input{width:20px;height:20px;margin-top:2px;accent-color:#E5161F;flex:none;padding:0}
+.fe{font-size:13px;color:#FF2D2D;min-height:0}
+.fm button{border:0;cursor:pointer;background:#E5161F;color:#fff;font:800 16px 'Manrope',sans-serif;letter-spacing:.06em;padding:20px 28px;border-radius:14px;box-shadow:0 0 40px rgba(229,22,31,.5);transition:all .5s cubic-bezier(.2,.7,.2,1)}
+.fm button:hover{background:#FF2D2D;transform:translateY(-3px);box-shadow:0 14px 50px rgba(255,45,45,.65)}
+.ok2{padding:clamp(28px,4vw,52px);border-radius:28px;background:linear-gradient(160deg,rgba(143,18,32,.3),#0D0507 65%);border:1px solid rgba(255,45,45,.35)}
+.ki{padding:26px 0;border-top:1px solid rgba(255,255,255,.18);display:flex;gap:14px;align-items:flex-start}.ki svg{flex:none;color:#E5161F;margin-top:3px}
+.ki b{display:block;font-weight:800;font-size:clamp(18px,1.7vw,22px);letter-spacing:-.02em;line-height:1.25}
+@media(max-width:700px){.az{flex-direction:column}.az button{padding:18px}.fm{grid-template-columns:1fr}}
+@media(max-width:1000px){.nv{display:none}}
+/* --- Añadidos para conectar el diseño al motor real --- */
+#gate{max-width:760px;margin:16px auto 0;text-align:left}
+.cs{display:flex;gap:12px;align-items:flex-start;font-size:13.5px;line-height:1.55;color:#B9AEB0;cursor:pointer}
+.cs input{width:18px;height:18px;margin-top:2px;accent-color:#E5161F;flex:none;cursor:pointer}
+#cap{justify-content:center}
+.ghost{border:1px solid rgba(255,255,255,.18);background:transparent;color:#D4C9C9;cursor:pointer;font:500 12px 'JetBrains Mono',monospace;letter-spacing:.18em;padding:12px 18px;border-radius:12px;transition:all .4s}
+.ghost:hover{border-color:#FF2D2D;color:#fff}
+.btn.ghost2{background:transparent;border:1px solid rgba(255,255,255,.25);box-shadow:none}
+.btn.ghost2:hover{border-color:#FF2D2D;background:rgba(229,22,31,.15)}
+.nb{margin-top:24px;padding:18px 22px;border-radius:18px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.03);color:#C9BEBF;font-size:15px;line-height:1.6}
+.nb b{color:#F4EFEE}
+.cvn{font-size:13px;color:#9A8E90;margin:14px 0 0}
+.fd.n .ib{border-color:rgba(255,255,255,.2);color:#B9AEB0}
+.fd h3{word-break:break-word}
+.cvb{margin-top:clamp(24px,3vw,36px);padding:22px 26px;border-radius:20px;background:#0D0507;border:1px solid rgba(255,255,255,.09)}
+.cvr{display:flex;gap:16px;padding:12px 0;border-top:1px solid rgba(255,255,255,.08);font-size:14.5px}
+.cvr b{flex:0 0 230px;font-weight:600;color:#F4EFEE}.cvr span{color:#9A8E90}
+.fm button:disabled{opacity:.6;cursor:progress;transform:none}
+.mo{position:fixed;inset:0;z-index:60;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(6,2,3,.82);backdrop-filter:blur(10px)}
+.mo.on{display:flex}
+.mb{max-width:640px;max-height:86vh;overflow:auto;padding:clamp(24px,3vw,40px);border-radius:24px;background:#0D0507;border:1px solid rgba(255,45,45,.3);box-shadow:0 30px 90px -30px rgba(229,22,31,.6)}
+.mb p{color:#C9BEBF;font-size:15.5px;line-height:1.7;margin:16px 0 0}.mb b{color:#F4EFEE}
+@media(max-width:860px){#rg{grid-template-columns:1fr!important}#fl{grid-template-columns:1fr!important}.fm{grid-template-columns:1fr}#informe .wrap{grid-template-columns:1fr!important}.cvr{flex-direction:column;gap:4px}.cvr b{flex:none}}
+</style>
+</head>
+<body>
+<a class="sk" href="#contenido">Saltar al contenido</a>
+<header>
+<a class="logo" href="https://cyberfusion.global/" aria-label="CYBERFUSION, inicio"><svg width="26" height="26" viewBox="0 0 100 100" aria-hidden="true"><path d="M8 20 L52 50 L8 80 M52 50 H94" fill="none" stroke="#E5161F" stroke-width="13" stroke-linecap="square"></path></svg>CYBERFUSION</a>
+<nav class="nv" aria-label="Principal">
+<a href="https://cyberfusion.global/">Inicio</a><a href="https://cyberfusion.global/nosotros">Nosotros</a><a href="https://cyberfusion.global/soluciones">Capacidades</a><a href="https://cyberfusion.global/intelligence-center">Intelligence Center</a><a href="https://cyberfusion.global/contacto">Contacto</a>
+</nav>
+<a class="btn" href="#analizador">Analizar sitio web</a>
+</header>
+<main id="contenido">
+<section id="analizador" aria-labelledby="h-hero" style="position:relative;overflow:hidden;min-height:100vh;display:flex;align-items:center;padding:120px clamp(20px,6vw,96px) 80px;background:radial-gradient(60% 80% at 100% 100%,rgba(143,18,32,.4),transparent 70%),#060203">
+<svg class="hb" style="opacity:.6" viewBox="0 0 900 640" aria-hidden="true" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="hg" x1="0" x2="1"><stop offset="0" stop-color="#FF2D2D" stop-opacity="0"></stop><stop offset=".72" stop-color="#FF2D2D"></stop><stop offset="1" stop-color="#fff"></stop></linearGradient><filter id="hbl"><feGaussianBlur stdDeviation="9"></feGaussianBlur></filter></defs>
+<g filter="url(#hbl)" class="pl"><path d="M0 40 L600 330 H900" stroke="#E5161F" stroke-width="12" fill="none"></path><path d="M0 610 L600 330" stroke="#E5161F" stroke-width="12" fill="none"></path></g>
+<path d="M0 40 L600 330 H900" stroke="url(#hg)" stroke-width="2.4" fill="none"></path><path d="M0 610 L600 330" stroke="url(#hg)" stroke-width="2.4" fill="none"></path>
+<path d="M0 130 L600 330" stroke="url(#hg)" stroke-width="1" fill="none" opacity=".8"></path><path d="M0 520 L600 330" stroke="url(#hg)" stroke-width="1" fill="none" opacity=".8"></path><path d="M0 230 L600 330" stroke="#8f1220" stroke-width="1" fill="none"></path><path d="M0 430 L600 330" stroke="#8f1220" stroke-width="1" fill="none"></path>
+<path class="dr" d="M0 40 L600 330 H900" stroke="#fff" stroke-width="1.2" fill="none" opacity=".55"></path>
+<circle cx="600" cy="330" r="5" fill="#fff"></circle><circle class="pl" cx="600" cy="330" r="26" fill="none" stroke="#FF2D2D" stroke-opacity=".5"></circle></svg>
+<div class="wrap" style="position:relative;width:100%;max-width:900px;text-align:center">
+<div class="eb" data-r="">CYBERFUSION WEB ANALYZER</div>
+<h1 id="h-hero" data-r="" style="font-size:clamp(38px,6.4vw,92px);line-height:.98;letter-spacing:-.045em;margin-top:24px">Analiza la seguridad<br>de tu <span style="color:#E5161F">sitio web.</span></h1>
+<p data-r="" style="font-size:clamp(17px,1.5vw,20px);line-height:1.6;color:#D4C9C9;margin:28px auto 0;max-width:680px">Identifica riesgos visibles que podrían afectar la confianza, reputación y percepción profesional de tu organización.</p>
+<form id="af" data-r="" class="az" style="margin:40px auto 0;max-width:760px" novalidate="">
+<label for="dm" style="position:absolute;left:-999px">Dirección de tu sitio web</label>
+<input id="dm" type="text" inputmode="url" autocomplete="url" placeholder="https://www.tusitio.com" spellcheck="false">
+<button id="ab" type="submit">ANALIZAR SITIO WEB</button></form>
+<div id="gate" data-r="">
+<label class="cs"><input type="checkbox" id="ck"><span>Declaro que soy propietario del sitio o cuento con autorización para analizarlo, y acepto la <a href="#" data-modal="mUso">Política de Uso</a>. El análisis solo revisa información pública: no explota vulnerabilidades ni modifica nada.</span></label>
+<div id="cap" style="display:none;margin-top:14px"></div>
+</div>
+<div id="er" role="alert" style="max-width:760px;margin-left:auto;margin-right:auto"></div>
+<div id="sc" aria-live="polite"><div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:14px"><span class="mono" style="font-size:11px;letter-spacing:.2em;color:#FF2D2D">ANALIZANDO</span><span id="sd" class="mono" style="font-size:12px;color:#B9AEB0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span></div><div class="pb"><i id="pg"></i></div><ul class="st" id="sl"></ul></div>
+<ul class="tk" data-r=""><li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M7.5 12.5l3 3 6-6.5"></path></svg>Resultados en minutos</li><li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M7.5 12.5l3 3 6-6.5"></path></svg>Sin instalación</li><li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M7.5 12.5l3 3 6-6.5"></path></svg>Disponible para organizaciones de todo el mundo</li></ul>
+<p data-r="" style="font-weight:800;font-size:clamp(18px,1.9vw,24px);letter-spacing:-.02em;margin:40px 0 0;line-height:1.25;color:#F4EFEE">La seguridad no se supone.<br><span style="color:#FF2D2D">Se verifica.</span></p>
+</div></section>
+
+<div id="res">
+<section id="resultados" class="sec" aria-labelledby="h-res" style="background:radial-gradient(60% 70% at 0% 100%,rgba(90,10,18,.45),transparent 70%),#060203">
+<div class="wrap">
+<div style="display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap">
+<div><div class="eb">RESULTADOS</div>
+<h2 id="h-res" style="font-size:clamp(28px,4.2vw,60px);line-height:1;letter-spacing:-.04em;margin:18px 0 0">Análisis de <span id="rd" style="color:#E5161F;word-break:break-all"></span></h2></div>
+<button type="button" id="again" class="ghost">↻ ANALIZAR OTRO SITIO</button></div>
+<div id="nb" class="nb" style="display:none"></div>
+<div class="g2" style="grid-template-columns:.8fr 1.4fr;margin-top:clamp(28px,4vw,48px);align-items:stretch;gap:clamp(16px,2.4vw,32px)" id="rg">
+<div class="gc"><div class="mono" style="font-size:11px;letter-spacing:.2em;color:#9A8E90">SECURITY SCORE</div>
+<svg viewBox="0 0 200 200" style="width:min(100%,260px);margin:18px auto 0;display:block" role="img" aria-label="Puntaje de seguridad"><circle cx="100" cy="100" r="84" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="9"></circle><circle id="ga" cx="100" cy="100" r="84" fill="none" stroke="#E5161F" stroke-width="9" stroke-linecap="round" stroke-dasharray="527.8" stroke-dashoffset="527.8" transform="rotate(-90 100 100)" style="filter:drop-shadow(0 0 8px rgba(255,45,45,.8));transition:stroke-dashoffset 1.6s cubic-bezier(.2,.7,.2,1)"></circle><text id="gn" x="100" y="108" text-anchor="middle" fill="#F4EFEE" font-family="Manrope" font-weight="800" font-size="60" letter-spacing="-2">0</text><text id="gs" x="100" y="134" text-anchor="middle" fill="#9A8E90" font-family="JetBrains Mono" font-size="12" letter-spacing="2">/ 100</text></svg>
+<div><span id="rk" class="rk b">BAJO</span></div><div class="lv" id="lv"><i></i><i></i><i></i></div>
+<div class="mono" style="font-size:10.5px;letter-spacing:.2em;color:#9A8E90;margin-top:12px">NIVEL DE RIESGO</div>
+<p id="cv" class="cvn"></p></div>
+<div id="fl" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;align-content:start"></div></div>
+<div id="cov"></div>
+</div></section>
+
+<section id="informe" class="sec" aria-labelledby="h-inf" style="background:radial-gradient(70% 60% at 50% 100%,rgba(143,18,32,.45),transparent 70%),#060203">
+<div class="wrap g2" style="align-items:start;grid-template-columns:.8fr 1.2fr">
+<div><div class="eb">INFORME COMPLETO</div>
+<h2 id="h-inf" style="font-size:clamp(32px,4.8vw,70px);line-height:1;letter-spacing:-.045em;margin-top:20px">Obtén el informe completo.</h2>
+<p style="font-size:18px;line-height:1.7;color:#C9BEBF;margin:24px 0 0;max-width:460px">Recibe un informe detallado en PDF con los hallazgos identificados y las recomendaciones para corregir cada uno.</p></div>
+<div id="fw"><form id="ff" class="fm" novalidate="">
+<label>NOMBRE<input name="nombre" autocomplete="name" required=""></label>
+<label>EMPRESA<input name="empresa" autocomplete="organization" required=""></label>
+<label>CARGO<input name="cargo" autocomplete="organization-title" required=""></label>
+<label>CORREO CORPORATIVO<input name="correo" type="email" autocomplete="email" required=""></label>
+<label>TELÉFONO<input name="telefono" type="tel" autocomplete="tel" placeholder="+51 999 999 999" required=""></label>
+<label>PAÍS<select name="pais" required=""><option value="">Selecciona</option><option>Perú</option><option>México</option><option>Colombia</option><option>Chile</option><option>Argentina</option><option>Ecuador</option><option>Bolivia</option><option>Brasil</option><option>Panamá</option><option>Costa Rica</option><option>Guatemala</option><option>República Dominicana</option><option>España</option><option>Estados Unidos</option><option>Canadá</option><option>Reino Unido</option><option>Australia</option><option>Nueva Zelanda</option><option>Otro</option></select></label>
+<label class="ck2 full"><input type="checkbox" name="acepto" required=""><span>Acepto la <a href="https://cyberfusion.global/politica-de-privacidad" target="_blank" rel="noopener">Política de Privacidad</a> y el <a href="https://cyberfusion.global/tratamiento-de-datos" target="_blank" rel="noopener">Tratamiento de Datos Personales</a>, y que CYBERFUSION me envíe este informe y avisos sobre la seguridad de mi sitio.</span></label>
+<div id="fe" class="fe full" role="alert"></div>
+<button class="full" type="submit" id="fb">DESCARGAR INFORME</button></form></div>
+</div></section>
+</div>
+
+<section id="cyberfusion" class="sec" aria-labelledby="h-cf" style="background:#060203">
+<div class="wrap">
+<div class="eb" data-r="">CYBERFUSION</div>
+<h2 id="h-cf" data-r="" style="font-size:clamp(30px,4.6vw,66px);line-height:1;letter-spacing:-.04em;margin:20px 0 0;max-width:900px">Detrás del análisis existe una <span style="color:#E5161F">Firma de Protección.</span></h2>
+<p data-r="" style="font-size:18px;line-height:1.7;color:#C9BEBF;margin:28px 0 0;max-width:760px">CYBERFUSION ayuda a organizaciones de todo el mundo a identificar riesgos, validar exposiciones y fortalecer su capacidad de detección y respuesta frente a amenazas cibernéticas.</p>
+<p data-r="" style="font-weight:800;font-size:clamp(22px,2.6vw,34px);letter-spacing:-.02em;margin:24px 0 0;line-height:1.2">La seguridad no se supone.<br><span style="color:#fff;background:#E5161F;padding:0 10px">Se verifica.</span></p>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:clamp(16px,3vw,40px);margin-top:clamp(36px,5vw,64px)">
+<div class="ki" data-r=""><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 6L9 17l-5-5"></path></svg><b>8 servicios especializados</b></div>
+<div class="ki" data-r=""><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 6L9 17l-5-5"></path></svg><b>Atención internacional desde Perú</b></div>
+<div class="ki" data-r=""><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 6L9 17l-5-5"></path></svg><b>Red internacional de especialistas y socios estratégicos</b></div>
+<div class="ki" data-r=""><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 6L9 17l-5-5"></path></svg><b>Enfoque en detección, validación y respuesta</b></div></div>
+<p data-r="" style="font-size:14.5px;line-height:1.7;color:#9A8E90;margin:clamp(28px,4vw,48px) 0 0;max-width:820px;padding-top:20px;border-top:1px solid rgba(255,255,255,.1)">Todos los servicios son coordinados desde Perú y, cuando requisitos regulatorios, contractuales o de negocio lo requieren, son complementados mediante una red internacional de especialistas y socios estratégicos en el país del cliente.</p>
+</div></section>
+</main>
+<footer style="background:#060203;border-top:1px solid rgba(255,255,255,.07)">
+<div style="padding:clamp(56px,7vw,96px) clamp(20px,6vw,96px) clamp(48px,6vw,80px)"><div class="fg wrap">
+<div><a class="logo" href="https://cyberfusion.global/" aria-label="CYBERFUSION, inicio" style="font-size:17px"><svg width="30" height="30" viewBox="0 0 100 100" aria-hidden="true"><path d="M8 20 L52 50 L8 80 M52 50 H94" fill="none" stroke="#E5161F" stroke-width="13" stroke-linecap="square"></path></svg>CYBERFUSION</a>
+<p style="font-size:15px;line-height:1.7;color:#B9AEB0;margin:24px 0 0;max-width:380px">Firma de Protección especializada en resiliencia digital, gestión del riesgo y ciberseguridad empresarial.</p></div>
+<nav aria-label="Menú del pie"><div class="mono" style="font-size:11px;letter-spacing:.2em;color:#FF2D2D">MENÚ</div>
+<div style="display:grid;gap:14px;margin-top:24px"><a class="fl" href="https://cyberfusion.global/">Inicio</a><a class="fl" href="https://cyberfusion.global/nosotros">Nosotros</a><a class="fl" href="https://cyberfusion.global/soluciones">Capacidades</a><a class="fl" href="https://cyberfusion.global/intelligence-center">Intelligence Center</a><a class="fl" href="https://cyberfusion.global/contacto">Contacto</a></div></nav>
+<nav aria-label="Información legal"><div class="mono" style="font-size:11px;letter-spacing:.2em;color:#FF2D2D">INFORMACIÓN LEGAL</div>
+<div style="display:grid;gap:14px;margin-top:24px"><a class="fl" href="https://cyberfusion.global/politica-de-privacidad">Política de Privacidad</a><a class="fl" href="https://cyberfusion.global/tratamiento-de-datos">Tratamiento de Datos Personales</a><a class="fl" href="https://cyberfusion.global/libro-de-reclamaciones">Libro de Reclamaciones</a><a class="fl" href="https://cyberfusion.global/terminos">Términos y Condiciones</a></div></nav>
+</div></div>
+<div style="border-top:1px solid rgba(255,255,255,.1);padding:24px clamp(20px,6vw,96px);background:linear-gradient(90deg,transparent,rgba(255,45,45,.05))">
+<div class="sf wrap">
+<div style="font-size:13px;line-height:1.6;color:#9A8E90"><span style="color:#D4C9C9;font-weight:600;letter-spacing:.04em">CYBERFUSION TECHNOLOGIES © 2026</span><br>Todos los derechos reservados.</div>
+<div style="display:flex;gap:10px">
+<a class="so" href="#" aria-label="LinkedIn"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9.5h4V21H3zM10 9.5h3.8v1.6h.1c.5-1 1.8-1.9 3.7-1.9 4 0 4.4 2.6 4.4 6V21h-4v-5c0-1.2 0-2.7-1.7-2.7s-1.9 1.3-1.9 2.6V21h-4z"></path></svg></a>
+<a class="so" href="#" aria-label="X"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 3h3.2l-7 8 8.2 10h-6.4l-5-6.1L4.7 21H1.5l7.5-8.6L1.1 3h6.5l4.5 5.6zM16.4 19h1.8L6.5 4.9H4.6z"></path></svg></a>
+<a class="so" href="#" aria-label="YouTube"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M22 8.2a3 3 0 0 0-2.1-2.1C18 5.6 12 5.6 12 5.6s-6 0-7.9.5A3 3 0 0 0 2 8.2C1.5 10 1.5 12 1.5 12s0 2 .5 3.8a3 3 0 0 0 2.1 2.1c1.9.5 7.9.5 7.9.5s6 0 7.9-.5a3 3 0 0 0 2.1-2.1c.5-1.8.5-3.8.5-3.8s0-2-.5-3.8zM10 15V9l5.2 3z"></path></svg></a>
+<a class="so" href="#" aria-label="Facebook"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M14 8.5V6.8c0-.8.2-1.3 1.4-1.3H17V2.2C16.7 2.1 15.8 2 14.8 2 12.5 2 11 3.4 11 6v2.5H8.5V12H11v10h3V12h2.5l.4-3.5z"></path></svg></a>
+<a class="so" href="#" aria-label="Instagram"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"></rect><circle cx="12" cy="12" r="4"></circle><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"></circle></svg></a>
+</div></div></div>
+</footer>
+
+<div class="mo" id="mUso" role="dialog" aria-modal="true" aria-labelledby="mUsoT"><div class="mb">
+<div class="eb">POLÍTICA DE USO</div>
+<h3 id="mUsoT" style="font-size:26px;letter-spacing:-.03em;margin-top:12px">Qué hace y qué no hace el análisis</h3>
+<p>Al solicitar el análisis declaras que eres propietario del sitio, representante autorizado de la organización o que cuentas con autorización expresa. CYBERFUSION registra cada solicitud con su dirección IP y el dominio analizado, y puede rechazar dominios sobre los que haya dudas razonables de autorización.</p>
+<p><b>Revisa</b> solo información que el sitio publica: certificado TLS, registros DNS (SPF, DMARC, CAA, DNSSEC), cabeceras HTTP de seguridad, rutas comunes que no deberían ser públicas y el gestor de contenidos que el propio sitio declara.</p>
+<p><b>No</b> explota vulnerabilidades, no prueba contraseñas, no accede a áreas protegidas ni modifica nada. Las peticiones están limitadas en volumen. El escáner se identifica como <span class="mono" style="color:#FF2D2D">CyberfusionScanner/1.0</span> y puede bloquearse en cualquier momento.</p>
+<p>Los resultados se conservan 24 horas. El análisis profundo, que sí prueba vulnerabilidades conocidas, exige verificar antes la propiedad del dominio.</p>
+<button type="button" class="btn" data-close="" style="border:0;cursor:pointer;margin-top:8px">ENTENDIDO</button>
+</div></div>
+<script>
+(function(){
+/* Motor real. La URL de la API puede sobrescribirse definiendo
+   window.CF_API antes de este script (p. ej. para pruebas locales). */
+var API=(window.CF_API||'https://api.cyberfusion.pe').replace(/\/$/,'');
+var $=function(i){return document.getElementById(i)};
+var esc=function(s){return String(s==null?'':s).replace(/[<>&"]/g,function(c){return{'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c]})};
+
+var I18N={},JOB=null,R=null,busy=false;
+/* null = el servidor no exige captcha. "" = lo exige y falta resolverlo. */
+var CAPTCHA=null;
+
+var SEV={critical:'CRÍTICO',high:'ALTO',medium:'MEDIO',low:'BAJO'};
+var EFF={low:'ESFUERZO BAJO',medium:'ESFUERZO MEDIO',high:'ESFUERZO ALTO'};
+var COV={tls:'Certificado y cifrado',dns:'DNS y protección de correo',headers:'Cabeceras de seguridad',exposure:'Archivos expuestos',cms:'Gestor de contenidos',stack:'Software del servidor',app:'Vulnerabilidades conocidas'};
+/* Lo que se muestra mientras el motor trabaja. Avanza con el tiempo real
+   del sondeo: no es una animación con duración fija. */
+var STEPS=['Verificando certificado','Revisando DNS y correo','Evaluando cabeceras','Buscando archivos expuestos','Identificando el gestor de contenidos','Priorizando hallazgos'];
+var IOK='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6L9 17l-5-5"/></svg>';
+var IW='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 8v5M12 17v.5"/><path d="M10.3 3.9L2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>';
+var II='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.5v.5"/></svg>';
+var t=function(k,f){return I18N[k]||f||''};
+
+/* ---------- captcha (lo decide el servidor, no este archivo) ---------- */
+fetch(API+'/config').then(function(r){return r.json()}).then(function(cfg){
+  if(!cfg||!cfg.turnstile_site_key)return;
+  CAPTCHA='';
+  var box=$('cap');box.style.display='flex';
+  box.innerHTML='<div class="cf-turnstile" data-sitekey="'+esc(cfg.turnstile_site_key)+'" data-theme="dark" data-callback="cfCapOk" data-expired-callback="cfCapGone" data-error-callback="cfCapGone"></div>';
+  var s=document.createElement('script');s.src='https://challenges.cloudflare.com/turnstile/v0/api.js';s.async=true;s.defer=true;document.head.appendChild(s);
+}).catch(function(){});
+window.cfCapOk=function(tok){CAPTCHA=tok;$('er').textContent=''};
+window.cfCapGone=function(){CAPTCHA=''};
+
+/* ---------- modal de política de uso ---------- */
+document.addEventListener('click',function(e){
+  var a=e.target.closest('[data-modal]');
+  if(a){e.preventDefault();$(a.getAttribute('data-modal')).classList.add('on');return}
+  var m=e.target.closest('.mo');
+  if(m&&(e.target===m||e.target.closest('[data-close]')))m.classList.remove('on');
+});
+addEventListener('keydown',function(e){if(e.key==='Escape')[].forEach.call(document.querySelectorAll('.mo.on'),function(m){m.classList.remove('on')})});
+
+/* ---------- análisis ---------- */
+function norm(v){v=(v||'').trim();if(!v)return null;var u=v.replace(/^[a-z]+:\/\//i,'').split(/[\/?#]/)[0].toLowerCase();return /^([a-z0-9-]+\.)+[a-z]{2,}$/.test(u)?u:null}
+$('sl').innerHTML=STEPS.map(function(s){return '<li><i></i>'+s+'</li>'}).join('');
+
+function progress(d){
+  var lis=$('sl').children,i=0;
+  $('sc').classList.add('on');$('sd').textContent=d;$('pg').style.width='4%';
+  [].forEach.call(lis,function(l){l.classList.remove('on')});
+  var tm=setInterval(function(){if(i<lis.length-1){lis[i].classList.add('on');$('pg').style.width=Math.round((i+1)/lis.length*92)+'%';i++}},1600);
+  return function(){clearInterval(tm);[].forEach.call(lis,function(l){l.classList.add('on')});$('pg').style.width='100%'};
+}
+function idle(){busy=false;$('ab').disabled=false;$('ab').textContent='ANALIZAR SITIO WEB'}
+
+$('af').addEventListener('submit',function(e){
+  e.preventDefault();if(busy)return;
+  var d=norm($('dm').value);
+  if(!d){$('er').textContent='Ingresa una dirección válida, por ejemplo https://www.tusitio.com';$('dm').focus();return}
+  if(!$('ck').checked){$('er').textContent='Marca la declaración de autorización para continuar.';$('ck').focus();return}
+  if(CAPTCHA===''){$('er').textContent='Completa la verificación antirrobot.';return}
+  $('er').textContent='';busy=true;$('ab').disabled=true;$('ab').textContent='ANALIZANDO…';
+  analyze(d);
+});
+
+async function analyze(d){
+  var done=progress(d);
+  try{
+    if(!Object.keys(I18N).length)
+      I18N=await fetch(API+'/i18n/es.json').then(function(r){return r.json()}).catch(function(){return{}});
+    var res=await fetch(API+'/scans',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({url:$('dm').value.trim(),authorized:true,captcha:CAPTCHA||''})});
+    var st=await res.json().catch(function(){return{}});
+    if(!res.ok)throw new Error(typeof st.detail==='string'?st.detail:'No pudimos iniciar el análisis.');
+    JOB=st.id;
+    var data=null;
+    for(var n=0;n<90;n++){
+      await new Promise(function(r){setTimeout(r,2000)});
+      data=await fetch(API+'/scans/'+JOB).then(function(r){return r.json()});
+      if(data.status==='done')break;
+      if(data.status==='error')throw new Error(data.error||'El análisis falló.');
+    }
+    if(!data||data.status!=='done')throw new Error('El análisis tardó demasiado. Inténtalo de nuevo en unos minutos.');
+    done();
+    setTimeout(function(){idle();$('sc').classList.remove('on');show(data.result)},500);
+  }catch(err){
+    done();idle();$('sc').classList.remove('on');
+    $('er').textContent=err.message||'Algo falló. Inténtalo de nuevo.';
+    resetCaptcha();
+  }
+}
+
+/* Nivel de riesgo: lo marcan primero los hallazgos graves, luego la nota. */
+function level(r){
+  var c=r.counts||{};
+  if((c.critical||0)>0||r.score<55)return 2;
+  if((c.high||0)>0||r.score<80)return 1;
+  return 0;
+}
+
+var REASON={waf_blocked:'Un firewall de aplicación detuvo el análisis automatizado.',
+  access_denied:'El sitio rechazó las peticiones de nuestro escáner.',
+  rate_limited:'El sitio limitó nuestras peticiones durante el análisis.',
+  responds_200_to_everything:'El servidor responde afirmativamente a rutas que no existen, así que no podemos verificar hallazgos por HTTP.',
+  probe_failed:'No pudimos conectar con el sitio por HTTP.'};
+
+function card(cls,icon,title,label){
+  return '<div class="fd'+cls+'"><div class="ib">'+icon+'</div><div><h3>'+esc(title)+'</h3><span>'+label+'</span></div></div>';
+}
+
+function show(r){
+  R=r;
+  var host=(r.target||'').replace(/^https?:\/\//,'').replace(/\/$/,'');
+  $('rd').textContent=host;
+  var cov=r.coverage||{},keys=Object.keys(cov);
+  var nOk=keys.filter(function(k){return cov[k].result==='ok'}).length;
+  var issues=(r.findings||[]).filter(function(f){return f.severity!=='info'});
+  var notes=(r.findings||[]).filter(function(f){return f.severity==='info'});
+  var ok=r.strengths||[];
+  var scored=r.score!==null&&r.score!==undefined;
+
+  /* Sin nota: lo decimos claro, sin vender el bloqueo como buena noticia. */
+  var nb=$('nb');
+  if(!scored){
+    var why=REASON[(r.integrity||{}).reason]||'No pudimos completar el análisis.';
+    nb.innerHTML='<b>No emitimos puntaje para este sitio.</b> '+esc(why)+' Abajo verás lo que sí pudimos comprobar desde fuera. Para un análisis completo, <a href="https://cyberfusion.global/contacto">escríbenos</a> y te indicamos qué IP autorizar.';
+    nb.style.display='block';
+  }else nb.style.display='none';
+
+  var ks=['BAJO','MEDIO','ALTO'],cs=['b','m','a'],rk=$('rk');
+  if(scored){var lv=level(r);rk.textContent=ks[lv];rk.className='rk '+cs[lv];
+    [].forEach.call($('lv').children,function(e,i){e.className=i<=lv?'on':''});
+  }else{rk.textContent='SIN PUNTAJE';rk.className='rk b';
+    [].forEach.call($('lv').children,function(e){e.className=''});}
+  $('cv').textContent=scored?('Calculado sobre '+nOk+' de '+keys.length+' capas analizadas'):('Se analizaron '+nOk+' de '+keys.length+' capas');
+
+  var html=issues.map(function(f){
+    return card(' w',IW,t(f.title_key,f.finding_key),(SEV[f.severity]||'REVISAR')+' · '+(EFF[f.effort]||'REQUIERE ATENCIÓN'));
+  }).join('');
+  html+=notes.map(function(f){return card(' n',II,t(f.title_key,f.finding_key),'OBSERVACIÓN')}).join('');
+  html+=ok.map(function(f){return card('',IOK,t(f.title_key,f.finding_key),'CORRECTO')}).join('');
+  $('fl').innerHTML=html||'<p style="color:#9A8E90">No hay hallazgos que mostrar.</p>';
+
+  /* Qué no se pudo ver, y por qué. Callarlo haría pasar "no lo vimos" por "está bien". */
+  var und=keys.filter(function(k){return cov[k].result!=='ok'});
+  $('cov').innerHTML=und.length?('<div class="cvb"><div class="mono" style="font-size:11px;letter-spacing:.2em;color:#9A8E90">CAPAS NO DETERMINADAS</div><p style="color:#9A8E90;font-size:14px;margin:8px 0 6px">No significa que estén bien: significa que no pudimos verlas.</p>'+
+    und.map(function(k){var c=cov[k];return '<div class="cvr"><b>'+esc(COV[k]||k)+'</b><span>'+esc(c.reason?t('coverage.reason.'+c.reason,''):'')+'</span></div>'}).join('')+'</div>'):'';
+
+  $('res').classList.add('on');
+  var ga=$('ga');ga.style.transition='none';ga.style.strokeDashoffset='527.8';$('gn').textContent=scored?'0':'—';
+  $('gs').textContent=scored?'/ 100':'';
+  void ga.getBoundingClientRect();ga.style.transition='';
+  var top=$('resultados').getBoundingClientRect().top+window.pageYOffset-68;window.scrollTo({top:top,behavior:'smooth'});
+  if(scored)setTimeout(function(){
+    ga.style.strokeDashoffset=String(527.8*(1-r.score/100));
+    var s=performance.now();(function f(n){var p=Math.min(1,(n-s)/1600);$('gn').textContent=Math.round(r.score*(1-Math.pow(1-p,3)));if(p<1)requestAnimationFrame(f)})(s);
+  },500);
+}
+
+function resetCaptcha(){if(CAPTCHA!==null){CAPTCHA='';if(window.turnstile)window.turnstile.reset()}}
+
+$('again').addEventListener('click',function(){
+  JOB=null;R=null;$('res').classList.remove('on');$('dm').value='';$('ck').checked=false;$('er').textContent='';
+  resetCaptcha();
+  if(!$('ff')){location.reload();return}
+  window.scrollTo({top:0,behavior:'smooth'});setTimeout(function(){$('dm').focus()},400);
+});
+
+/* ---------- formulario del informe ---------- */
+var FREE=/@(gmail|hotmail|outlook|yahoo|live|icloud|proton|protonmail|msn|aol)\./i;
+$('ff').addEventListener('submit',async function(e){
+  e.preventDefault();
+  var fm=e.target,f={};
+  ['nombre','empresa','cargo','correo','telefono','pais'].forEach(function(k){f[k]=(fm.elements[k].value||'').trim()});
+  var m='';
+  if(Object.keys(f).some(function(k){return !f[k]}))m='Completa todos los campos.';
+  else if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(f.correo))m='Ingresa un correo válido.';
+  else if(FREE.test(f.correo))m='Usa tu correo corporativo.';
+  else if((f.telefono.match(/\d/g)||[]).length<7)m='Ingresa un teléfono válido.';
+  else if(!fm.elements.acepto.checked)m='Debes aceptar la Política de Privacidad y el Tratamiento de Datos Personales.';
+  else if(!JOB)m='Primero analiza un sitio.';
+  $('fe').textContent=m;if(m)return;
+  $('fb').disabled=true;$('fb').textContent='PREPARANDO…';
+  try{
+    var res=await fetch(API+'/leads',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({job_id:JOB,name:f.nombre,company:f.empresa,role:f.cargo,email:f.correo,phone:f.telefono,country:f.pais,consent:true})});
+    var out=await res.json().catch(function(){return{}});
+    if(!res.ok)throw new Error(typeof out.detail==='string'?out.detail:'No pudimos registrar tus datos.');
+    var url=API+out.download_url;
+    $('fw').innerHTML='<div class="ok2"><div class="eb">INFORME LISTO</div><h3 style="font-size:clamp(26px,3vw,40px);letter-spacing:-.035em;line-height:1.1;margin-top:16px">Gracias, '+esc(f.nombre)+'.</h3><p style="font-size:16.5px;line-height:1.65;color:#C9BEBF;margin:16px 0 0">'+
+      (out.email_sent?'Te enviamos el informe a <b style="color:#F4EFEE">'+esc(f.correo)+'</b>. También puedes descargarlo aquí. ':'Descarga tu informe aquí. ')+
+      'Un especialista de CYBERFUSION podrá ayudarte a interpretar los hallazgos.</p><div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:28px"><a class="btn" href="'+esc(url)+'" target="_blank" rel="noopener" style="font-size:15px;padding:16px 24px">DESCARGAR PDF</a><a class="btn ghost2" href="https://cyberfusion.global/contacto" style="font-size:15px;padding:16px 24px">HABLAR CON UN ESPECIALISTA</a></div></div>';
+    window.open(url,'_blank','noopener');
+  }catch(err){
+    $('fb').disabled=false;$('fb').textContent='DESCARGAR INFORME';$('fe').textContent=err.message;
+  }
+});
+
+/* ---------- aparición al hacer scroll (del diseño) ---------- */
+var els=[].slice.call(document.querySelectorAll('[data-r]'));
+var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+if(reduce||!('IntersectionObserver' in window))return;
+els.forEach(function(e){e.style.opacity='0';e.style.transform='translateY(24px)';e.style.filter='blur(8px)';e.style.transition='opacity .8s cubic-bezier(.2,.7,.2,1),transform .8s cubic-bezier(.2,.7,.2,1),filter .8s cubic-bezier(.2,.7,.2,1)'});
+var io=new IntersectionObserver(function(en){en.forEach(function(x){if(x.isIntersecting){var el=x.target;el.style.transitionDelay=Math.min([].indexOf.call(el.parentNode.children,el),5)*80+'ms';el.style.opacity='1';el.style.transform='none';el.style.filter='none';setTimeout(function(){el.style.transitionDelay='0ms'},1200);io.unobserve(el)}})},{threshold:.12,rootMargin:'0px 0px -6% 0px'});
+els.forEach(function(e){io.observe(e)});
+setTimeout(function(){els.forEach(function(el){el.style.opacity='1';el.style.transform='none';el.style.filter='none'})},2500);
+})();
+</script>
+</body></html>

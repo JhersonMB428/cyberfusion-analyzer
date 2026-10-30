@@ -246,7 +246,9 @@ def send_lead_notice(to: str, lead: dict, pdf: bytes | None = None,
     txt = f"""Lead nuevo desde el analizador web
 
 Contacto : {lead.get('name')}
+Cargo    : {lead.get('role') or '-'}
 Empresa  : {lead.get('company')}
+Pais     : {lead.get('country') or '-'}
 Correo   : {email}
 Telefono : {phone}
 
@@ -265,7 +267,9 @@ Responda a este correo para escribirle directamente.
    {lead.get('at','')}</p>
   <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
    {_row("Contacto", lead.get('name',''))}
+   {_row("Cargo", lead.get('role') or '-')}
    {_row("Empresa", lead.get('company',''))}
+   {_row("País", lead.get('country') or '-')}
    {_row("Correo", email, f"mailto:{email}")}
    {_row("Telefono", phone, f"tel:{phone}")}
   </table>
