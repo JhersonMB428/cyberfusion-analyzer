@@ -253,6 +253,7 @@ def build_context(res: dict, lang: str = "es") -> dict:
         "major": [f for f in findings if f["severity"] in ("critical", "high", "medium")],
         "minor": [f for f in findings if f["severity"] == "low"]
                  + [dict(n, severity="info", sev_label=ui["sev"]["info"]) for n in notes],
+        "logo_url": BRAND.get("LOGO_URL", ""),
         "logo": (BASE / "assets" / "logo.png").exists(),
     }
 
