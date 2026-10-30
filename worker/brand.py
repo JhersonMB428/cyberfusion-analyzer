@@ -12,6 +12,10 @@ CONTACT_EMAIL = f"scanner@{DOMAIN}"
 SALES_EMAIL_PUBLIC = f"contacto@{DOMAIN}"
 CONTACT_PAGE = f"{SITE_URL}/contacto"
 
+# Logo de la portada del PDF. Se carga desde la web al generar el informe,
+# asi un cambio de logo no obliga a reconstruir el contenedor.
+LOGO_URL = f"{SITE_URL}/wp-content/uploads/2026/10/cyberfusion-logo_color-negro_6000x2400-scaled.png"
+
 SCANNER_NAME  = "CyberfusionScanner"
 VERSION       = "1.0"
 USER_AGENT    = f"{SCANNER_NAME}/{VERSION} (+{SCANNER_PAGE})"
