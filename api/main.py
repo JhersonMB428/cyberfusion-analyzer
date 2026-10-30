@@ -216,6 +216,9 @@ class LeadRequest(BaseModel):
     company: str
     phone: str
     consent: bool = False
+    # Opcionales: la pagina de cyberfusion.global los pide; la anterior no.
+    role: str = ""
+    country: str = ""
 
 
 LEADS_FILE = pathlib.Path(os.getenv("LEADS_PATH", "/data/leads.jsonl"))
@@ -254,7 +257,8 @@ def export_leads(token: str = ""):
     _auth(token)
 
     import csv, io
-    cols = ["at", "name", "email", "phone", "company", "domain", "score", "grade", "job_id"]
+    cols = ["at", "name", "role", "email", "phone", "company", "country",
+            "domain", "score", "grade", "job_id"]
     buf = io.StringIO()
     w = csv.DictWriter(buf, fieldnames=cols, extrasaction="ignore")
     w.writeheader()
@@ -293,11 +297,6 @@ def create_lead(req: LeadRequest, bg: BackgroundTasks):
     if email.split("@")[-1] in DISPOSABLE:
         raise HTTPException(400, "Use un correo corporativo o personal "
                                  "permanente para recibir el informe")
-    if email.split("@")[-1] in DISPOSABLE:
-        raise HTTPException(400, "Use un correo corporativo o personal "
-                                 "permanente para recibir el informe")
-    if not req.consent:
-        raise HTTPException(400, "Falta aceptar el tratamiento de datos")
     if not req.consent:
         raise HTTPException(400, "Falta aceptar el tratamiento de datos")
 
@@ -310,6 +309,8 @@ def create_lead(req: LeadRequest, bg: BackgroundTasks):
         "at": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),
         "name": name[:120], "company": company[:120],
         "email": email, "phone": phone[:30],
+        "role": (req.role or "").strip()[:80],
+        "country": (req.country or "").strip()[:60],
         "domain": res.get("target"),
         "score": res.get("score"), "grade": res.get("grade"),
         "urgent": (res.get("counts") or {}).get("critical", 0)
