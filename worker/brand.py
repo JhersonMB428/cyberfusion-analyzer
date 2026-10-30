@@ -3,7 +3,7 @@
 Se desincronizo una vez entre el user-agent, el colofon del PDF y el
 token de verificacion. Todo lo que mencione el dominio importa aqui.
 """
-DOMAIN        = "cyberfusion.pe"
+DOMAIN        = "cyberfusion.global"
 SITE_URL      = f"https://{DOMAIN}"
 SCANNER_PAGE  = f"{SITE_URL}/scanner"
 ANALYZER_HOST = f"analyzer.{DOMAIN}"
