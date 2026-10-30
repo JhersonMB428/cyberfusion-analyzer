@@ -9,7 +9,7 @@
 {{ tokens }}
 
 @page {
-  size: A4; margin: 20mm 18mm 22mm 18mm;
+  size: A4; margin: 15mm 16mm 17mm 16mm;
   @bottom-left  { content: "{{ t.brand }} · {{ target }}";
                   font-family: var(--font-body); font-size: 7.5pt; color: var(--cf-muted); }
   @bottom-right { content: counter(page) " / " counter(pages);
@@ -19,7 +19,7 @@
   @bottom-left { content: none; } @bottom-right { content: none; } }
 
 * { box-sizing: border-box; }
-body { margin:0; font-family:var(--font-body); font-size:9.5pt; line-height:1.55;
+body { margin:0; font-family:var(--font-body); font-size:8.8pt; line-height:1.45;
        color:var(--cf-text); }
 h1,h2,h3 { font-family:var(--font-display); font-weight:700; margin:0; }
 
@@ -45,71 +45,75 @@ h1,h2,h3 { font-family:var(--font-display); font-weight:700; margin:0; }
 .grade-sub { font-size:9pt; color:#8f8f9c; padding-bottom:3mm; max-width:78mm; }
 .no-grade { font-family:var(--font-display); font-size:19pt; line-height:1.25; max-width:110mm; }
 
-/* ---------- Interior ---------- */
-.section { margin-top:11mm; }
+/* ---------- Interior ----------
+   Objetivo: portada + 3 hojas. Pagina 1: resumen, alcance y fortalezas.
+   Paginas 2-3: hallazgos. Lo grave va completo; lo bajo, en lista. */
+.section { margin-top:7mm; }
 .section:first-of-type { margin-top:0; }
-h2.sec { font-size:15pt; padding-bottom:2.5mm; border-bottom:2px solid var(--cf-ink);
-         margin-bottom:5mm; }
-p.lede { font-size:11pt; line-height:1.5; max-width:150mm; }
+h2.sec { font-size:12.5pt; padding-bottom:1.6mm; border-bottom:1.5px solid var(--cf-ink);
+         margin-bottom:3.5mm; }
+p.lede { font-size:10pt; line-height:1.45; margin:0; }
+.intro { color:var(--cf-muted); font-size:8.3pt; margin:0 0 3mm; }
 
 table { width:100%; border-collapse:collapse; }
-.tally td { padding:2.5mm 0; border-bottom:1px solid var(--cf-rule); font-size:9.5pt; }
-.tally td:last-child { text-align:right; font-family:var(--font-display); font-weight:700; }
-.dot { display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:6px; }
 
-.cov td { padding:3mm 3mm 3mm 0; border-bottom:1px solid var(--cf-rule);
-          vertical-align:top; font-size:9pt; }
-.cov td.layer { font-weight:600; width:52mm; }
-.cov td.state { width:34mm; }
-.cov .why { color:var(--cf-muted); font-size:8.5pt; }
+/* Recuento por severidad en una sola fila */
+.tally { margin-top:4mm; }
+.tally td { width:25%; padding:2.6mm 3mm; border:1px solid var(--cf-rule); vertical-align:top; }
+.tally .n { font-family:var(--font-display); font-weight:700; font-size:15pt; line-height:1; }
+.tally .l { font-size:7.6pt; color:var(--cf-muted); text-transform:uppercase; letter-spacing:.06em; margin-top:1mm; }
+
+.cov td { padding:1.7mm 2.5mm 1.7mm 0; border-bottom:1px solid var(--cf-rule);
+          vertical-align:top; font-size:8.3pt; }
+.cov td.layer { font-weight:600; width:50mm; }
+.cov td.state { width:28mm; }
+.cov .why { color:var(--cf-muted); font-size:7.8pt; }
 .state-ok      { color:var(--sev-ok);     font-weight:600; }
 .state-partial { color:var(--sev-medium); font-weight:600; }
 .state-undet   { color:var(--cf-muted);   font-weight:600; }
 .state-error   { color:var(--sev-high);   font-weight:600; }
 
-/* Hallazgos: regla lateral cuyo grosor y color codifican la severidad.
-   Nada de tarjetas identicas con la misma sombra. */
-.finding { padding:0 0 5mm 7mm; margin-bottom:6mm; border-left:3px solid var(--sev-low);
+/* Fortalezas en dos columnas */
+.wins td { width:50%; vertical-align:top; padding:0 3mm 2.2mm 0; }
+.win { padding-left:3.5mm; border-left:2.5px solid var(--sev-ok); }
+.win-t { font-weight:600; font-size:8.6pt; }
+.win-d { font-size:7.6pt; color:var(--cf-muted); }
+
+/* Hallazgos completos (critico, alto, medio) */
+.finding { padding:0 0 0 5mm; margin-bottom:4mm; border-left:3px solid var(--sev-low);
            page-break-inside:avoid; }
-.finding.critical { border-left-width:7px; border-left-color:var(--sev-critical); }
+.finding.critical { border-left-width:6px; border-left-color:var(--sev-critical); }
 .finding.high     { border-left-width:5px; border-left-color:var(--sev-high); }
 .finding.medium   { border-left-width:4px; border-left-color:var(--sev-medium); }
-.finding.low      { border-left-width:2px; border-left-color:var(--sev-low); }
-.finding.info     { border-left-width:2px; border-left-color:var(--sev-info); }
-.f-meta { font-size:8pt; color:var(--cf-muted); margin-bottom:1mm; }
+.f-meta { font-size:7.5pt; color:var(--cf-muted); }
 .f-sev { font-weight:700; text-transform:uppercase; letter-spacing:.06em; }
 .critical .f-sev{color:var(--sev-critical)} .high .f-sev{color:var(--sev-high)}
 .medium .f-sev{color:var(--sev-medium)} .low .f-sev{color:var(--sev-low)}
-.info .f-sev{color:var(--sev-info)}
-.f-title { font-family:var(--font-display); font-size:11pt; font-weight:700; line-height:1.3; }
-.f-fix { margin-top:2mm; max-width:145mm; }
-.f-ev { margin-top:2.5mm; background:var(--cf-paper-warm); border:1px solid var(--cf-rule);
-        padding:2.5mm 3mm; font-size:8pt; color:#3a3a44; word-break:break-all; }
-.f-ev b { color:var(--cf-text); }
+.f-title { font-family:var(--font-display); font-size:10pt; font-weight:700; line-height:1.25; margin-top:.4mm; }
+.f-fix { margin-top:1mm; }
+.f-ev { margin-top:1mm; font-size:7.5pt; color:var(--cf-muted); word-break:break-all; }
+.f-ev b { color:var(--cf-text); font-weight:600; }
 
-.strengths-block { page-break-inside:avoid; }
-.win { padding-left:7mm; border-left:3px solid var(--sev-ok); margin-bottom:4mm;
-       page-break-inside:avoid; }
-.win-t { font-weight:600; }
-.win-d { font-size:8.5pt; color:var(--cf-muted); }
+/* Hallazgos bajos y observaciones: lista compacta */
+.minor td { padding:1.8mm 2.5mm 1.8mm 0; border-bottom:1px solid var(--cf-rule);
+            vertical-align:top; font-size:8.2pt; }
+.minor td.k { width:19mm; font-size:7.2pt; font-weight:700; text-transform:uppercase;
+              letter-spacing:.05em; color:var(--sev-low); padding-top:2.1mm; }
+.minor td.k.info { color:var(--sev-info); }
+.minor .mt { font-weight:600; }
+.minor .md { color:var(--cf-muted); font-size:7.8pt; }
+.minor tr { page-break-inside:avoid; }
 
-.colophon a { color:var(--cf-crimson); text-decoration:none; }
-.cta { page-break-inside:avoid; margin-top:11mm; border:1.5px solid var(--cf-crimson);
-       border-radius:3mm; overflow:hidden; }
-.cta-head { background:var(--cf-ink); color:#fff; padding:6mm 7mm; }
-.cta-head h3 { font-family:var(--font-display); font-size:13pt; margin:0; }
-.cta-head p { font-size:9pt; color:#b9b9c4; margin:2mm 0 0; max-width:140mm; line-height:1.5; }
-.cta-body { padding:6mm 7mm; }
-.cta-body ul { margin:0; padding-left:5mm; }
-.cta-body li { font-size:9pt; margin-bottom:2.5mm; line-height:1.5; }
-.cta-foot { margin-top:4mm; padding-top:3.5mm; border-top:1px solid var(--cf-rule);
-            font-size:9.5pt; }
-.cta-foot b { color:var(--cf-crimson-dp); }
+/* Captacion: una franja, no una seccion entera */
+.cta { page-break-inside:avoid; margin-top:6mm; background:var(--cf-ink); color:#fff;
+       border-left:4px solid var(--cf-crimson); padding:4mm 5mm; }
+.cta h3 { font-family:var(--font-display); font-size:10.5pt; margin:0; color:#fff; }
+.cta p { margin:1.2mm 0 0; font-size:8.2pt; color:#c9c9d2; line-height:1.45; }
+.cta p b { color:#fff; }
 
-.note { background:var(--cf-paper-warm); page-break-inside:avoid; border-left:3px solid var(--cf-crimson);
-        padding:4mm 5mm; margin-top:6mm; font-size:9pt; }
-.colophon { margin-top:8mm; page-break-before:avoid; padding-top:4mm; border-top:1px solid var(--cf-rule);
-            font-size:7.5pt; color:var(--cf-muted); }
+.foot-note { margin-top:4mm; padding-top:2.5mm; border-top:1px solid var(--cf-rule);
+             font-size:7.2pt; line-height:1.45; color:var(--cf-muted); page-break-inside:avoid; }
+.foot-note a { color:var(--cf-crimson); text-decoration:none; }
 </style>
 </head>
 <body>
@@ -133,98 +137,77 @@ table { width:100%; border-collapse:collapse; }
   </div>
 </section>
 
+<!-- Hoja 1: resumen, alcance y fortalezas -->
 <section class="section">
   <h2 class="sec">{{ t.summary }}</h2>
   <p class="lede">{{ summary_text }}</p>
-
   {% if counts_rows %}
-  <table class="tally" style="margin-top:6mm">
+  <table class="tally"><tr>
     {% for row in counts_rows %}
-    <tr><td><span class="dot" style="background:{{ row.color }}"></span>{{ row.label }}</td>
-        <td>{{ row.n }}</td></tr>
+    <td style="border-top:3px solid {{ row.color }}"><div class="n">{{ row.n }}</div><div class="l">{{ row.label }}</div></td>
     {% endfor %}
-  </table>
+  </tr></table>
   {% endif %}
 </section>
 
 <section class="section">
   <h2 class="sec">{{ t.coverage }}</h2>
-  <p style="color:var(--cf-muted); max-width:150mm; margin:0 0 4mm">{{ t.coverage_intro }}</p>
+  <p class="intro">{{ t.coverage_intro }}</p>
   <table class="cov">
     {% for c in coverage_rows %}
-    <tr>
-      <td class="layer">{{ c.label }}</td>
-      <td class="state"><span class="{{ c.css }}">{{ c.state }}</span></td>
-      <td class="why">{{ c.why }}</td>
-    </tr>
+    <tr><td class="layer">{{ c.label }}</td>
+        <td class="state"><span class="{{ c.css }}">{{ c.state }}</span></td>
+        <td class="why">{{ c.why }}</td></tr>
     {% endfor %}
   </table>
 </section>
 
-{% if findings %}
+{% if strengths %}
+<section class="section" style="page-break-inside:avoid">
+  <h2 class="sec">{{ t.strengths }}</h2>
+  <table class="wins">
+    {% for pair in strengths|batch(2) %}
+    <tr>{% for s in pair %}<td><div class="win"><div class="win-t">{{ s.title }}</div>
+      {% if s.evidence_line %}<div class="win-d">{{ s.evidence_line }}</div>{% endif %}</div></td>{% endfor %}</tr>
+    {% endfor %}
+  </table>
+</section>
+{% endif %}
+
+<!-- Hojas 2 y 3: hallazgos -->
+{% if major or minor %}
 <section class="section" style="page-break-before:always">
   <h2 class="sec">{{ t.findings }}</h2>
-  <p style="color:var(--cf-muted); margin:0 0 6mm">{{ t.findings_intro }}</p>
-  {% for f in findings %}
+  <p class="intro">{{ t.findings_intro }}</p>
+  {% for f in major %}
   <div class="finding {{ f.severity }}">
-    <div class="f-meta"><span class="f-sev">{{ f.sev_label }}</span> ·
-      {{ t.effort }}: {{ f.effort_label }}{% if f.tentative %} · {{ t.tentative }}{% endif %}{% if f.cve %} · {{ f.cve|join(', ') }}{% endif %}
-    </div>
+    <div class="f-meta"><span class="f-sev">{{ f.sev_label }}</span> · {{ t.effort }} {{ f.effort_label }}{% if f.tentative %} · {{ t.tentative }}{% endif %}{% if f.cve %} · {{ f.cve|join(', ') }}{% endif %}</div>
     <div class="f-title">{{ f.title }}</div>
     {% if f.fix %}<div class="f-fix">{{ f.fix }}</div>{% endif %}
     {% if f.evidence_line %}<div class="f-ev"><b>{{ t.evidence }}:</b> {{ f.evidence_line }}</div>{% endif %}
   </div>
   {% endfor %}
-</section>
-{% endif %}
 
-{% if notes %}
-<section class="section">
-  <h2 class="sec">{{ t.notes }}</h2>
-  {% for f in notes %}
-  <div class="finding info">
-    <div class="f-title">{{ f.title }}</div>
-    {% if f.fix %}<div class="f-fix">{{ f.fix }}</div>{% endif %}
-  </div>
-  {% endfor %}
-</section>
-{% endif %}
-
-{% if strengths %}
-<section class="section strengths-block">
-  <h2 class="sec">{{ t.strengths }}</h2>
-  {% for s in strengths %}
-  <div class="win">
-    <div class="win-t">{{ s.title }}</div>
-    {% if s.evidence_line %}<div class="win-d">{{ s.evidence_line }}</div>{% endif %}
-  </div>
-  {% endfor %}
+  {% if minor %}
+  <h3 style="font-size:10pt;margin:5mm 0 1.5mm">{{ t.minor_title }}</h3>
+  <table class="minor">
+    {% for f in minor %}
+    <tr><td class="k {{ f.severity }}">{{ f.sev_label }}</td>
+        <td><span class="mt">{{ f.title }}.</span> {% if f.fix %}<span class="md">{{ f.fix }}</span>{% endif %}</td></tr>
+    {% endfor %}
+  </table>
+  {% endif %}
 </section>
 {% endif %}
 
 <section class="cta">
-  <div class="cta-head">
-    <h3>{{ t.cta_title }}</h3>
-    <p>{{ t.cta_body }}</p>
-  </div>
-  <div class="cta-body">
-    <ul>{% for item in t.cta_items %}<li>{{ item }}</li>{% endfor %}</ul>
-    <div class="cta-foot">
-      {{ t.cta_contact }} <b>{{ contact_email }}</b>
-      &nbsp;·&nbsp; <b>{{ contact_page }}</b>
-    </div>
-  </div>
+  <h3>{{ t.cta_title }}</h3>
+  <p>{{ t.cta_body }} <b>{{ contact_email }}</b> · <b>{{ contact_page }}</b></p>
 </section>
 
-<div class="note">
-  {{ t.limits_note }}
-  <div style="margin-top:2.5mm; padding-top:2.5mm;
-              border-top:1px solid rgba(0,0,0,.09);">{{ validity_note }}</div>
-</div>
-
-<div class="colophon">
-  <a href="{{ t.site_url }}">{{ t.site_url }}</a> · {{ t.contact }}<br>
-  {{ t.engine }} {{ engine_version }} · {{ scanned_at }}
+<div class="foot-note">
+  {{ t.limits_note }} {{ validity_note }}<br>
+  <a href="{{ t.site_url }}">{{ t.site_url }}</a> · {{ t.engine }} {{ engine_version }} · {{ scanned_at }}
 </div>
 
 </body>

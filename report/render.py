@@ -33,8 +33,8 @@ UI = {
         "verdict_sub_partial": "Sobre las {ok} de 7 capas que pudimos analizar.",
         "no_score_headline": "No emitimos puntuación: el análisis no cubrió "
                              "suficientes capas para calificar este sitio.",
-        "no_score_headline_waf": "Su sitio bloqueó nuestro escáner. "
-                                 "Es buena señal: tiene protección activa.",                             
+        "no_score_headline_waf": "Un firewall detuvo el análisis automatizado: "
+                                 "no emitimos puntuación.",
         "summary": "Resumen ejecutivo",
         "coverage": "Alcance del análisis",
         "coverage_intro": "Qué se revisó, qué se pudo determinar y qué no. "
@@ -46,12 +46,11 @@ UI = {
         "strengths": "Lo que este sitio hace bien",
         "notes": "Observaciones",
         "tier": "Análisis automatizado · Nivel básico",
-        "cta_title": "¿Quiere que nos encarguemos nosotros?",
-        "cta_body": "Este es nuestro análisis automatizado de nivel básico: "
-                    "cubre la superficie pública de su sitio. Si necesita ir "
-                    "más a fondo, o prefiere que corrijamos los hallazgos en "
-                    "lugar de hacerlo usted, escríbanos y le preparamos una "
-                    "cotización para su caso.",
+        "cta_title": "¿Prefiere que lo corrijamos nosotros?",
+        "cta_body": "Podemos corregir estos hallazgos, hacer un análisis "
+                    "profundo con revisión de un especialista o vigilar su "
+                    "sitio de forma continua. Escríbanos:",
+        "minor_title": "Mejoras menores y observaciones",
         "cta_items": [
             "Análisis profundo: vulnerabilidades conocidas de su CMS y sus extensiones, "
             "configuración del servidor y revisión manual por un especialista.",
@@ -64,19 +63,15 @@ UI = {
         "effort": "Esfuerzo",
         "evidence": "Evidencia",
         "tentative": "requiere verificación manual",
-        "limits_note": "Este informe es una evaluación automatizada. Detecta "
-                       "vulnerabilidades conocidas, versiones sin soporte y "
-                       "errores de configuración. No sustituye a una auditoría "
-                       "manual, que además cubre lógica de negocio y control "
-                       "de acceso.",
+        "limits_note": "Evaluación automatizada: detecta vulnerabilidades "
+                       "conocidas, versiones sin soporte y errores de "
+                       "configuración, pero no sustituye a una auditoría manual.",
         # La caducidad es una limitación real y, a la vez, el argumento del
         # monitoreo continuo. La misma frase hace los dos trabajos.
-        "validity_note": "Este análisis refleja el estado del sitio el {fecha}. "
-                         "La seguridad de una web cambia con cada actualización "
-                         "de software y cada vulnerabilidad publicada, así que "
-                         "conviene repetirlo periódicamente.",
+        "validity_note": "Refleja el estado del sitio el {fecha}; conviene "
+                         "repetirlo periódicamente.",
         "sev": {"critical": "Crítico", "high": "Alto", "medium": "Medio",
-                "low": "Bajo", "info": "Informativo"},
+                "low": "Bajo", "info": "Observ."},
         "effort_l": {"low": "bajo", "medium": "medio", "high": "alto"},
         "state": {"ok": "Analizado", "partial": "Parcial",
                   "undetermined": "No determinado", "error": "Error"},
@@ -168,9 +163,8 @@ def _summary(res: dict, ui: dict) -> str:
 
     if res.get("score") is None:
         if (res.get("integrity") or {}).get("reason") == "waf_blocked":
-            s = (f"El sitio {host} tiene un firewall de aplicación activo que "
-                 f"detuvo el análisis automatizado. Eso es buena señal: significa "
-                 f"que está protegido frente a herramientas como esta. Se revisaron "
+            s = (f"Un firewall de aplicación detuvo el análisis automatizado de "
+                 f"{host}, así que no emitimos puntuación. Se revisaron "
                  f"{7 - len(undet)} de 7 capas, las que no dependen de acceso HTTP.")
         else:
             s = (f"El análisis de {host} no pudo completarse. "
@@ -254,6 +248,11 @@ def build_context(res: dict, lang: str = "es") -> dict:
         "summary_text": _summary(res, ui),
         "counts_rows": counts_rows, "coverage_rows": coverage_rows,
         "findings": findings, "notes": notes, "strengths": strengths,
+        # Lo grave va completo; lo bajo y las observaciones, en una lista.
+        # Es lo que mantiene el informe en portada + 3 hojas.
+        "major": [f for f in findings if f["severity"] in ("critical", "high", "medium")],
+        "minor": [f for f in findings if f["severity"] == "low"]
+                 + [dict(n, severity="info", sev_label=ui["sev"]["info"]) for n in notes],
         "logo": (BASE / "assets" / "logo.png").exists(),
     }
 
