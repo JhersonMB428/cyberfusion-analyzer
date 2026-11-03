@@ -5,8 +5,40 @@ import redis
 from .pipeline import scan
 from .netguard import validar_o_fallar, DestinoNoPermitido, NoResuelve
 
-r = redis.from_url(os.getenv("REDIS_URL", "redis://redis:6379/0"))
+# socket_timeout tiene que ser MAYOR que el timeout de blpop (30 s): si no,
+# cada espera sin trabajo acaba en un TimeoutError falso. keepalive y
+# health_check evitan que una conexion que Azure cerro por inactividad
+# se descubra justo al ir a guardar un resultado.
+r = redis.from_url(
+    os.getenv("REDIS_URL", "redis://redis:6379/0"),
+    socket_timeout=45, socket_connect_timeout=10, socket_keepalive=True,
+    health_check_interval=25, retry_on_timeout=True,
+)
 QUEUE = "scans:queue"
+RETRY_S = 3
+RETRY_MAX = 100   # ~5 minutos: cubre un reinicio de mantenimiento de Azure
+
+
+def _redis(fn, *args, **kwargs):
+    """Ejecuta una operacion de Redis reintentando mientras no responda.
+
+    En el plan Basic de Azure, Redis se reinicia de vez en cuando por
+    mantenimiento. Antes, un TimeoutError en ese momento tumbaba el worker
+    (exit 1) y el escaneo que tenia en curso se perdia: la pagina se
+    quedaba esperando para siempre. Ahora el trabajo se queda en memoria
+    y se guarda en cuanto Redis vuelve.
+    """
+    for intento in range(1, RETRY_MAX + 1):
+        try:
+            return fn(*args, **kwargs)
+        except redis.exceptions.RedisError as e:
+            # ConnectionError y TimeoutError heredan de RedisError: el
+            # codigo anterior solo atrapaba el primero.
+            if intento == RETRY_MAX:
+                raise
+            print(f"[worker] Redis no responde ({type(e).__name__}), "
+                  f"reintento {intento} en {RETRY_S}s", flush=True)
+            time.sleep(RETRY_S)
 
 
 def _render_pdf(job_id: str, result: dict) -> bool:
@@ -22,7 +54,7 @@ def _render_pdf(job_id: str, result: dict) -> bool:
             path = fh.name
         render(result, path, "es")
         with open(path, "rb") as fh:
-            r.set(f"pdf:{job_id}", base64.b64encode(fh.read()), ex=86400)
+            _redis(r.set, f"pdf:{job_id}", base64.b64encode(fh.read()), ex=86400)
         os.unlink(path)
         return True
     except Exception as e:
@@ -55,7 +87,7 @@ def main():
     while True:
         try:
             item = r.blpop(QUEUE, timeout=30)
-        except redis.exceptions.ConnectionError as e:
+        except redis.exceptions.RedisError as e:
             # Redis se reinicia (mantenimiento en Azure, despliegue local).
             # Reconectar es lo normal, no un fallo: reventar aqui deja el
             # worker caido hasta que el orquestador lo levante otra vez.
@@ -75,19 +107,26 @@ def main():
         except (DestinoNoPermitido, NoResuelve) as e:
             print(f"[worker] RECHAZADO {target}: {e}", flush=True)
             _registrar_rechazo(job_id, target, str(e))
-            r.set(f"scan:{job_id}",
-                  json.dumps({"status": "error", "error": str(e)}), ex=86400)
+            _redis(r.set, f"scan:{job_id}",
+                   json.dumps({"status": "error", "error": str(e)}), ex=86400)
             continue
 
         print(f"[worker] escaneando {target}", flush=True)
-        r.set(f"scan:{job_id}", json.dumps({"status": "running"}), ex=86400)
+        _redis(r.set, f"scan:{job_id}", json.dumps({"status": "running"}), ex=86400)
         try:
             result = asyncio.run(scan(target, deep=deep))
             payload = {"status": "done", "result": result}
             payload["report_ready"] = _render_pdf(job_id, result)
         except Exception as e:
             payload = {"status": "error", "error": str(e)}
-        r.set(f"scan:{job_id}", json.dumps(payload, ensure_ascii=False), ex=86400)
+        try:
+            _redis(r.set, f"scan:{job_id}",
+                   json.dumps(payload, ensure_ascii=False), ex=86400)
+        except redis.exceptions.RedisError as e:
+            # Redis lleva mas de 5 minutos caido: el resultado se pierde,
+            # pero el worker sigue vivo para los siguientes escaneos.
+            print(f"[worker] no se pudo guardar {target}: {e}", flush=True)
+            continue
         print(f"[worker] listo {target}", flush=True)
 
 
