@@ -1,176 +1,186 @@
 <!DOCTYPE html>
-<html lang="{{ lang }}">
+<html lang="es">
 <head>
 <meta charset="utf-8">
 <style>
-@font-face { font-family:'Plus Jakarta Sans'; src:url('fonts/PlusJakartaSans.ttf'); font-weight:200 800; }
-@font-face { font-family:'Space Grotesk';     src:url('fonts/SpaceGrotesk.ttf');    font-weight:300 700; }
+@font-face { font-family:'Manrope'; src:url('fonts/Manrope.ttf'); font-weight:200 800; }
+@font-face { font-family:'JetBrains Mono'; src:url('fonts/JetBrainsMono.ttf'); font-weight:400 800; }
 
 {{ tokens }}
 
 @page {
   size: A4; margin: 15mm 16mm 17mm 16mm;
-  @bottom-left  { content: "{{ t.brand }} · {{ target }}";
-                  font-family: var(--font-body); font-size: 7.5pt; color: var(--cf-muted); }
-  @bottom-right { content: counter(page) " / " counter(pages);
-                  font-family: var(--font-body); font-size: 7.5pt; color: var(--cf-muted); }
+  @bottom-left  { content: "CYBERFUSION · cyberfusion.global";
+                  font-family: var(--font-mono); font-size: 6.8pt; letter-spacing: .08em; color: var(--cf-muted); }
+  @bottom-right { content: "Informe de {{ host }} · " counter(page) " / " counter(pages);
+                  font-family: var(--font-mono); font-size: 6.8pt; letter-spacing: .04em; color: var(--cf-muted); }
 }
-@page cover { margin: 0;
-  @bottom-left { content: none; } @bottom-right { content: none; } }
+@page cover { margin: 0; @bottom-left { content: none; } @bottom-right { content: none; } }
 
 * { box-sizing: border-box; }
-body { margin:0; font-family:var(--font-body); font-size:8.8pt; line-height:1.45;
-       color:var(--cf-text); }
-h1,h2,h3 { font-family:var(--font-display); font-weight:700; margin:0; }
+body { margin:0; font-family:var(--font-body); font-size:8.6pt; line-height:1.45; color:var(--cf-text); }
+h1,h2,h3 { font-family:var(--font-display); font-weight:800; margin:0; letter-spacing:-.01em; }
+.eb { font-family:var(--font-mono); font-size:6.8pt; letter-spacing:.22em; color:var(--cf-crimson); text-transform:uppercase; }
 
-/* ---------- Portada ---------- */
-.cover { page: cover; height:297mm; background:var(--cf-ink); color:#fff;
-         padding:26mm 20mm; position:relative; }
-.cover::after { content:""; position:absolute; left:0; right:0; bottom:0; height:4mm;
-                background:linear-gradient(90deg,var(--cf-crimson),var(--cf-crimson-dp)); }
-.mark { font-family:var(--font-display); font-size:13pt; letter-spacing:.02em; }
-.mark b { color:var(--cf-crimson); }
-.logo { height:10mm; width:auto; display:block; }
-.cover-kind { margin-top:70mm; font-size:10pt; color:#8f8f9c; }
-.cover-target { font-family:var(--font-display); font-size:30pt; line-height:1.1;
-                margin-top:3mm; word-break:break-all; }
-.cover-date { margin-top:4mm; font-size:9pt; color:#8f8f9c; }
+/* ---------- Portada: la imagen de marca a sangre ---------- */
+.cover { page: cover; height:297mm; position:relative; color:#fff;
+         background:#060203 url('assets/cover.jpg') no-repeat center / 210mm 297mm; }
+.cv-block { position:absolute; left:18mm; right:18mm; top:118mm; }
+.cv-kind { font-family:var(--font-mono); font-size:7.4pt; letter-spacing:.26em; color:#FF6b6b; }
+.cv-host { font-size:30pt; font-weight:800; line-height:1.05; margin-top:4mm; letter-spacing:-.03em; word-break:break-all; }
+.cv-date { margin-top:3.5mm; font-size:9pt; color:#c9bebf; }
+.cv-verdict { position:absolute; left:18mm; right:18mm; bottom:24mm; padding-top:7mm;
+              border-top:1px solid rgba(255,255,255,.18); }
+.cv-row { display:table; width:100%; }
+.cv-score, .cv-meta { display:table-cell; vertical-align:bottom; }
+.cv-score { width:52mm; font-size:50pt; font-weight:800; line-height:.85; letter-spacing:-.04em; }
+.cv-score small { font-size:13pt; font-weight:600; color:#c9bebf; letter-spacing:0; }
+.cv-meta { font-size:9pt; color:#d4c9c9; padding-bottom:1.5mm; }
+.chip { display:inline-block; font-family:var(--font-mono); font-size:7pt; letter-spacing:.18em;
+        padding:1.4mm 3.2mm; border-radius:20mm; border:1px solid rgba(255,255,255,.55); color:#fff; }
+.chip.alto { background:var(--cf-crimson); border-color:var(--cf-crimson); }
+.chip.medio { border-color:#FF2D2D; color:#FF6b6b; }
 
-.verdict { position:absolute; left:20mm; right:20mm; bottom:26mm;
-           border-top:1px solid rgba(255,255,255,.16); padding-top:9mm; }
-.grade-wrap { display:table; }
-.grade, .grade-sub { display:table-cell; vertical-align:bottom; }
-.grade { font-family:var(--font-display); font-size:58pt; line-height:.85;
-         color:var(--cf-crimson); }
-.grade-sub { font-size:9pt; color:#8f8f9c; padding-bottom:3mm; max-width:78mm; }
-.no-grade { font-family:var(--font-display); font-size:19pt; line-height:1.25; max-width:110mm; }
-
-/* ---------- Interior ----------
-   Objetivo: portada + 3 hojas. Pagina 1: resumen, alcance y fortalezas.
-   Paginas 2-3: hallazgos. Lo grave va completo; lo bajo, en lista. */
-.section { margin-top:7mm; }
+/* ---------- Interior ---------- */
+.section { margin-top:6mm; }
 .section:first-of-type { margin-top:0; }
-h2.sec { font-size:12.5pt; padding-bottom:1.6mm; border-bottom:1.5px solid var(--cf-ink);
-         margin-bottom:3.5mm; }
-p.lede { font-size:10pt; line-height:1.45; margin:0; }
-.intro { color:var(--cf-muted); font-size:8.3pt; margin:0 0 3mm; }
-
+h2.sec { font-size:12pt; margin:1.2mm 0 3mm; }
+p.lede { font-size:9.6pt; line-height:1.5; margin:0; }
+.intro { color:var(--cf-muted); font-size:7.9pt; margin:0 0 2.5mm; }
 table { width:100%; border-collapse:collapse; }
 
-/* Recuento por severidad en una sola fila */
-.tally { margin-top:4mm; }
-.tally td { width:25%; padding:2.6mm 3mm; border:1px solid var(--cf-rule); vertical-align:top; }
-.tally .n { font-family:var(--font-display); font-weight:700; font-size:15pt; line-height:1; }
-.tally .l { font-size:7.6pt; color:var(--cf-muted); text-transform:uppercase; letter-spacing:.06em; margin-top:1mm; }
+/* Tarjeta de puntaje: mismo lenguaje que la web y la portada */
+.hero { display:table; width:100%; margin-top:3.5mm; }
+.hero > div { display:table-cell; vertical-align:middle; }
+.scorebox { width:56mm; padding:5mm 5mm 4.2mm; color:#fff; border-radius:3mm;
+            background:linear-gradient(150deg,#5a0d14 0%,#1a0508 55%,#060203 100%); }
+.scorebox .n { font-size:34pt; font-weight:800; line-height:.9; letter-spacing:-.04em; }
+.scorebox .n small { font-size:10pt; color:#c9bebf; font-weight:600; letter-spacing:0; }
+.scorebox .cv { font-family:var(--font-mono); font-size:6.4pt; letter-spacing:.14em; color:#c9bebf; margin-top:2.5mm; }
+.bars { margin-top:1.5mm; }
+.bars i { display:inline-block; width:3.6mm; height:1.2mm; margin-right:.7mm; border-radius:1mm; background:rgba(255,255,255,.18); }
+.bars i.on { background:var(--cf-crimson-hi); }
+.hero .txt { padding-left:6mm; }
 
-.cov td { padding:1.7mm 2.5mm 1.7mm 0; border-bottom:1px solid var(--cf-rule);
-          vertical-align:top; font-size:8.3pt; }
-.cov td.layer { font-weight:600; width:50mm; }
-.cov td.state { width:28mm; }
-.cov .why { color:var(--cf-muted); font-size:7.8pt; }
-.state-ok      { color:var(--sev-ok);     font-weight:600; }
-.state-partial { color:var(--sev-medium); font-weight:600; }
-.state-undet   { color:var(--cf-muted);   font-weight:600; }
-.state-error   { color:var(--sev-high);   font-weight:600; }
+.tally { margin-top:3.5mm; }
+.tally td { width:25%; padding:2mm 2.6mm; border:1px solid var(--cf-rule); vertical-align:top; }
+.tally .n { font-weight:800; font-size:13pt; line-height:1; }
+.tally .l { font-family:var(--font-mono); font-size:6.4pt; color:var(--cf-muted); letter-spacing:.12em; text-transform:uppercase; margin-top:1mm; }
 
-/* Fortalezas en dos columnas */
-.wins td { width:50%; vertical-align:top; padding:0 3mm 2.2mm 0; }
-.win { padding-left:3.5mm; border-left:2.5px solid var(--sev-ok); }
-.win-t { font-weight:600; font-size:8.6pt; }
-.win-d { font-size:7.6pt; color:var(--cf-muted); }
+.layers td { padding:1.45mm 2.4mm 1.45mm 0; border-bottom:1px solid var(--cf-rule); vertical-align:top; font-size:8pt; }
+.layers td.id { width:9mm; font-family:var(--font-mono); font-size:6.8pt; color:var(--cf-muted); padding-top:1.8mm; }
+.layers td.nm { width:52mm; font-weight:700; }
+.layers td.st { width:33mm; }
+.layers td.nt { color:var(--cf-muted); font-size:7.6pt; }
+.st-tag { font-family:var(--font-mono); font-size:6.2pt; letter-spacing:.1em; font-weight:500; text-transform:uppercase; }
+.st-ok { color:var(--sev-ok); } .st-attention { color:var(--sev-medio); }
+.st-undetermined, .st-needs_verification { color:var(--cf-muted); }
 
-/* Hallazgos completos (critico, alto, medio) */
-.finding { padding:0 0 0 5mm; margin-bottom:4mm; border-left:3px solid var(--sev-low);
-           page-break-inside:avoid; }
-.finding.critical { border-left-width:6px; border-left-color:var(--sev-critical); }
-.finding.high     { border-left-width:5px; border-left-color:var(--sev-high); }
-.finding.medium   { border-left-width:4px; border-left-color:var(--sev-medium); }
-.f-meta { font-size:7.5pt; color:var(--cf-muted); }
-.f-sev { font-weight:700; text-transform:uppercase; letter-spacing:.06em; }
-.critical .f-sev{color:var(--sev-critical)} .high .f-sev{color:var(--sev-high)}
-.medium .f-sev{color:var(--sev-medium)} .low .f-sev{color:var(--sev-low)}
-.f-title { font-family:var(--font-display); font-size:10pt; font-weight:700; line-height:1.25; margin-top:.4mm; }
-.f-fix { margin-top:1mm; }
-.f-ev { margin-top:1mm; font-size:7.5pt; color:var(--cf-muted); word-break:break-all; }
-.f-ev b { color:var(--cf-text); font-weight:600; }
+.note { margin-top:4mm; padding:3.2mm 4mm; border-left:3px solid var(--cf-crimson);
+        background:var(--cf-paper-warm); font-size:8.2pt; page-break-inside:avoid; }
 
-/* Hallazgos bajos y observaciones: lista compacta */
-.minor td { padding:1.8mm 2.5mm 1.8mm 0; border-bottom:1px solid var(--cf-rule);
-            vertical-align:top; font-size:8.2pt; }
-.minor td.k { width:19mm; font-size:7.2pt; font-weight:700; text-transform:uppercase;
-              letter-spacing:.05em; color:var(--sev-low); padding-top:2.1mm; }
-.minor td.k.info { color:var(--sev-info); }
-.minor .mt { font-weight:600; }
-.minor .md { color:var(--cf-muted); font-size:7.8pt; }
+.wins td { width:50%; vertical-align:top; padding:0 3mm 2mm 0; }
+.win { padding-left:3.2mm; border-left:2.5px solid var(--sev-ok); }
+.win-t { font-weight:700; font-size:8.3pt; }
+.win-d { font-size:7.4pt; color:var(--cf-muted); }
+
+/* Hallazgos de riesgo alto y medio: completos */
+.finding { padding:0 0 0 4.5mm; margin-bottom:3.6mm; border-left:3px solid var(--sev-medio); page-break-inside:avoid; }
+.finding.alto { border-left:5px solid var(--sev-alto); }
+.f-meta { font-family:var(--font-mono); font-size:6.4pt; letter-spacing:.12em; text-transform:uppercase; color:var(--cf-muted); }
+.f-meta b { font-weight:500; }
+.alto .f-meta b { color:var(--sev-alto); } .medio .f-meta b { color:var(--sev-medio); }
+.f-title { font-size:9.6pt; font-weight:800; line-height:1.25; margin-top:.5mm; }
+.f-row { margin-top:.9mm; font-size:8.2pt; }
+.f-row span { font-weight:700; }
+
+/* Riesgo bajo y observaciones: lista compacta */
+.minor td { padding:1.5mm 2.4mm 1.5mm 0; border-bottom:1px solid var(--cf-rule); vertical-align:top; font-size:7.9pt; }
+.minor td.k { width:16mm; font-family:var(--font-mono); font-size:6.2pt; letter-spacing:.1em; text-transform:uppercase; color:var(--sev-bajo); padding-top:1.9mm; }
+.minor td.k.observ { color:var(--sev-observ); }
+.minor .mt { font-weight:700; }
+.minor .md { color:var(--cf-muted); }
 .minor tr { page-break-inside:avoid; }
 
-/* Captacion: una franja, no una seccion entera */
-.cta { page-break-inside:avoid; margin-top:6mm; background:var(--cf-ink); color:#fff;
-       border-left:4px solid var(--cf-crimson); padding:4mm 5mm; }
-.cta h3 { font-family:var(--font-display); font-size:10.5pt; margin:0; color:#fff; }
-.cta p { margin:1.2mm 0 0; font-size:8.2pt; color:#c9c9d2; line-height:1.45; }
-.cta p b { color:#fff; }
-.cta p.cta-c { margin-top:1.8mm; color:#fff; }
+/* Captacion: el mismo degradado y destello que la portada */
+.cta { page-break-inside:avoid; margin-top:5.5mm; color:#fff; border-radius:3mm; padding:5.5mm 6mm;
+       background:
+         radial-gradient(60mm 30mm at 92% 0%, rgba(255,45,45,.55), transparent 70%),
+         linear-gradient(120deg,#060203 0%,#1a0508 45%,#5a0d14 100%); }
+.cta .eb { color:#FF6b6b; }
+.cta h3 { font-size:12.5pt; margin-top:1.6mm; color:#fff; }
+.cta p { margin:1.4mm 0 0; font-size:8.6pt; color:#e6dcdc; line-height:1.45; }
+.cta .c { margin-top:2.6mm; padding-top:2.4mm; border-top:1px solid rgba(255,255,255,.18); font-size:8.6pt; }
+.cta .c b { color:#fff; }
 
-.foot-note { margin-top:4mm; padding-top:2.5mm; border-top:1px solid var(--cf-rule);
-             font-size:7.2pt; line-height:1.45; color:var(--cf-muted); page-break-inside:avoid; }
-.foot-note a { color:var(--cf-crimson); text-decoration:none; }
+.foot-note { margin-top:3.5mm; padding-top:2.4mm; border-top:1px solid var(--cf-rule);
+             font-size:6.9pt; line-height:1.45; color:var(--cf-muted); page-break-inside:avoid; }
 </style>
 </head>
 <body>
 
 <section class="cover">
-  {% if logo_url %}<img src="{{ logo_url }}" class="logo" alt="Cyberfusion">
-  {% elif logo %}<img src="assets/logo.png" class="logo" alt="Cyberfusion">
-  {% else %}<div class="mark">Cyber<b>Fusion</b></div>{% endif %}
-  <div class="cover-kind">{{ t.report_kind }} &nbsp;·&nbsp; {{ t.tier }}</div>
-  <div class="cover-target">{{ host }}</div>
-  <div class="cover-date">{{ t.scanned_on }} {{ scanned_human }}</div>
-
-  <div class="verdict">
-  {% if score is not none %}
-    <div class="grade-wrap">
-      <div class="grade">{{ grade }}</div>
-      <div class="grade-sub" style="padding-left:11mm">{{ score }}/100<br>{{ t.verdict_sub }}</div>
+  <div class="cv-block">
+    <div class="cv-kind">INFORME DE SEGURIDAD WEB · ANÁLISIS PASIVO</div>
+    <div class="cv-host">{{ host }}</div>
+    <div class="cv-date">Analizado el {{ analyzed_human }}</div>
+  </div>
+  <div class="cv-verdict">
+    {% if score is not none %}
+    <div class="cv-row">
+      <div class="cv-score">{{ score }}<small> / 100</small></div>
+      <div class="cv-meta"><span class="chip {{ level }}">RIESGO {{ level|upper }}</span><br>
+        <span style="display:inline-block;margin-top:2.5mm">Calculado sobre {{ cov.determined }} de {{ cov.total }} capas analizadas.</span></div>
     </div>
-  {% else %}
-    <div class="no-grade">{{ t.no_score_headline }}</div>
-  {% endif %}
+    {% else %}
+    <div style="font-size:18pt;font-weight:800;line-height:1.25;max-width:120mm">No pudimos completar el análisis de este dominio.</div>
+    {% endif %}
   </div>
 </section>
 
-<!-- Hoja 1: resumen, alcance y fortalezas -->
+<!-- Hoja 1: resumen, capas y aciertos -->
 <section class="section">
-  <h2 class="sec">{{ t.summary }}</h2>
-  <p class="lede">{{ summary_text }}</p>
-  {% if counts_rows %}
+  <div class="eb">Resumen</div>
+  <h2 class="sec">Así está tu sitio hoy</h2>
+  <div class="hero">
+    {% if score is not none %}
+    <div class="scorebox">
+      <div class="n">{{ score }}<small> / 100</small></div>
+      <div style="margin-top:2.2mm"><span class="chip {{ level }}">RIESGO {{ level|upper }}</span></div>
+      <div class="cv">COBERTURA {{ cov.determined }} DE {{ cov.total }} CAPAS</div>
+      <div class="bars">{% for i in range(cov.total) %}<i{% if i < cov.determined %} class="on"{% endif %}></i>{% endfor %}</div>
+    </div>
+    {% endif %}
+    <div class="txt"><p class="lede">{{ summary_text }}</p></div>
+  </div>
+  {% if tally %}
   <table class="tally"><tr>
-    {% for row in counts_rows %}
-    <td style="border-top:3px solid {{ row.color }}"><div class="n">{{ row.n }}</div><div class="l">{{ row.label }}</div></td>
-    {% endfor %}
+    {% for t in tally %}<td style="border-top:3px solid {{ t.color }}"><div class="n">{{ t.n }}</div><div class="l">{{ t.label }}</div></td>{% endfor %}
   </tr></table>
   {% endif %}
+  {% if blocked_note %}<div class="note">{{ blocked_note }}</div>{% endif %}
 </section>
 
 <section class="section">
-  <h2 class="sec">{{ t.coverage }}</h2>
-  <p class="intro">{{ t.coverage_intro }}</p>
-  <table class="cov">
-    {% for c in coverage_rows %}
-    <tr><td class="layer">{{ c.label }}</td>
-        <td class="state"><span class="{{ c.css }}">{{ c.state }}</span></td>
-        <td class="why">{{ c.why }}</td></tr>
+  <div class="eb">Alcance</div>
+  <h2 class="sec">Qué revisamos</h2>
+  <p class="intro">Una capa no determinada no significa que esté bien: significa que no pudimos verla desde fuera.</p>
+  <table class="layers">
+    {% for l in layers %}
+    <tr><td class="id">{{ l.id }}</td><td class="nm">{{ l.name }}</td>
+        <td class="st"><span class="st-tag st-{{ l.state }}">{{ l.state_label }}</span></td>
+        <td class="nt">{{ l.note or '' }}</td></tr>
     {% endfor %}
   </table>
 </section>
 
-{% if strengths %}
+{% if positives %}
 <section class="section" style="page-break-inside:avoid">
-  <h2 class="sec">{{ t.strengths }}</h2>
+  <div class="eb">Fortalezas</div>
+  <h2 class="sec">Lo que tu sitio hace bien</h2>
   <table class="wins">
-    {% for pair in strengths|batch(2) %}
-    <tr>{% for s in pair %}<td><div class="win"><div class="win-t">{{ s.title }}</div>
-      {% if s.evidence_line %}<div class="win-d">{{ s.evidence_line }}</div>{% endif %}</div></td>{% endfor %}</tr>
+    {% for pair in positives|batch(2) %}
+    <tr>{% for p in pair %}<td><div class="win"><div class="win-t">{{ p.title }}</div><div class="win-d">{{ p.detail }}</div></div></td>{% endfor %}</tr>
     {% endfor %}
   </table>
 </section>
@@ -179,23 +189,23 @@ table { width:100%; border-collapse:collapse; }
 <!-- Hojas 2 y 3: hallazgos -->
 {% if major or minor %}
 <section class="section" style="page-break-before:always">
-  <h2 class="sec">{{ t.findings }}</h2>
-  <p class="intro">{{ t.findings_intro }}</p>
+  <div class="eb">Hallazgos</div>
+  <h2 class="sec">Qué conviene corregir</h2>
+  <p class="intro">Ordenados por riesgo y, a igual riesgo, por facilidad de corrección. Empieza por arriba.</p>
   {% for f in major %}
   <div class="finding {{ f.severity }}">
-    <div class="f-meta"><span class="f-sev">{{ f.sev_label }}</span> · {{ t.effort }} {{ f.effort_label }}{% if f.tentative %} · {{ t.tentative }}{% endif %}{% if f.cve %} · {{ f.cve|join(', ') }}{% endif %}</div>
+    <div class="f-meta"><b>RIESGO {{ f.severity|upper }}</b> · Esfuerzo {{ f.effort }} · {{ f.layer_name }}</div>
     <div class="f-title">{{ f.title }}</div>
-    {% if f.fix %}<div class="f-fix">{{ f.fix }}</div>{% endif %}
-    {% if f.evidence_line %}<div class="f-ev"><b>{{ t.evidence }}:</b> {{ f.evidence_line }}</div>{% endif %}
+    <div class="f-row"><span>Qué significa para tu negocio:</span> {{ f.impact }}</div>
+    <div class="f-row"><span>Qué hacer:</span> {{ f.fix }}</div>
   </div>
   {% endfor %}
-
   {% if minor %}
-  <h3 style="font-size:10pt;margin:5mm 0 1.5mm">{{ t.minor_title }}</h3>
+  <h3 style="font-size:9.6pt;margin:4.5mm 0 1.2mm">Mejoras menores y observaciones</h3>
   <table class="minor">
     {% for f in minor %}
-    <tr><td class="k {{ f.severity }}">{{ f.sev_label }}</td>
-        <td><span class="mt">{{ f.title }}.</span> {% if f.fix %}<span class="md">{{ f.fix }}</span>{% endif %}</td></tr>
+    <tr><td class="k {{ f.severity }}">{{ 'Bajo' if f.severity == 'bajo' else 'Observ.' }}</td>
+        <td><span class="mt">{{ f.title }}.</span> <span class="md">{{ f.fix }}</span></td></tr>
     {% endfor %}
   </table>
   {% endif %}
@@ -203,14 +213,15 @@ table { width:100%; border-collapse:collapse; }
 {% endif %}
 
 <section class="cta">
-  <h3>{{ t.cta_title }}</h3>
-  <p>{{ t.cta_body }}</p>
-  <p class="cta-c">{{ t.cta_contact }} <b>{{ contact_email }}</b> &nbsp;|&nbsp; <b>{{ contact_page }}</b></p>
+  <div class="eb">CYBERFUSION</div>
+  <h3>¡Nosotros podemos ayudarte!</h3>
+  <p>Corregimos los hallazgos identificados y solucionamos las brechas de tu web.</p>
+  <div class="c">Contáctanos a <b>{{ contact_email }}</b> &nbsp;|&nbsp; <b>{{ contact_page }}</b></div>
 </section>
 
 <div class="foot-note">
-  {{ t.limits_note }} {{ validity_note }}<br>
-  <a href="{{ t.site_url }}">{{ t.site_url }}</a> · {{ t.engine }} {{ engine_version }} · {{ scanned_at }}
+  {{ limits_note }} Refleja el estado del sitio el {{ analyzed_date }}; conviene repetirlo periódicamente.<br>
+  cyberfusion.global · Motor {{ engine_version }} · {{ analyzed_at }}
 </div>
 
 </body>

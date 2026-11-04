@@ -18,7 +18,7 @@ CONTACT_PAGE = f"{SITE_URL}/contacto"
 LOGO_URL = ""
 
 SCANNER_NAME  = "CyberfusionScanner"
-VERSION       = "1.0"
+VERSION       = "1.1"
 USER_AGENT    = f"{SCANNER_NAME}/{VERSION} (+{SCANNER_PAGE})"
 
 # Verificacion de propiedad del dominio

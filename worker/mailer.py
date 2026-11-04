@@ -126,26 +126,28 @@ def _send(msg: EmailMessage, who: str) -> bool:
 
 # ------------------------------------------------ informe para el cliente
 def send_report(to: str, host: str, pdf: bytes, filename: str,
-                score=None, grade=None, urgent: int = 0,
-                report_url: str = "") -> bool:
+                score=None, level=None, urgent: int = 0,
+                report_url: str = "", coverage: dict | None = None) -> bool:
     if not configured:
         print("[mail] SMTP sin configurar: no se envia nada", flush=True)
         return False
 
+    cov = coverage or {}
+    sobre = (f" sobre {cov.get('determined')} de {cov.get('total')} capas analizadas"
+             if cov.get("determined") is not None and cov.get("determined") != cov.get("total") else "")
     if score is None:
-        titular = f"No pudimos completar el analisis de {host}"
-        detalle = ("El sitio bloqueo el analisis automatizado. El informe "
-                   "adjunto explica que se pudo revisar y que no.")
+        titular = f"No pudimos completar el análisis de {host}"
+        detalle = ("El informe adjunto explica qué se pudo revisar y qué no.")
     elif urgent:
         n, verbo = ("punto", "requiere") if urgent == 1 else ("puntos", "requieren")
-        titular = f"{host}: {urgent} {n} que {verbo} atencion"
-        detalle = (f"Su sitio obtuvo {score} de 100 (nota {grade}). El informe "
-                   f"adjunto detalla cada hallazgo y como corregirlo.")
+        titular = f"{host}: {urgent} {n} que {verbo} atención"
+        detalle = (f"Tu sitio obtuvo {score} de 100{sobre} (riesgo {level}). El informe "
+                   f"adjunto detalla cada hallazgo y cómo corregirlo.")
     else:
-        titular = f"{host}: sin riesgos altos ni criticos"
-        detalle = (f"Su sitio obtuvo {score} de 100 (nota {grade}). El informe "
+        titular = f"{host}: sin riesgos altos"
+        detalle = (f"Tu sitio obtuvo {score} de 100{sobre} (riesgo {level}). El informe "
                    f"adjunto recoge los puntos de mejora pendientes y lo que "
-                   f"su sitio ya hace bien.")
+                   f"tu sitio ya hace bien.")
 
     url = report_url or brand.SITE_URL
     txt = f"""{titular}
@@ -155,23 +157,22 @@ def send_report(to: str, host: str, pdf: bytes, filename: str,
 Descargar el informe:
 {url}
 
-Que contiene:
-- Resumen ejecutivo para direccion
-- Cada hallazgo con su evidencia y como corregirlo
-- Que capas se revisaron y cuales no, con el motivo
-- Lo que su sitio ya hace bien
+Qué contiene:
+- Resumen para dirección
+- Cada hallazgo, qué significa para tu negocio y cómo corregirlo
+- Qué capas se revisaron y cuáles no, con el motivo
+- Lo que tu sitio ya hace bien
 
-Este analisis refleja el estado del sitio en el momento de ejecutarlo. La
-seguridad de una web cambia con cada actualizacion y cada vulnerabilidad
-publicada, asi que conviene repetirlo periodicamente.
+Este análisis refleja el estado de tu sitio en el momento de ejecutarlo.
+La configuración de una web cambia con cada actualización, así que conviene
+repetirlo periódicamente.
 
-Si necesita un analisis mas profundo o que corrijamos los hallazgos,
-escribanos a {brand.SALES_EMAIL_PUBLIC}
+Si quieres que corrijamos los hallazgos, escríbenos a {brand.SALES_EMAIL_PUBLIC}
 
 --
 {FROM_NAME} · {brand.SITE_URL}
-Recibe este correo porque solicito un analisis en nuestra web.
-Para dejar de recibirlos, responda con "baja".
+Recibes este correo porque solicitaste un análisis en nuestra web.
+Para dejar de recibirlos, responde con "baja".
 """
 
     inner = f"""<tr><td style="padding:30px 28px 26px 28px;">
@@ -181,35 +182,35 @@ Para dejar de recibirlos, responda con "baja".
    {detalle}</p>
   {_button(url, "Descargar el informe")}
   <p style="margin:20px 0 0 0;font-family:{FONT};font-size:13px;color:{MUT};">
-   Tambien lo tiene adjunto a este correo.</p>
+   También lo tienes adjunto a este correo.</p>
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
    <tr><td style="border-top:1px solid {LINE};padding-top:22px;">
     <p style="margin:0 0 10px 0;font-family:{FONT};font-size:14px;font-weight:bold;color:{TXT};">
-     Que contiene</p>
+     Qué contiene</p>
     <table role="presentation" cellpadding="0" cellspacing="0" border="0">
      {''.join(f'''<tr><td style="font-family:{FONT};font-size:14px;line-height:1.7;
       color:#44444e;padding:0 0 4px 0;">&bull;&nbsp; {x}</td></tr>''' for x in (
-       "Resumen ejecutivo para direccion",
-       "Cada hallazgo con su evidencia y como corregirlo",
-       "Que capas se revisaron y cuales no, con el motivo",
-       "Lo que su sitio ya hace bien"))}
+       "Resumen para dirección",
+       "Cada hallazgo, qué significa para tu negocio y cómo corregirlo",
+       "Qué capas se revisaron y cuáles no, con el motivo",
+       "Lo que tu sitio ya hace bien"))}
     </table>
    </td></tr>
    <tr><td style="padding-top:22px;">
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
      <tr><td style="background-color:{WARM};border-left:3px solid {RED};padding:14px 18px;
       font-family:{FONT};font-size:13.5px;line-height:1.6;color:#44444e;">
-      &iquest;Necesita un analisis mas profundo o que corrijamos los hallazgos?
-      Escribanos a <a href="mailto:{brand.SALES_EMAIL_PUBLIC}"
+      &iexcl;Nosotros podemos ayudarte! Corregimos los hallazgos identificados.
+      Escr&iacute;benos a <a href="mailto:{brand.SALES_EMAIL_PUBLIC}"
       style="color:{RED};text-decoration:none;font-weight:bold;">{brand.SALES_EMAIL_PUBLIC}</a>
-      y le preparamos una cotizacion.</td></tr>
+      y te preparamos una propuesta.</td></tr>
     </table>
    </td></tr>
   </table>
   <p style="margin:22px 0 0 0;font-family:{FONT};font-size:12px;line-height:1.6;color:#8a8a96;">
-   Este analisis refleja el estado del sitio en el momento de ejecutarlo. La seguridad
-   de una web cambia con cada actualizacion y cada vulnerabilidad publicada, asi que
-   conviene repetirlo periodicamente.</p>
+   Este an&aacute;lisis refleja el estado de tu sitio en el momento de ejecutarlo.
+   La configuraci&oacute;n de una web cambia con cada actualizaci&oacute;n, as&iacute; que
+   conviene repetirlo peri&oacute;dicamente.</p>
 </td></tr>"""
 
     msg = EmailMessage()
@@ -238,8 +239,8 @@ def send_lead_notice(to: str, lead: dict, pdf: bytes | None = None,
         return False
 
     host = (lead.get("domain") or "").split("://")[-1].strip("/")
-    nota = (f"{lead['score']}/100 (nota {lead['grade']})"
-            if lead.get("score") is not None else "analisis parcial")
+    nota = (f"{lead['score']}/100 (riesgo {lead.get('level') or '-'}, {lead.get('coverage', '')} capas)"
+            if lead.get("score") is not None else "sin puntaje")
     email = lead.get("email", "")
     phone = lead.get("phone", "")
 

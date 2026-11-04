@@ -41,7 +41,7 @@ TURNSTILE_URL = "https://challenges.cloudflare.com/turnstile/v0/siteverify"
 # y se salta el limite por IP poniendo una IP distinta en cada peticion.
 TRUST_PROXY = os.getenv("TRUST_PROXY", "").lower() in ("1", "true", "yes")
 OPEN_REPORTS = os.getenv("OPEN_REPORTS", "").strip().lower() in ("1", "true", "yes")
-SCANS_PER_IP_PER_DAY = int(os.getenv("SCANS_PER_IP_PER_DAY", "5"))
+SCANS_PER_IP_PER_HOUR = int(os.getenv("SCANS_PER_IP_PER_HOUR", "3"))
 
 
 def client_ip(request: Request) -> str:
@@ -73,14 +73,15 @@ def check_captcha(token: str, ip: str) -> None:
 
 
 def check_rate(ip: str) -> None:
-    key = f"rate:ip:{ip}:{datetime.date.today().isoformat()}"
+    hora = datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%d%H")
+    key = f"rate:ip:{ip}:{hora}"
     n = r.incr(key)
     if n == 1:
-        r.expire(key, 86400)
-    if n > SCANS_PER_IP_PER_DAY:
-        raise HTTPException(429, f"Ha alcanzado el limite de "
-                                 f"{SCANS_PER_IP_PER_DAY} analisis diarios. "
-                                 f"Escribanos si necesita analizar mas dominios.")
+        r.expire(key, 3600)
+    if n > SCANS_PER_IP_PER_HOUR:
+        raise HTTPException(429, f"Alcanzaste el límite de {SCANS_PER_IP_PER_HOUR} "
+                                 f"análisis por hora. Inténtalo más tarde o escríbenos "
+                                 f"si necesitas analizar más dominios.")
 
 from worker.verification import Store, normalize_domain
 from worker import mailer
@@ -109,6 +110,8 @@ def normalize(raw: str) -> str:
     p = urlparse(raw)
     if not p.hostname:
         raise HTTPException(400, "URL invalida")
+    if len(p.hostname) > 253 or re.fullmatch(r"[0-9.]+|\[?[0-9a-f:]+\]?", p.hostname, re.I):
+        raise HTTPException(400, "Ingresa un nombre de dominio, no una dirección IP")
 
     try:
         host, _ips = validar_o_fallar(p.hostname)
@@ -120,7 +123,7 @@ def normalize(raw: str) -> str:
     if host.endswith(BLOCKED_SUFFIXES) or host in BLOCKED_DOMAINS:
         raise HTTPException(403, "Dominio excluido del escaneo")
 
-    return f"{p.scheme}://{host}"
+    return f"https://{host}"
 
 @app.post("/scans")
 def create_scan(req: ScanRequest, request: Request):
@@ -186,9 +189,10 @@ def _report_filename(job_id: str) -> str:
         res = (json.loads(raw) or {}).get("result") or {}
         if res.get("target"):
             host = res["target"].split("://")[-1].strip("/").split("/")[0]
-        if res.get("scanned_at"):
+        when = res.get("analyzedAt") or res.get("scanned_at")
+        if when:
             try:
-                fecha = datetime.datetime.fromisoformat(res["scanned_at"]).date()
+                fecha = datetime.datetime.fromisoformat(when.replace("Z", "+00:00")).date()
             except ValueError:
                 pass
     # Windows y macOS rechazan estos caracteres en nombres de archivo.
@@ -214,11 +218,15 @@ class LeadRequest(BaseModel):
     email: str
     name: str
     company: str
-    phone: str
+    phone: str = ""
     consent: bool = False
     # Opcionales: la pagina de cyberfusion.global los pide; la anterior no.
     role: str = ""
     country: str = ""
+    utm_source: str = ""
+    utm_medium: str = ""
+    utm_campaign: str = ""
+    utm_content: str = ""
 
 
 LEADS_FILE = pathlib.Path(os.getenv("LEADS_PATH", "/data/leads.jsonl"))
@@ -258,7 +266,8 @@ def export_leads(token: str = ""):
 
     import csv, io
     cols = ["at", "name", "role", "email", "phone", "company", "country",
-            "domain", "score", "grade", "job_id"]
+            "domain", "score", "level", "status", "coverage",
+            "utm_source", "utm_medium", "utm_campaign", "utm_content", "job_id"]
     buf = io.StringIO()
     w = csv.DictWriter(buf, fieldnames=cols, extrasaction="ignore")
     w.writeheader()
@@ -290,7 +299,7 @@ def create_lead(req: LeadRequest, bg: BackgroundTasks):
         raise HTTPException(400, "Indique su nombre")
     if not EMAIL_RE.match(email):
         raise HTTPException(400, "Correo no valido")
-    if not PHONE_RE.match(phone) or sum(c.isdigit() for c in phone) < 7:
+    if phone and (not PHONE_RE.match(phone) or sum(c.isdigit() for c in phone) < 7):
         raise HTTPException(400, "Telefono no valido")
     if len(company) < 2:
         raise HTTPException(400, "Indique el nombre de su empresa")
@@ -311,10 +320,13 @@ def create_lead(req: LeadRequest, bg: BackgroundTasks):
         "email": email, "phone": phone[:30],
         "role": (req.role or "").strip()[:80],
         "country": (req.country or "").strip()[:60],
-        "domain": res.get("target"),
-        "score": res.get("score"), "grade": res.get("grade"),
-        "urgent": (res.get("counts") or {}).get("critical", 0)
-                  + (res.get("counts") or {}).get("high", 0),
+        "domain": res.get("domain") or res.get("target"),
+        "score": res.get("score"), "level": res.get("level"),
+        "status": res.get("status"),
+        "coverage": "{determined}/{total}".format(**(res.get("coverage") or {"determined": 0, "total": 10})),
+        "urgent": sum(1 for f in res.get("findings", []) if f.get("severity") == "alto"),
+        **{k: (getattr(req, k) or "").strip()[:80] for k in
+           ("utm_source", "utm_medium", "utm_campaign", "utm_content")},
         "job_id": req.job_id,
     }
     payload = json.dumps(lead, ensure_ascii=False)
@@ -331,8 +343,8 @@ def create_lead(req: LeadRequest, bg: BackgroundTasks):
     r.set(f"released:{req.job_id}", "1", ex=86400)
 
     filename = _report_filename(req.job_id)
-    host = (res.get("target") or "").split("://")[-1].strip("/")
-    counts = res.get("counts") or {}
+    host = (res.get("domain") or res.get("target") or "").split("://")[-1].strip("/")
+    urgent = sum(1 for f in res.get("findings", []) if f.get("severity") == "alto")
     pdf_raw = r.get(f"pdf:{req.job_id}")
     if not pdf_raw:
         # El worker genera el PDF al terminar el escaneo. Si falta aqui,
@@ -346,8 +358,8 @@ def create_lead(req: LeadRequest, bg: BackgroundTasks):
         bg.add_task(
             mailer.send_report,
             to=email, host=host, pdf=base64.b64decode(pdf_raw),
-            filename=filename, score=res.get("score"), grade=res.get("grade"),
-            urgent=counts.get("critical", 0) + counts.get("high", 0),
+            filename=filename, score=res.get("score"), level=res.get("level"),
+            urgent=urgent, coverage=res.get("coverage"),
             report_url=f"{PUBLIC_URL}/scans/{req.job_id}/report.pdf",
         )
 
@@ -431,7 +443,7 @@ def get_config():
     """La pagina lee de aqui su configuracion publica, para no tener que
     editar el HTML cada vez que cambie una clave."""
     return {"turnstile_site_key": TURNSTILE_SITE_KEY,
-            "scans_per_day": SCANS_PER_IP_PER_DAY}
+            "scans_per_hour": SCANS_PER_IP_PER_HOUR}
 
 
 @app.get("/health")
