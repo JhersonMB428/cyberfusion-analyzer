@@ -6,8 +6,34 @@ import redis
 from .engine.core import analyze
 from .netguard import validar_o_fallar, DestinoNoPermitido, NoResuelve
 
-r = redis.from_url(os.getenv("REDIS_URL", "redis://redis:6379/0"))
+# socket_timeout tiene que ser MAYOR que el timeout de blpop (30 s): si no,
+# cada espera sin trabajo acaba en un TimeoutError falso.
+r = redis.from_url(
+    os.getenv("REDIS_URL", "redis://redis:6379/0"),
+    socket_timeout=45, socket_connect_timeout=10, socket_keepalive=True,
+    health_check_interval=25, retry_on_timeout=True,
+)
 QUEUE = "scans:queue"
+RETRY_S = 3
+RETRY_MAX = 100   # ~5 minutos: cubre un reinicio de mantenimiento de Azure
+# Analisis simultaneos por replica. El motor es casi todo espera de red,
+# pero el PDF (WeasyPrint) es CPU: se renderiza de uno en uno.
+CONCURRENCY = max(1, int(os.getenv("WORKER_CONCURRENCY", "2")))
+_pdf_lock = threading.Lock()
+
+
+def _redis(fn, *args, **kwargs):
+    """Ejecuta una operacion de Redis reintentando mientras no responda
+    (Redis Basic de Azure se reinicia por mantenimiento)."""
+    for intento in range(1, RETRY_MAX + 1):
+        try:
+            return fn(*args, **kwargs)
+        except redis.exceptions.RedisError as e:
+            if intento == RETRY_MAX:
+                raise
+            print(f"[worker] Redis no responde ({type(e).__name__}), "
+                  f"reintento {intento} en {RETRY_S}s", flush=True)
+            time.sleep(RETRY_S)
 
 
 def _render_pdf(job_id: str, result: dict) -> bool:
@@ -24,7 +50,7 @@ def _render_pdf(job_id: str, result: dict) -> bool:
         with _pdf_lock:
             render(result, path, "es")
         with open(path, "rb") as fh:
-            r.set(f"pdf:{job_id}", base64.b64encode(fh.read()), ex=86400)
+            _redis(r.set, f"pdf:{job_id}", base64.b64encode(fh.read()), ex=86400)
         os.unlink(path)
         return True
     except Exception as e:
