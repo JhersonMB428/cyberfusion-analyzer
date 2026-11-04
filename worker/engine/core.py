@@ -15,7 +15,7 @@ from datetime import datetime, timezone
 from . import m1_tls, m2_dns, m3_m6_http, m7_m9_external
 from .common import LAYERS, LAYER_NAME, REASON_NOTE, ModuleResult, adns, registrable
 
-ENGINE_VERSION = "0.15.0"
+ENGINE_VERSION = "0.15.1"
 SCHEMA_VERSION = "1.0"
 BUDGET_S = 60
 
