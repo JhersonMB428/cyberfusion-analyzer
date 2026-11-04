@@ -42,7 +42,10 @@ COPY worker/ ./worker/
 COPY report/ ./report/
 COPY locales/ ./locales/
 COPY worker/entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN chmod +x /usr/local/bin/entrypoint.sh
+# Si la imagen se construye desde Windows, Git puede entregar el script con
+# fin de linea CRLF y Linux responde "entrypoint.sh: no such file or
+# directory". Se normaliza a LF aqui para no depender de quien construya.
+RUN sed -i 's/\r$//' /usr/local/bin/entrypoint.sh && chmod +x /usr/local/bin/entrypoint.sh
 
 # nuclei procesa respuestas de sitios ajenos. Si algo sale mal ahi,
 # que no salga mal como root.
