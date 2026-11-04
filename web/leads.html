@@ -47,7 +47,7 @@ td a:hover{text-decoration:underline}
 .name{font-weight:600}
 .sub{color:var(--dim);font-size:12.5px}
 .g{font-family:var(--fh);font-weight:700}
-.g.A,.g.B{color:var(--green)}.g.C{color:var(--amber)}.g.D,.g.F{color:var(--red)}
+.g.bajo{color:var(--green)}.g.medio{color:var(--amber)}.g.alto{color:var(--red)}
 .g.none{color:var(--dim);font-weight:400;font-size:12.5px}
 .empty{text-align:center;color:var(--dim);padding:60px 20px}
 @media(max-width:820px){
@@ -126,11 +126,11 @@ function render(){
   }
 
   $('tableWrap').innerHTML = `<table><thead><tr>
-      <th>Contacto</th><th>Sitio analizado</th><th>Nota</th>
+      <th>Contacto</th><th>Sitio analizado</th><th>Riesgo</th>
       <th class="hide-sm">Teléfono</th><th class="hide-sm">Fecha</th>
     </tr></thead><tbody>` + rows.map(l => {
     const host = esc((l.domain||'').replace(/^https?:\/\//,'').replace(/\/$/,''));
-    const g = l.grade ? `<span class="g ${esc(l.grade)}">${esc(l.grade)}</span>
+    const g = l.level ? `<span class="g ${esc(l.level)}">${esc(l.level)}</span>
                          <span class="sub">${l.score}/100</span>`
                       : `<span class="g none">parcial</span>`;
     const f = l.at ? new Date(l.at).toLocaleString('es-PE',

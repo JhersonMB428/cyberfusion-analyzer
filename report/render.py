@@ -1,277 +1,125 @@
-"""Convierte el JSON de un escaneo en el PDF de Cyberfusion.
+"""Convierte el resultado del motor 0.15 en el informe PDF de CYBERFUSION.
 
-Regla que gobierna esta plantilla: cada afirmacion lleva detras el
-alcance con el que se hizo. Por eso la tabla de cobertura esta en la
-segunda pagina, no en un anexo.
+Formato: portada + 3 hojas. Hoja 1, resumen, capas y aciertos; hojas 2 y 3,
+hallazgos. Lo de riesgo alto y medio va completo (impacto y accion); lo
+bajo y las observaciones, en una lista compacta.
+
+Terminologia (revisar con legal): el analisis es pasivo y no confirma
+vulnerabilidades. El informe habla de "hallazgos", "riesgos visibles" y
+"configuraciones mejorables", nunca de que el sitio "es vulnerable".
 
 Uso:
-    python -m report.render escaneo.json informe.pdf [es|en]
+    python -m report.render resultado.json informe.pdf
 """
-import json, sys, datetime
+import datetime
+import json
+import re
+import sys
 from pathlib import Path
+
 from jinja2 import Template
 from weasyprint import HTML
 
 BASE = Path(__file__).parent
-
-# El renderizador puede correr fuera del worker, asi que lee la marca
-# sin importar el paquete entero.
 BRAND: dict = {}
 exec((BASE.parent / "worker" / "brand.py").read_text(encoding="utf-8"), BRAND)
-LOCALES = BASE.parent / "locales"
 
-SEV_COLOR = {"critical": "#8b0d08", "high": "#f63b2f", "medium": "#b8730a",
-             "low": "#7a7a86", "info": "#9b9ba6"}
+MAX_DETAILED = 10
+MAX_MINOR = 18
+SEV_COLOR = {"alto": "#E5161F", "medio": "#c26a0c", "bajo": "#7a6e70", "observ": "#a69b9d"}
+SEV_LABEL = {"alto": "Riesgo alto", "medio": "Riesgo medio", "bajo": "Riesgo bajo", "observ": "Observaciones"}
+STATE_LABEL = {"ok": "Correcto", "attention": "Requiere atención",
+               "undetermined": "No determinado", "needs_verification": "Requiere verificar propiedad"}
+LAYER_NAME = {"L1": "Certificado y cifrado", "L2": "DNS y protección de correo",
+              "L3": "Cabeceras de seguridad", "L4": "Archivos sensibles expuestos",
+              "L5": "Gestor de contenidos y extensiones", "L6": "Software del servidor",
+              "L7": "Vulnerabilidades conocidas", "L8": "Reputación y listas negras",
+              "L9": "Dominio y marca", "L10": "Superficie visible (subdominios)"}
 
-UI = {
-    "es": {
-        "brand": "Cyberfusion Technologies",
-        "engine": "Motor",
-        "report_kind": "Informe de seguridad web",
-        "scanned_on": "Analizado el",
-        "verdict_sub_full": "Sobre las 7 capas analizadas.",
-        "verdict_sub_partial": "Sobre las {ok} de 7 capas que pudimos analizar.",
-        "no_score_headline": "No emitimos puntuación: el análisis no cubrió "
-                             "suficientes capas para calificar este sitio.",
-        "no_score_headline_waf": "Un firewall detuvo el análisis automatizado: "
-                                 "no emitimos puntuación.",
-        "summary": "Resumen ejecutivo",
-        "coverage": "Alcance del análisis",
-        "coverage_intro": "Qué se revisó, qué se pudo determinar y qué no. "
-                          "Las capas sin determinar no significan que estén "
-                          "bien: significan que no pudimos verlas.",
-        "findings": "Hallazgos",
-        "findings_intro": "Ordenados por riesgo y, a igual riesgo, por "
-                          "facilidad de corrección. Empiece por arriba.",
-        "strengths": "Lo que este sitio hace bien",
-        "notes": "Observaciones",
-        "tier": "Análisis automatizado · Nivel básico",
-        "cta_title": "¡Nosotros podemos ayudarte!",
-        "cta_body": "Corregimos los hallazgos identificados y solucionamos "
-                    "las brechas de tu web.",
-        "cta_contact": "Contáctanos a",
-        "minor_title": "Mejoras menores y observaciones",
-        "cta_items": [
-            "Análisis profundo: vulnerabilidades conocidas de su CMS y sus extensiones, "
-            "configuración del servidor y revisión manual por un especialista.",
-            "Corrección de los hallazgos de este informe, con validación posterior.",
-            "Monitoreo continuo con aviso cuando aparezca un problema nuevo.",
-        ],
-        "site_url": BRAND["SITE_URL"],
-        "contact": BRAND["CONTACT_EMAIL"],
-        "effort": "Esfuerzo",
-        "evidence": "Evidencia",
-        "tentative": "requiere verificación manual",
-        "limits_note": "Evaluación automatizada: detecta vulnerabilidades "
-                       "conocidas, versiones sin soporte y errores de "
-                       "configuración, pero no sustituye a una auditoría manual.",
-        # La caducidad es una limitación real y, a la vez, el argumento del
-        # monitoreo continuo. La misma frase hace los dos trabajos.
-        "validity_note": "Refleja el estado del sitio el {fecha}; conviene "
-                         "repetirlo periódicamente.",
-        "sev": {"critical": "Crítico", "high": "Alto", "medium": "Medio",
-                "low": "Bajo", "info": "Observ."},
-        "effort_l": {"low": "bajo", "medium": "medio", "high": "alto"},
-        "state": {"ok": "Analizado", "partial": "Parcial",
-                  "undetermined": "No determinado", "error": "Error"},
-        "layer": {"tls": "Certificado y cifrado",
-                  "dns": "DNS y protección de correo",
-                  "headers": "Cabeceras de seguridad",
-                  "exposure": "Archivos sensibles expuestos",
-                  "cms": "Gestor de contenidos y extensiones",
-                  "stack": "Software del servidor",
-                  "app": "Vulnerabilidades conocidas"},
-    }
-}
-UI["en"] = UI["es"]  # pendiente de traducir
-
-STATE_CSS = {"ok": "state-ok", "partial": "state-partial",
-             "undetermined": "state-undet", "error": "state-error"}
+LIMITS_NOTE = ("Evaluación automatizada y pasiva de la información que tu sitio expone "
+               "públicamente: identifica configuraciones mejorables y riesgos visibles, "
+               "no confirma vulnerabilidades ni intenta aprovecharlas, y no sustituye una "
+               "auditoría de seguridad.")
 
 
-def _load_locale(lang: str) -> dict:
-    path = LOCALES / f"{lang}.json"
-    if not path.exists():
-        path = LOCALES / "es.json"
-    return json.loads(path.read_text(encoding="utf-8"))
-
-
-EV_LABEL = {
-    "days_left":         lambda v: f"Vence en {v} días",
-    "years_unsupported": lambda v: f"{v} años sin recibir parches",
-    "checked":           lambda v: f"{v} rutas sensibles comprobadas",
-    "record":            lambda v: f"Registro publicado: {v}",
-    "policy":            lambda v: f"Política actual: p={v}",
-    "sp":                lambda v: f"Política de subdominios: sp={v}",
-    "version":           lambda v: f"Versión detectada: {v}",
-    "negotiated":        lambda v: f"Protocolo negociado: {v}",
-    "issuer":            lambda v: f"Emisor: {v}",
-    "domain":            lambda v: f"Dominio: {v}",
-    "path":              lambda v: f"Ruta accesible: {v}",
-    "endpoint":          lambda v: f"Endpoint: {v}",
-    "matched_at":        lambda v: f"Detectado en: {v}",
-    "product":           lambda v: f"Producto: {v}",
-    "value":             lambda v: str(v),
-    "name":              lambda v: str(v),
-    "eol_date":          lambda v: f"Fin de soporte: {v}",
-    "users":             lambda v: f"Usuarios visibles: {', '.join(map(str, v))}",
-    "plugins":           lambda v: (f"{len(v)} extensiones" if isinstance(v, dict)
-                                    else f"{', '.join(map(str, v[:6]))}"),
-}
-# Claves internas que no aportan nada al lector del informe.
-EV_HIDE = {"url", "auto_renew", "scope", "status", "signals", "cms",
-           "via", "detail", "latest_branch", "checked_at", "tags",
-           "matcher", "extracted", "reference", "remediation"}
-
-ORDER_EV = ("days_left", "years_unsupported", "eol_date", "version",
-            "negotiated", "issuer", "header", "record", "policy", "sp",
-            "path", "matched_at", "endpoint", "users", "plugins",
-            "domain", "product", "checked", "value", "name")
-
-
-def _evidence_line(ev: dict, finding_key: str = "") -> str:
-    """Una linea legible por una persona. El JSON crudo no va en un
-    informe que se vende: 'days_left: 87' no es evidencia, es depuracion."""
-    if not ev:
-        return ""
-    parts = []
-    for k in ORDER_EV:
-        if k in EV_HIDE or k not in ev:
-            continue
-        v = ev[k]
-        if v in (None, "", [], {}):
-            continue
-        if k == "header":
-            # La misma clave sirve para "falta esta cabecera" y para
-            # "esta cabecera esta puesta". Decir siempre "ausente"
-            # contradecia al titulo en los hallazgos de cabecera presente.
-            ausente = "missing" in finding_key or finding_key.startswith("headers.no_")
-            parts.append(f"Cabecera {'ausente' if ausente else 'presente'}: {v}")
-            continue
-        fmt = EV_LABEL.get(k)
-        parts.append(fmt(v) if fmt else f"{k}: {v}")
-    return " · ".join(parts)[:320]
-
-def _summary(res: dict, ui: dict) -> str:
-    c = res.get("counts") or {}
-    urgent = c.get("critical", 0) + c.get("high", 0)
-    n = sum(c.get(k, 0) for k in ("critical", "high", "medium", "low"))
-    host = res["target"].split("://")[-1].rstrip("/")
-    undet = [k for k, v in (res.get("coverage") or {}).items()
-             if v.get("result") in ("undetermined", "partial")]
-
+def _summary(res: dict) -> str:
+    host = res["domain"]
+    f = res.get("findings", [])
+    altos = sum(1 for x in f if x["severity"] == "alto")
+    n = sum(1 for x in f if x["severity"] != "observ")
+    cov = res["coverage"]
     if res.get("score") is None:
-        if (res.get("integrity") or {}).get("reason") == "waf_blocked":
-            s = (f"Un firewall de aplicación detuvo el análisis automatizado de "
-                 f"{host}, así que no emitimos puntuación. Se revisaron "
-                 f"{7 - len(undet)} de 7 capas, las que no dependen de acceso HTTP.")
-        else:
-            s = (f"El análisis de {host} no pudo completarse. "
-                 f"Se revisaron {7 - len(undet)} de 7 capas.")
-    elif urgent:
-        verbo = "requiere" if urgent == 1 else "requieren"
-        s = (f"Se detectaron {n} puntos de mejora en {host}, de los cuales "
-             f"{urgent} {verbo} atención prioritaria.")
+        return f"No pudimos completar el análisis de {host}."
+    if altos:
+        s = (f"Encontramos {n} puntos por mejorar en {host}; "
+             f"{altos} {'es' if altos == 1 else 'son'} de riesgo alto y conviene atenderlos primero.")
     elif n:
-        s = (f"No se detectaron riesgos altos ni críticos en {host}. "
-             f"Quedan {n} {'punto' if n == 1 else 'puntos'} de mejora "
-             f"de menor urgencia.")
+        s = (f"No encontramos riesgos altos en {host}. Quedan {n} "
+             f"{'punto' if n == 1 else 'puntos'} por mejorar de menor urgencia.")
     else:
-        s = f"No se detectaron problemas en las capas analizadas de {host}."
-
-    if undet:
-        cap = "capa no pudo" if len(undet) == 1 else "capas no pudieron"
-        s += (f" {len(undet)} de 7 {cap} determinarse por completo; "
-              f"el detalle está en el alcance.")
+        s = f"No encontramos puntos por mejorar en las capas analizadas de {host}."
+    if cov["determined"] < cov["total"]:
+        s += (f" El puntaje se calculó sobre las {cov['determined']} de {cov['total']} capas "
+              f"que pudimos revisar desde fuera.")
     return s
 
 
-def build_context(res: dict, lang: str = "es") -> dict:
-    ui, loc = dict(UI.get(lang, UI["es"])), _load_locale(lang)
+def build_context(res: dict) -> dict:
+    when = datetime.datetime.fromisoformat(res["analyzedAt"].replace("Z", "+00:00"))
+    findings = res.get("findings", [])
+    for f in findings:
+        f["layer_name"] = LAYER_NAME.get(f["layerId"], f["layerId"])
+    counts = {s: sum(1 for f in findings if f["severity"] == s) for s in SEV_COLOR}
+    tally = [{"label": SEV_LABEL[s], "n": counts[s], "color": SEV_COLOR[s]} for s in SEV_COLOR]
 
-    # La nota se calcula sobre lo que se vio. Decir "global" cuando tres
-    # capas quedaron sin determinar es prometer un alcance que no hubo.
-    cov = res.get("coverage") or {}
-    n_ok = sum(1 for c in cov.values() if c.get("result") == "ok")
-    ui["verdict_sub"] = (ui["verdict_sub_full"] if n_ok == len(cov) and cov
-                         else ui["verdict_sub_partial"].format(ok=n_ok))
-    if (res.get("integrity") or {}).get("reason") == "waf_blocked":
-        ui["no_score_headline"] = ui["no_score_headline_waf"]
-    def txt(key, default=""):
-        return loc.get(key, default)
+    blocked_note = ""
+    n_blocked = sum(1 for l in res["layers"] if l["reason"] == "waf_blocked")
+    if n_blocked:
+        prod = res.get("waf", {}).get("product") or "firewall"
+        blocked_note = (f"Un firewall de aplicación ({prod}) protege tu sitio y detuvo nuestro "
+                        f"análisis automatizado, lo cual es positivo. Por eso el puntaje se calculó "
+                        f"con las capas que no dependen del acceso web. Para revisar las "
+                        f"{n_blocked} restantes, podemos verificar contigo la propiedad del dominio.")
 
-    findings, notes = [], []
-    for f in res.get("findings", []):
-        (notes if f["severity"] == "info" else findings).append({
-            "severity": f["severity"],
-            "sev_label": ui["sev"].get(f["severity"], f["severity"]),
-            "effort_label": ui["effort_l"].get(f["effort"], f["effort"]),
-            "tentative": f.get("confidence") == "tentative",
-            "cve": f.get("cve") or [],
-            "title": txt(f["title_key"], f["finding_key"]),
-            "fix": txt(f["remediation_key"]),
-            "evidence_line": _evidence_line(f.get("evidence"), f.get("finding_key", "")),
-        })
-
-    strengths = [{"title": txt(s["title_key"], s["finding_key"]),
-                  "evidence_line": _evidence_line(s.get("evidence"), s.get("finding_key", ""))}
-                 for s in res.get("strengths", [])]
-
-    counts_rows = [{"label": ui["sev"][k], "n": v, "color": SEV_COLOR[k]}
-                   for k, v in (res.get("counts") or {}).items()
-                   if v and k != "info"]
-
-    coverage_rows = []
-    for layer, c in (res.get("coverage") or {}).items():
-        why = c.get("reason", "")
-        coverage_rows.append({
-            "label": ui["layer"].get(layer, layer),
-            "state": ui["state"].get(c["result"], c["result"]),
-            "css": STATE_CSS.get(c["result"], "state-undet"),
-            "why": txt(f"coverage.reason.{why}", "") if why else "",
-        })
-
-    dt = datetime.datetime.fromisoformat(res["scanned_at"])
+    layers = [{**l, "state_label": STATE_LABEL.get(l["state"], l["state"])} for l in res["layers"]]
     return {
-        "lang": lang, "t": ui,
         "tokens": (BASE / "tokens.css").read_text(encoding="utf-8"),
-        "target": res["target"],
-        "host": res["target"].split("://")[-1].rstrip("/"),
-        "score": res.get("score"), "grade": res.get("grade"),
-        "engine_version": res.get("engine_version", "?"),
-        "scanned_at": res["scanned_at"],
-        "scanned_human": dt.strftime("%d/%m/%Y %H:%M UTC"),
-        "validity_note": ui["validity_note"].format(fecha=dt.strftime("%d/%m/%Y")),
+        "host": res["domain"],
+        "score": res.get("score"), "level": res.get("level"),
+        "cov": res["coverage"],
+        "analyzed_human": when.strftime("%d/%m/%Y · %H:%M UTC"),
+        "analyzed_date": when.strftime("%d/%m/%Y"),
+        "analyzed_at": res["analyzedAt"],
+        "engine_version": res.get("engineVersion", "?"),
+        "summary_text": _summary(res),
+        "tally": tally if findings else [],
+        "blocked_note": blocked_note,
+        "layers": layers,
+        "positives": res.get("positives", []),
+        # Detalle solo para los mas importantes: el informe debe caber en
+        # portada + 3 paginas. El resto va en la lista compacta.
+        "major": [f for f in findings if f["severity"] in ("alto", "medio")][:MAX_DETAILED],
+        "minor": ([f for f in findings if f["severity"] in ("alto", "medio")][MAX_DETAILED:]
+                  + [f for f in findings if f["severity"] in ("bajo", "observ")])[:MAX_MINOR],
         "contact_email": BRAND["SALES_EMAIL_PUBLIC"],
-        # En el PDF la web se lee mejor sin el https://
         "contact_page": BRAND["CONTACT_PAGE"].split("://")[-1],
-        "summary_text": _summary(res, ui),
-        "counts_rows": counts_rows, "coverage_rows": coverage_rows,
-        "findings": findings, "notes": notes, "strengths": strengths,
-        # Lo grave va completo; lo bajo y las observaciones, en una lista.
-        # Es lo que mantiene el informe en portada + 3 hojas.
-        "major": [f for f in findings if f["severity"] in ("critical", "high", "medium")],
-        "minor": [f for f in findings if f["severity"] == "low"]
-                 + [dict(n, severity="info", sev_label=ui["sev"]["info"]) for n in notes],
-        "logo_url": BRAND.get("LOGO_URL", ""),
-        "logo": (BASE / "assets" / "logo.png").exists(),
+        "limits_note": LIMITS_NOTE,
     }
 
 
 def render(res: dict, out: str, lang: str = "es") -> str:
     tpl = Template((BASE / "template.html").read_text(encoding="utf-8"))
-    html = tpl.render(**build_context(res, lang))
+    html = tpl.render(**build_context(res))
     HTML(string=html, base_url=str(BASE)).write_pdf(out)
     return out
 
 
 def filename_for(res: dict) -> str:
     """Mismo nombre que sirve la API, para que no diverjan."""
-    import re
-    host = res.get("target", "informe").split("://")[-1].strip("/").split("/")[0]
+    host = (res.get("domain") or res.get("target", "informe")).split("://")[-1].strip("/").split("/")[0]
     host = re.sub(r'[<>:"/\\|?*]', "-", host)[:80]
     try:
-        fecha = datetime.datetime.fromisoformat(res["scanned_at"]).date()
+        fecha = datetime.datetime.fromisoformat(res["analyzedAt"].replace("Z", "+00:00")).date()
     except (KeyError, ValueError):
         fecha = datetime.date.today()
     return f"{host} - Reporte generado {fecha.strftime('%d-%m-%Y')}.pdf"
@@ -280,7 +128,5 @@ def filename_for(res: dict) -> str:
 if __name__ == "__main__":
     data = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
     res = data.get("result", data)
-    lang = sys.argv[3] if len(sys.argv) > 3 else "es"
-    # Sin segundo argumento, usa el nombre comercial.
     out = sys.argv[2] if len(sys.argv) > 2 else filename_for(res)
-    print(render(res, out, lang))
+    print(render(res, out))

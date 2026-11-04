@@ -2,12 +2,11 @@
 <html lang="es"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Analiza la seguridad de tu sitio web · CYBERFUSION</title>
-<meta name="description" content="Analiza la seguridad de tu sitio web. Identifica riesgos visibles que podrían afectar la confianza, reputación y percepción profesional de tu organización.">
-<link rel="canonical" href="https://cyberfusion.global/analyzer/">
+<title>Analiza la seguridad de tu web, sin costo · CYBERFUSION</title>
+<meta name="description" content="Descubre el puntaje de seguridad de tu sitio y qué corregir primero. Análisis sin costo, resultados en minutos.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Manrope:wght@300;400;500;600;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#060203;color:#F4EFEE;font-family:'Manrope',sans-serif;-webkit-font-smoothing:antialiased}
@@ -19,432 +18,347 @@ a{color:#FF2D2D}a:hover{color:#F4EFEE}
 .pl{animation:cfPulse 6s ease-in-out infinite}
 .dr{stroke-dasharray:120 120;animation:cfDrift 9s linear infinite}
 .mono{font-family:'JetBrains Mono',monospace}
-.eb{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.3em;color:#FF2D2D}
-.sec{padding:clamp(64px,8vw,112px) clamp(20px,6vw,96px);border-top:1px solid rgba(255,255,255,.06)}
+.eb{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.2em;color:#FF2D2D;line-height:1.6}
+.sec{padding:clamp(56px,8vw,104px) clamp(20px,6vw,96px);border-top:1px solid rgba(255,255,255,.06)}
 .wrap{max-width:1240px;margin:0 auto}
 h1,h2,h3{margin:0;font-weight:800}
-.hb{position:absolute;right:-6%;top:6%;width:72%;height:92%;pointer-events:none}
 .sk{position:absolute;left:-999px;top:8px;background:#E5161F;color:#fff;padding:10px 16px;border-radius:8px;z-index:50}.sk:focus{left:12px}
-header{position:fixed;top:0;left:0;right:0;z-index:30;height:68px;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:0 clamp(20px,4vw,56px);background:rgba(6,2,3,.78);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,.07)}
-.logo{display:inline-flex;align-items:center;gap:11px;text-decoration:none;color:#F4EFEE;font-weight:800;letter-spacing:.08em;font-size:15px}
-.nv{display:flex;gap:4px}
-.nv a{white-space:nowrap;color:#B9AEB0;text-decoration:none;font-size:13.5px;padding:8px 12px;border-radius:8px}
-.nv a:hover,.nv a[aria-current]{color:#F4EFEE;background:rgba(255,255,255,.06)}
-.btn{background:#E5161F;color:#fff;text-decoration:none;font-weight:600;font-size:13.5px;padding:11px 18px;border-radius:10px;white-space:nowrap;transition:all .5s cubic-bezier(.2,.7,.2,1)}
+header{position:fixed;top:0;left:0;right:0;z-index:30;height:68px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 clamp(16px,4vw,56px);background:rgba(6,2,3,.82);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,.07)}
+.logo{display:inline-flex;align-items:center;gap:11px;text-decoration:none;color:#F4EFEE;font-weight:800;letter-spacing:.08em;font-size:15px;min-height:44px}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;background:#E5161F;color:#fff;text-decoration:none;font:600 14px 'Manrope',sans-serif;padding:0 18px;border:0;cursor:pointer;border-radius:10px;transition:all .5s cubic-bezier(.2,.7,.2,1);text-align:center}
 .btn:hover{background:#FF2D2D;color:#fff;box-shadow:0 8px 30px rgba(255,45,45,.45)}
-.card{padding:clamp(24px,2.6vw,34px);border-radius:24px;background:linear-gradient(160deg,rgba(255,45,45,.08),#0D0507 55%);border:1px solid rgba(255,255,255,.09);display:flex;flex-direction:column;justify-content:space-between;gap:56px;min-height:280px;transition:all .6s cubic-bezier(.2,.7,.2,1)}
-.card:hover{border-color:rgba(255,45,45,.5);transform:translateY(-6px)}
-.fg{display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:clamp(32px,6vw,96px)}
-.sf{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}
-.fl{color:#B9AEB0;text-decoration:none;font-size:15px;line-height:1.4}.fl:hover{color:#F4EFEE}
-.so{display:flex;width:40px;height:40px;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,.16);border-radius:50%;color:#B9AEB0;transition:all .4s cubic-bezier(.2,.7,.2,1)}.so:hover{color:#fff;border-color:#FF2D2D;background:rgba(229,22,31,.18)}
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:clamp(32px,6vw,96px)}
-.gm{display:grid;grid-template-columns:1fr 1.7fr;gap:clamp(28px,5vw,72px);align-items:center;margin-top:clamp(32px,5vw,56px)}
-.reg{list-style:none;margin:28px 0 0;padding:0;display:grid;gap:0;border-top:1px solid rgba(255,255,255,.14)}
-.reg li{display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid rgba(255,255,255,.1);font-size:16px;color:#D4C9C9}
-.reg i{width:8px;height:8px;border-radius:50%;background:#E5161F;flex:none}
-.reg li:first-child i{background:#fff;box-shadow:0 0 12px 3px rgba(255,45,45,.7)}
-#map path.c{fill:#150a0c;stroke:rgba(255,255,255,.07);stroke-width:.5}
-#map path.on{fill:rgba(143,18,32,.55);stroke:rgba(255,45,45,.45)}
-#map path.pe{fill:#E5161F;stroke:#FF2D2D;filter:drop-shadow(0 0 8px rgba(255,45,45,.9))}
-#map .arc{fill:none;stroke:#FF2D2D;stroke-width:1.2;opacity:.85}
-#map text{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.15em;fill:#F4EFEE}
-@media(max-width:1000px){.nv{display:none}}
-@media(max-width:860px){.hb{width:130%;right:-30%;top:34%;height:66%;opacity:.7}.g2,.gm,.fg{grid-template-columns:1fr}}
-@media(max-width:700px){.sf{justify-content:center;text-align:center;flex-direction:column}}
-@media(prefers-reduced-motion:reduce){.pl,.dr{animation:none}html{scroll-behavior:auto}}
-
-.az{display:flex;gap:8px;padding:8px;border-radius:20px;background:rgba(13,5,7,.85);border:1px solid rgba(255,255,255,.16);box-shadow:0 30px 90px -30px rgba(229,22,31,.6);backdrop-filter:blur(8px);transition:border-color .4s,box-shadow .4s}
+.btn.big{font-weight:800;font-size:16px;padding:0 28px;min-height:56px;border-radius:14px;box-shadow:0 0 36px rgba(229,22,31,.45)}
+.lnk{color:#FF2D2D;font-weight:600;font-size:15px;display:inline-flex;align-items:center;min-height:44px}
+.lk{background:none;border:0;padding:0;font:inherit;color:#FF2D2D;text-decoration:underline;cursor:pointer}.lk:hover{color:#F4EFEE}
+.hb{position:absolute;left:0;top:50%;width:1400px;height:900px;transform:translate(-100%,-50%);pointer-events:none;z-index:0;overflow:visible}
+.az{position:relative;display:flex;gap:8px;padding:8px;border-radius:20px;background:rgba(13,5,7,.75);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.16);box-shadow:0 30px 90px -30px rgba(229,22,31,.6);transition:border-color .4s,box-shadow .4s}
 .az:focus-within{border-color:#FF2D2D;box-shadow:0 30px 90px -20px rgba(229,22,31,.8)}
-.az input{flex:1;min-width:0;background:transparent;border:0;color:#F4EFEE;font:500 clamp(16px,1.6vw,19px) 'Manrope',sans-serif;padding:16px 18px;outline:0}
-.az input::placeholder{color:#7d7173}
-.az button{flex:none;border:0;cursor:pointer;background:#E5161F;color:#fff;font:800 clamp(14px,1.3vw,16px) 'Manrope',sans-serif;letter-spacing:.06em;padding:0 clamp(20px,3vw,36px);border-radius:14px;transition:all .5s cubic-bezier(.2,.7,.2,1);box-shadow:0 0 30px rgba(229,22,31,.45)}
+.az input{flex:1;min-width:0;background:transparent;border:0;color:#F4EFEE;font:500 clamp(17px,1.6vw,19px) 'Manrope',sans-serif;padding:16px 18px;outline:0}
+.az input::placeholder{color:#9A8E90}
+.az button{flex:none;white-space:nowrap;border:0;cursor:pointer;background:#E5161F;color:#fff;font:800 clamp(15px,1.3vw,16px) 'Manrope',sans-serif;padding:0 clamp(20px,3vw,34px);min-height:56px;border-radius:14px;transition:all .5s cubic-bezier(.2,.7,.2,1);box-shadow:0 0 30px rgba(229,22,31,.45)}
 .az button:hover{background:#FF2D2D;box-shadow:0 10px 44px rgba(255,45,45,.65)}
-.az button:disabled{opacity:.6;cursor:progress}
-.tk{display:flex;flex-wrap:wrap;justify-content:center;gap:10px 28px;margin:28px 0 0;padding:0;list-style:none;font-size:15px;color:#D4C9C9}
+.az button:disabled{opacity:.7;cursor:progress}
+.ck{display:flex;gap:12px;align-items:flex-start;text-align:left;font-size:14px;line-height:1.5;color:#D4C9C9;margin:14px auto 0;max-width:760px;padding:4px 2px;cursor:pointer}
+.ck input{width:22px;height:22px;margin:1px 0 0;accent-color:#E5161F;flex:none}
+#er{min-height:20px;margin:8px auto 0;max-width:760px;font-size:14px;color:#FF2D2D;text-align:left}
+.tk{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 26px;margin:22px 0 0;padding:0;list-style:none;font-size:15px;color:#D4C9C9}
 .tk li{display:flex;align-items:center;gap:9px}.tk svg{color:#E5161F}
-#er{min-height:22px;margin-top:12px;font-size:14px;color:#FF2D2D;text-align:left}
-#sc{display:none;margin:28px auto 0;max-width:760px;text-align:left;padding:22px 26px;border-radius:20px;background:rgba(13,5,7,.85);border:1px solid rgba(255,255,255,.1)}
+.chips{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:22px 0 0;padding:0;list-style:none}
+.chips li{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;border:1px solid rgba(255,255,255,.14);background:rgba(13,5,7,.7);font:400 12px 'JetBrains Mono',monospace;letter-spacing:.06em;color:#D4C9C9}
+.chips li:before{content:"";width:6px;height:6px;background:#E5161F;flex:none}
+#sc{display:none;margin:24px auto 0;max-width:760px;text-align:left;padding:22px 26px;border-radius:20px;background:rgba(13,5,7,.92);border:1px solid rgba(255,255,255,.1);position:relative}
 #sc.on{display:block}
 .pb{height:3px;border-radius:2px;background:rgba(255,255,255,.1);overflow:hidden}.pb i{display:block;height:100%;width:0;background:linear-gradient(90deg,#8f1220,#FF2D2D,#fff);box-shadow:0 0 14px #FF2D2D;transition:width .5s linear}
-.st{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px 24px;margin:18px 0 0;padding:0;list-style:none}
-.st li{display:flex;gap:10px;align-items:center;font-size:14px;color:#6e6264;transition:color .4s}
-.st li i{width:8px;height:8px;border-radius:50%;border:1px solid #6e6264;flex:none;transition:all .4s}
+.st{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:10px 24px;margin:18px 0 0;padding:0;list-style:none}
+.st li{display:flex;gap:10px;align-items:center;font-size:14px;color:#9A8E90;transition:color .4s}
+.st li i{width:8px;height:8px;border-radius:50%;border:1px solid #9A8E90;flex:none;transition:all .4s}
 .st li.on{color:#F4EFEE}.st li.on i{border-color:#FF2D2D;background:#E5161F;box-shadow:0 0 10px #FF2D2D}
 #res{display:none}#res.on{display:block}
-.gc{padding:clamp(24px,3vw,40px);border-radius:28px;background:linear-gradient(160deg,rgba(143,18,32,.3),#0D0507 65%);border:1px solid rgba(255,45,45,.3);text-align:center}
-.rk{display:inline-block;margin-top:18px;padding:8px 18px;border-radius:999px;font:500 12px 'JetBrains Mono',monospace;letter-spacing:.25em}
+.rg{display:grid;grid-template-columns:.8fr 1.4fr;gap:clamp(16px,2.4vw,32px);margin-top:clamp(24px,3vw,40px);align-items:start}
+.gc{padding:clamp(24px,3vw,36px);border-radius:28px;background:linear-gradient(160deg,rgba(143,18,32,.3),#0D0507 65%);border:1px solid rgba(255,45,45,.3);text-align:center}
+.rk{display:inline-block;margin-top:16px;padding:8px 18px;border-radius:999px;font:500 12px 'JetBrains Mono',monospace;letter-spacing:.2em}
 .rk.b{border:1px solid rgba(255,255,255,.5);color:#F4EFEE}.rk.m{border:1px solid #FF2D2D;color:#FF2D2D}.rk.a{background:#E5161F;color:#fff;border:1px solid #E5161F;box-shadow:0 0 24px rgba(229,22,31,.6)}
-.lv{display:flex;gap:6px;justify-content:center;margin-top:18px}.lv i{width:44px;height:4px;border-radius:2px;background:rgba(255,255,255,.12)}.lv i.on{background:#E5161F;box-shadow:0 0 10px #FF2D2D}
-.fd{display:flex;gap:16px;align-items:flex-start;padding:20px 22px;border-radius:18px;background:#0D0507;border:1px solid rgba(255,255,255,.09);transition:all .5s cubic-bezier(.2,.7,.2,1)}
-.fd:hover{transform:translateY(-4px);border-color:rgba(255,45,45,.4)}
-.fd.w{border-color:rgba(255,45,45,.28);background:linear-gradient(160deg,rgba(255,45,45,.08),#0D0507 60%)}
-.fd .ib{flex:none;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,.3);color:#F4EFEE}
-.fd.w .ib{border-color:#FF2D2D;color:#FF2D2D;background:rgba(229,22,31,.12)}
-.fd h3{font-size:16.5px;line-height:1.35;letter-spacing:-.01em}
-.fd span{display:block;margin-top:6px;font:500 10.5px 'JetBrains Mono',monospace;letter-spacing:.18em;color:#9A8E90}.fd.w span{color:#FF2D2D}
+.lv{display:flex;gap:6px;justify-content:center;margin-top:16px}.lv i{width:44px;height:4px;border-radius:2px;background:rgba(255,255,255,.12)}.lv i.on{background:#E5161F;box-shadow:0 0 10px #FF2D2D}
+.cov{display:flex;gap:4px;justify-content:center;margin-top:18px}.cov i{width:28px;height:6px;border-radius:2px;background:rgba(255,255,255,.12)}.cov i.on{background:#F4EFEE}
+.lab{font:500 12px 'JetBrains Mono',monospace;letter-spacing:.14em;color:#B9AEB0}
+.ly{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.ly li{display:flex;gap:14px;align-items:flex-start;padding:16px 18px;border-radius:16px;background:#0D0507;border:1px solid rgba(255,255,255,.09)}
+.ly .ib{flex:none;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,.3);color:#F4EFEE}
+.ly h3{font-size:16px;line-height:1.35;letter-spacing:-.01em}
+.ly .sl{display:block;margin-top:4px;font:500 12px 'JetBrains Mono',monospace;letter-spacing:.12em;color:#B9AEB0}
+.ly p{margin:6px 0 0;font-size:14px;line-height:1.5;color:#B9AEB0}
+.ly li.attention{border-color:rgba(255,45,45,.35);background:linear-gradient(160deg,rgba(255,45,45,.08),#0D0507 60%)}
+.ly li.attention .ib{border-color:#FF2D2D;color:#FF2D2D;background:rgba(229,22,31,.12)}.ly li.attention .sl{color:#FF2D2D}
+.ly li.undetermined .ib,.ly li.needs_verification .ib{border-style:dashed;color:#D4C9C9}
+.g2b{display:grid;grid-template-columns:1fr 1fr;gap:clamp(16px,2.4vw,32px);margin-top:clamp(16px,2.4vw,32px);align-items:start}
+.pn{padding:24px;border-radius:22px;background:#0D0507;border:1px solid rgba(255,255,255,.1)}
+.pn.ok{border-color:rgba(95,203,138,.35)}
+.pn h3{font-size:20px;letter-spacing:-.02em}
+.pn ul{list-style:none;margin:16px 0 0;padding:0;display:grid;gap:14px}
+.pn li{display:flex;gap:12px;align-items:flex-start;font-size:15px;line-height:1.5;color:#D4C9C9}
+.pn li b{display:block;color:#F4EFEE;font-weight:600}
+.pn.ok li svg{color:#5FCB8A;flex:none;margin-top:2px}
+.sv{flex:none;font:500 12px 'JetBrains Mono',monospace;letter-spacing:.1em;padding:3px 8px;border-radius:6px;border:1px solid rgba(255,255,255,.3);color:#D4C9C9;margin-top:1px}
+.sv.alto{background:#E5161F;border-color:#E5161F;color:#fff}.sv.medio{border-color:#FF2D2D;color:#FF2D2D}
+.strip{margin-top:clamp(16px,2.4vw,32px);padding:clamp(22px,3vw,34px);border-radius:24px;background:linear-gradient(160deg,rgba(143,18,32,.35),#0D0507 70%);border:1px solid rgba(255,45,45,.35);display:flex;gap:20px 32px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.strip p{margin:0;font-weight:800;font-size:clamp(19px,2vw,26px);letter-spacing:-.025em;line-height:1.25;max-width:640px}
 .fm{padding:clamp(24px,3vw,40px);border-radius:28px;background:#0D0507;border:1px solid rgba(255,255,255,.1);display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.fm label{display:grid;gap:8px;font:500 11px 'JetBrains Mono',monospace;letter-spacing:.15em;color:#B9AEB0}
-.fm input,.fm select{width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.14);border-radius:12px;color:#F4EFEE;font:500 15.5px 'Manrope',sans-serif;padding:15px 16px;outline:0;color-scheme:dark;transition:border-color .3s}
+.fm label{display:grid;gap:8px;font:500 12px 'JetBrains Mono',monospace;letter-spacing:.12em;color:#B9AEB0}
+.fm input[type=text],.fm input[type=email],.fm input[type=tel],.fm select{width:100%;min-height:50px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.2);border-radius:12px;color:#F4EFEE;font:500 16px 'Manrope',sans-serif;padding:13px 16px;outline:0;color-scheme:dark;transition:border-color .3s}
 .fm input:focus,.fm select:focus{border-color:#FF2D2D}
 .fm .full{grid-column:1/-1}
-.fm .ck2{display:flex;gap:12px;align-items:flex-start;font:400 14px/1.5 'Manrope',sans-serif;letter-spacing:0;color:#C9BEBF}
-.fm .ck2 input{width:20px;height:20px;margin-top:2px;accent-color:#E5161F;flex:none;padding:0}
-.fe{font-size:13px;color:#FF2D2D;min-height:0}
-.fm button{border:0;cursor:pointer;background:#E5161F;color:#fff;font:800 16px 'Manrope',sans-serif;letter-spacing:.06em;padding:20px 28px;border-radius:14px;box-shadow:0 0 40px rgba(229,22,31,.5);transition:all .5s cubic-bezier(.2,.7,.2,1)}
-.fm button:hover{background:#FF2D2D;transform:translateY(-3px);box-shadow:0 14px 50px rgba(255,45,45,.65)}
-.ok2{padding:clamp(28px,4vw,52px);border-radius:28px;background:linear-gradient(160deg,rgba(143,18,32,.3),#0D0507 65%);border:1px solid rgba(255,45,45,.35)}
-.ki{padding:26px 0;border-top:1px solid rgba(255,255,255,.18);display:flex;gap:14px;align-items:flex-start}.ki svg{flex:none;color:#E5161F;margin-top:3px}
-.ki b{display:block;font-weight:800;font-size:clamp(18px,1.7vw,22px);letter-spacing:-.02em;line-height:1.25}
-@media(max-width:700px){.az{flex-direction:column}.az button{padding:18px}.fm{grid-template-columns:1fr}}
-@media(max-width:1000px){.nv{display:none}}
-/* --- Añadidos para conectar el diseño al motor real --- */
-#gate{max-width:760px;margin:16px auto 0;text-align:left}
-.cs{display:flex;gap:12px;align-items:flex-start;font-size:13.5px;line-height:1.55;color:#B9AEB0;cursor:pointer}
-.cs input{width:18px;height:18px;margin-top:2px;accent-color:#E5161F;flex:none;cursor:pointer}
-#cap{justify-content:center}
-.ghost{border:1px solid rgba(255,255,255,.18);background:transparent;color:#D4C9C9;cursor:pointer;font:500 12px 'JetBrains Mono',monospace;letter-spacing:.18em;padding:12px 18px;border-radius:12px;transition:all .4s}
-.ghost:hover{border-color:#FF2D2D;color:#fff}
-.btn.ghost2{background:transparent;border:1px solid rgba(255,255,255,.25);box-shadow:none}
-.btn.ghost2:hover{border-color:#FF2D2D;background:rgba(229,22,31,.15)}
-.nb{margin-top:24px;padding:18px 22px;border-radius:18px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.03);color:#C9BEBF;font-size:15px;line-height:1.6}
-.nb b{color:#F4EFEE}
-.cvn{font-size:13px;color:#9A8E90;margin:14px 0 0}
-.fd.n .ib{border-color:rgba(255,255,255,.2);color:#B9AEB0}
-.fd h3{word-break:break-word}
-.cvb{margin-top:clamp(24px,3vw,36px);padding:22px 26px;border-radius:20px;background:#0D0507;border:1px solid rgba(255,255,255,.09)}
-.cvr{display:flex;gap:16px;padding:12px 0;border-top:1px solid rgba(255,255,255,.08);font-size:14.5px}
-.cvr b{flex:0 0 230px;font-weight:600;color:#F4EFEE}.cvr span{color:#9A8E90}
-.fm button:disabled{opacity:.6;cursor:progress;transform:none}
-.mo{position:fixed;inset:0;z-index:60;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(6,2,3,.82);backdrop-filter:blur(10px)}
-.mo.on{display:flex}
-.mb{max-width:640px;max-height:86vh;overflow:auto;padding:clamp(24px,3vw,40px);border-radius:24px;background:#0D0507;border:1px solid rgba(255,45,45,.3);box-shadow:0 30px 90px -30px rgba(229,22,31,.6)}
-.mb p{color:#C9BEBF;font-size:15.5px;line-height:1.7;margin:16px 0 0}.mb b{color:#F4EFEE}
-@media(max-width:860px){#rg{grid-template-columns:1fr!important}#fl{grid-template-columns:1fr!important}.fm{grid-template-columns:1fr}#informe .wrap{grid-template-columns:1fr!important}.cvr{flex-direction:column;gap:4px}.cvr b{flex:none}}
+.fm .ck2{display:flex;gap:12px;align-items:flex-start;font:400 14px/1.5 'Manrope',sans-serif;letter-spacing:0;color:#D4C9C9;padding:4px 0}
+.fm .ck2 input{width:22px;height:22px;margin-top:1px;accent-color:#E5161F;flex:none}
+.fe{font-size:14px;color:#FF2D2D}
+.fm button{border:0;cursor:pointer;background:#E5161F;color:#fff;font:800 16px 'Manrope',sans-serif;min-height:58px;padding:0 28px;border-radius:14px;box-shadow:0 0 40px rgba(229,22,31,.5);transition:all .5s cubic-bezier(.2,.7,.2,1)}
+.fm button:hover{background:#FF2D2D;box-shadow:0 14px 50px rgba(255,45,45,.65)}
+.fm button:disabled{opacity:.7;cursor:progress}
+.ok2{padding:clamp(24px,4vw,44px);border-radius:28px;background:linear-gradient(160deg,rgba(143,18,32,.3),#0D0507 65%);border:1px solid rgba(255,45,45,.35)}
+.ann{display:flex;gap:16px;align-items:flex-start;margin-top:26px;padding:20px;border-radius:20px;background:#0D0507;border:1px solid rgba(255,255,255,.12)}
+.av{flex:none;width:52px;height:52px;border-radius:50%;background:#E5161F;color:#fff;font-weight:800;font-size:22px;display:flex;align-items:center;justify-content:center}
+.ki{padding:22px 0;border-top:1px solid rgba(255,255,255,.18);display:flex;gap:14px;align-items:flex-start}.ki svg{flex:none;color:#E5161F;margin-top:3px}
+.ki b{display:block;font-weight:800;font-size:clamp(17px,1.6vw,21px);letter-spacing:-.02em;line-height:1.25}
+.fl{color:#B9AEB0;text-decoration:none;font-size:14px;min-height:44px;display:inline-flex;align-items:center}.fl:hover{color:#F4EFEE}
+dialog{max-width:520px;width:calc(100% - 32px);padding:28px;border-radius:24px;background:#0D0507;color:#F4EFEE;border:1px solid rgba(255,45,45,.4);box-shadow:0 40px 120px rgba(0,0,0,.8)}
+dialog::backdrop{background:rgba(6,2,3,.8);backdrop-filter:blur(6px)}
+#sticky{display:none;position:fixed;left:0;right:0;bottom:0;z-index:25;padding:10px 16px calc(10px + env(safe-area-inset-bottom));background:rgba(6,2,3,.94);border-top:1px solid rgba(255,255,255,.12);backdrop-filter:blur(12px)}
+#sticky .btn{width:100%}
+@media(max-width:860px){.rg,.g2b,#informe .wrap{grid-template-columns:1fr!important}.fm{grid-template-columns:1fr}#sticky.on{display:block}body.sk-on{padding-bottom:76px}header .btn{font-size:13px;padding:0 12px}.hb{opacity:.7}}
+@media(max-width:700px){.az{flex-direction:column}.az button{width:100%}.strip .btn{width:100%}.logo{font-size:14px}}
+@media(prefers-reduced-motion:reduce){.pl,.dr{animation:none}html{scroll-behavior:auto}*{transition-duration:.01ms!important}}
 </style>
 </head>
 <body>
+
 <a class="sk" href="#contenido">Saltar al contenido</a>
 <header>
-<a class="logo" href="https://cyberfusion.global/" aria-label="CYBERFUSION, inicio"><svg width="26" height="26" viewBox="0 0 100 100" aria-hidden="true"><path d="M8 20 L52 50 L8 80 M52 50 H94" fill="none" stroke="#E5161F" stroke-width="13" stroke-linecap="square"></path></svg>CYBERFUSION</a>
-<nav class="nv" aria-label="Principal">
-<a href="https://cyberfusion.global/">Inicio</a><a href="https://cyberfusion.global/nosotros">Nosotros</a><a href="https://cyberfusion.global/soluciones">Capacidades</a><a href="https://cyberfusion.global/intelligence-center">Intelligence Center</a><a href="https://cyberfusion.global/contacto">Contacto</a>
-</nav>
-<a class="btn" href="#analizador">Analizar sitio web</a>
+<a class="logo" href="https://cyberfusion.global/" aria-label="CYBERFUSION, sitio principal"><svg width="26" height="26" viewBox="0 0 100 100" aria-hidden="true"><path d="M8 20 L52 50 L8 80 M52 50 H94" fill="none" stroke="#E5161F" stroke-width="13" stroke-linecap="square"></path></svg>CYBERFUSION</a>
+<a class="btn" id="hwa" data-wa="" data-from="header" href="https://wa.me/51976232501" target="_blank" rel="noopener">Hablar con un especialista</a>
 </header>
 <main id="contenido">
-<section id="analizador" aria-labelledby="h-hero" style="position:relative;overflow:hidden;min-height:100vh;display:flex;align-items:center;padding:120px clamp(20px,6vw,96px) 80px;background:radial-gradient(60% 80% at 100% 100%,rgba(143,18,32,.4),transparent 70%),#060203">
-<svg class="hb" style="opacity:.6" viewBox="0 0 900 640" aria-hidden="true" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="hg" x1="0" x2="1"><stop offset="0" stop-color="#FF2D2D" stop-opacity="0"></stop><stop offset=".72" stop-color="#FF2D2D"></stop><stop offset="1" stop-color="#fff"></stop></linearGradient><filter id="hbl"><feGaussianBlur stdDeviation="9"></feGaussianBlur></filter></defs>
-<g filter="url(#hbl)" class="pl"><path d="M0 40 L600 330 H900" stroke="#E5161F" stroke-width="12" fill="none"></path><path d="M0 610 L600 330" stroke="#E5161F" stroke-width="12" fill="none"></path></g>
-<path d="M0 40 L600 330 H900" stroke="url(#hg)" stroke-width="2.4" fill="none"></path><path d="M0 610 L600 330" stroke="url(#hg)" stroke-width="2.4" fill="none"></path>
-<path d="M0 130 L600 330" stroke="url(#hg)" stroke-width="1" fill="none" opacity=".8"></path><path d="M0 520 L600 330" stroke="url(#hg)" stroke-width="1" fill="none" opacity=".8"></path><path d="M0 230 L600 330" stroke="#8f1220" stroke-width="1" fill="none"></path><path d="M0 430 L600 330" stroke="#8f1220" stroke-width="1" fill="none"></path>
-<path class="dr" d="M0 40 L600 330 H900" stroke="#fff" stroke-width="1.2" fill="none" opacity=".55"></path>
-<circle cx="600" cy="330" r="5" fill="#fff"></circle><circle class="pl" cx="600" cy="330" r="26" fill="none" stroke="#FF2D2D" stroke-opacity=".5"></circle></svg>
-<div class="wrap" style="position:relative;width:100%;max-width:900px;text-align:center">
-<div class="eb" data-r="">CYBERFUSION WEB ANALYZER</div>
-<h1 id="h-hero" data-r="" style="font-size:clamp(38px,6.4vw,92px);line-height:.98;letter-spacing:-.045em;margin-top:24px">Analiza la seguridad<br>de tu <span style="color:#E5161F">sitio web.</span></h1>
-<p data-r="" style="font-size:clamp(17px,1.5vw,20px);line-height:1.6;color:#D4C9C9;margin:28px auto 0;max-width:680px">Identifica riesgos visibles que podrían afectar la confianza, reputación y percepción profesional de tu organización.</p>
-<form id="af" data-r="" class="az" style="margin:40px auto 0;max-width:760px" novalidate="">
+<section id="analizador" aria-labelledby="h-hero" style="position:relative;overflow:hidden;min-height:100vh;min-height:100svh;display:flex;align-items:center;padding:104px clamp(20px,6vw,96px) 56px;background:radial-gradient(60% 45% at 50% 100%,rgba(150,20,28,.5),transparent 70%),radial-gradient(rgba(255,255,255,.07) 1px,transparent 1.5px) 0 0/56px 56px,linear-gradient(180deg,#040102 0%,#090204 38%,#1d0407 78%,#2c060a 100%)">
+<svg id="hbs" aria-hidden="true" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:visible"></svg>
+<div class="wrap" style="position:relative;width:100%;max-width:900px;text-align:center;z-index:1">
+<div class="eb" data-r="">ANÁLISIS SIN COSTO · RESULTADOS EN MINUTOS</div>
+<h1 id="h-hero" data-r="" style="font-size:clamp(36px,6vw,84px);line-height:1;letter-spacing:-.045em;margin-top:22px">Analiza la seguridad de tu web, <span style="color:#E5161F">sin costo.</span></h1>
+<p data-r="" style="font-size:clamp(17px,1.5vw,20px);line-height:1.6;color:#D4C9C9;margin:22px auto 0;max-width:640px">Descubre el puntaje de seguridad de tu sitio y qué corregir primero. Tus clientes lo miran antes de escribirte.</p>
+<div style="position:relative;margin:34px auto 0;max-width:760px">
+<svg class="hb" style="display:none" viewBox="0 0 1400 900" aria-hidden="true"><defs>
+<linearGradient id="gl" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="1380" y2="0"><stop offset="0" stop-color="#FF2D2D" stop-opacity="0"></stop><stop offset=".55" stop-color="#FF2D2D" stop-opacity=".55"></stop><stop offset="1" stop-color="#fff"></stop></linearGradient>
+<radialGradient id="og"><stop offset="0" stop-color="#fff"></stop><stop offset=".25" stop-color="#FF2D2D" stop-opacity=".9"></stop><stop offset="1" stop-color="#E5161F" stop-opacity="0"></stop></radialGradient>
+<filter id="hbl"><feGaussianBlur stdDeviation="8"></feGaussianBlur></filter></defs>
+<g filter="url(#hbl)" class="pl" opacity=".5"><path d="M0 0L1380 450M0 900L1380 450" stroke="#E5161F" stroke-width="14" fill="none"></path></g>
+<g fill="none" stroke="url(#gl)"><path d="M0 0L1380 450M0 900L1380 450" stroke-width="2"></path><path d="M0 170L1380 450M0 730L1380 450" stroke-width="1.4"></path><path d="M0 330L1380 450M0 570L1380 450" stroke-width="1" opacity=".8"></path><path d="M0 450H1380" stroke-width="1.4"></path></g>
+<path class="dr" d="M0 0L1380 450" stroke="#fff" stroke-width="1.2" fill="none" opacity=".5"></path><path class="dr" d="M0 900L1380 450" stroke="#fff" stroke-width="1.2" fill="none" opacity=".45" style="animation-delay:-4s"></path>
+<circle class="pl" cx="1380" cy="450" r="90" fill="url(#og)"></circle><circle cx="1380" cy="450" r="6" fill="#fff"></circle></svg>
+<form id="af" data-r="" class="az" style="margin:0 auto;max-width:760px" novalidate="">
 <label for="dm" style="position:absolute;left:-999px">Dirección de tu sitio web</label>
-<input id="dm" type="text" inputmode="url" autocomplete="url" placeholder="https://www.tusitio.com" spellcheck="false">
-<button id="ab" type="submit">ANALIZAR SITIO WEB</button></form>
-<div id="gate" data-r="">
-<label class="cs"><input type="checkbox" id="ck"><span>Declaro que soy propietario del sitio o cuento con autorización para analizarlo, y acepto la <a href="#" data-modal="mUso">Política de Uso</a>. El análisis solo revisa información pública: no explota vulnerabilidades ni modifica nada.</span></label>
-<div id="cap" style="display:none;margin-top:14px"></div>
-</div>
-<div id="er" role="alert" style="max-width:760px;margin-left:auto;margin-right:auto"></div>
-<div id="sc" aria-live="polite"><div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:14px"><span class="mono" style="font-size:11px;letter-spacing:.2em;color:#FF2D2D">ANALIZANDO</span><span id="sd" class="mono" style="font-size:12px;color:#B9AEB0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span></div><div class="pb"><i id="pg"></i></div><ul class="st" id="sl"></ul></div>
-<ul class="tk" data-r=""><li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M7.5 12.5l3 3 6-6.5"></path></svg>Resultados en minutos</li><li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M7.5 12.5l3 3 6-6.5"></path></svg>Sin instalación</li><li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M7.5 12.5l3 3 6-6.5"></path></svg>Disponible para organizaciones de todo el mundo</li></ul>
-<p data-r="" style="font-weight:800;font-size:clamp(18px,1.9vw,24px);letter-spacing:-.02em;margin:40px 0 0;line-height:1.25;color:#F4EFEE">La seguridad no se supone.<br><span style="color:#FF2D2D">Se verifica.</span></p>
+<input id="dm" type="text" inputmode="url" autocomplete="url" autocapitalize="none" placeholder="tuempresa.com" spellcheck="false" aria-describedby="er">
+<button id="ab" type="submit">Analizar sin costo →</button></form></div>
+<label class="ck" data-r=""><input type="checkbox" id="cn" aria-describedby="er"><span>Soy propietario del sitio o tengo autorización para analizarlo, y acepto la <button type="button" class="lk" id="po">Política de Uso</button>.</span></label>
+<div id="cap" style="display:none;justify-content:center;margin-top:14px"></div>
+<div id="er" role="alert"></div>
+<div id="sc" aria-live="polite"><div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:14px"><span class="mono" style="font-size:12px;letter-spacing:.2em;color:#FF2D2D">ANALIZANDO</span><span id="sd" class="mono" style="font-size:12px;color:#D4C9C9;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span></div><div class="pb"><i id="pg"></i></div><ul class="st" id="sl"></ul></div>
+<ul class="tk" data-r="" id="tk"></ul>
+<ul class="chips" data-r=""><li>Certificado y cifrado</li><li>DNS: SPF · DMARC · CAA</li><li>Cabeceras de seguridad</li><li>Archivos sensibles expuestos</li><li>+6 capas más</li></ul>
+<p data-r="" style="font-weight:800;font-size:clamp(18px,1.9vw,24px);letter-spacing:-.02em;margin:32px 0 0;line-height:1.25">La seguridad no se supone.<br><span style="color:#FF2D2D">Se verifica.</span></p>
 </div></section>
 
-<div id="res">
+<div id="res" aria-live="polite">
 <section id="resultados" class="sec" aria-labelledby="h-res" style="background:radial-gradient(60% 70% at 0% 100%,rgba(90,10,18,.45),transparent 70%),#060203">
 <div class="wrap">
-<div style="display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap">
-<div><div class="eb">RESULTADOS</div>
-<h2 id="h-res" style="font-size:clamp(28px,4.2vw,60px);line-height:1;letter-spacing:-.04em;margin:18px 0 0">Análisis de <span id="rd" style="color:#E5161F;word-break:break-all"></span></h2></div>
-<button type="button" id="again" class="ghost">↻ ANALIZAR OTRO SITIO</button></div>
-<div id="nb" class="nb" style="display:none"></div>
-<div class="g2" style="grid-template-columns:.8fr 1.4fr;margin-top:clamp(28px,4vw,48px);align-items:stretch;gap:clamp(16px,2.4vw,32px)" id="rg">
-<div class="gc"><div class="mono" style="font-size:11px;letter-spacing:.2em;color:#9A8E90">SECURITY SCORE</div>
-<svg viewBox="0 0 200 200" style="width:min(100%,260px);margin:18px auto 0;display:block" role="img" aria-label="Puntaje de seguridad"><circle cx="100" cy="100" r="84" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="9"></circle><circle id="ga" cx="100" cy="100" r="84" fill="none" stroke="#E5161F" stroke-width="9" stroke-linecap="round" stroke-dasharray="527.8" stroke-dashoffset="527.8" transform="rotate(-90 100 100)" style="filter:drop-shadow(0 0 8px rgba(255,45,45,.8));transition:stroke-dashoffset 1.6s cubic-bezier(.2,.7,.2,1)"></circle><text id="gn" x="100" y="108" text-anchor="middle" fill="#F4EFEE" font-family="Manrope" font-weight="800" font-size="60" letter-spacing="-2">0</text><text id="gs" x="100" y="134" text-anchor="middle" fill="#9A8E90" font-family="JetBrains Mono" font-size="12" letter-spacing="2">/ 100</text></svg>
-<div><span id="rk" class="rk b">BAJO</span></div><div class="lv" id="lv"><i></i><i></i><i></i></div>
-<div class="mono" style="font-size:10.5px;letter-spacing:.2em;color:#9A8E90;margin-top:12px">NIVEL DE RIESGO</div>
-<p id="cv" class="cvn"></p></div>
-<div id="fl" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;align-content:start"></div></div>
-<div id="cov"></div>
+<div class="eb">RESULTADOS</div>
+<h2 id="h-res" style="font-size:clamp(28px,4.2vw,60px);line-height:1.02;letter-spacing:-.04em;margin:16px 0 0">Análisis de <span id="rd" style="color:#E5161F;word-break:break-all"></span></h2>
+<div id="rb"></div>
 </div></section>
-
 <section id="informe" class="sec" aria-labelledby="h-inf" style="background:radial-gradient(70% 60% at 50% 100%,rgba(143,18,32,.45),transparent 70%),#060203">
-<div class="wrap g2" style="align-items:start;grid-template-columns:.8fr 1.2fr">
+<div class="wrap g2b" style="grid-template-columns:.8fr 1.2fr;margin-top:0;gap:clamp(28px,5vw,80px)">
 <div><div class="eb">INFORME COMPLETO</div>
-<h2 id="h-inf" style="font-size:clamp(32px,4.8vw,70px);line-height:1;letter-spacing:-.045em;margin-top:20px">Obtén el informe completo.</h2>
-<p style="font-size:18px;line-height:1.7;color:#C9BEBF;margin:24px 0 0;max-width:460px">Recibe un informe detallado en PDF con los hallazgos identificados y las recomendaciones para corregir cada uno.</p></div>
+<h2 id="h-inf" style="font-size:clamp(32px,4.6vw,64px);line-height:1;letter-spacing:-.045em;margin-top:18px">Recibe tu informe con <span style="color:#E5161F">qué corregir.</span></h2>
+<p style="font-size:18px;line-height:1.7;color:#D4C9C9;margin:22px 0 0;max-width:460px">Incluye el detalle de cada hallazgo y cómo corregirlo.</p></div>
 <div id="fw"><form id="ff" class="fm" novalidate="">
-<label>NOMBRE<input name="nombre" autocomplete="name" required=""></label>
-<label>EMPRESA<input name="empresa" autocomplete="organization" required=""></label>
-<label>CARGO<input name="cargo" autocomplete="organization-title" required=""></label>
-<label>CORREO CORPORATIVO<input name="correo" type="email" autocomplete="email" required=""></label>
-<label>TELÉFONO<input name="telefono" type="tel" autocomplete="tel" placeholder="+51 999 999 999" required=""></label>
-<label>PAÍS<select name="pais" required=""><option value="">Selecciona</option><option>Perú</option><option>México</option><option>Colombia</option><option>Chile</option><option>Argentina</option><option>Ecuador</option><option>Bolivia</option><option>Brasil</option><option>Panamá</option><option>Costa Rica</option><option>Guatemala</option><option>República Dominicana</option><option>España</option><option>Estados Unidos</option><option>Canadá</option><option>Reino Unido</option><option>Australia</option><option>Nueva Zelanda</option><option>Otro</option></select></label>
-<label class="ck2 full"><input type="checkbox" name="acepto" required=""><span>Acepto la <a href="https://cyberfusion.global/politica-de-privacidad" target="_blank" rel="noopener">Política de Privacidad</a> y el <a href="https://cyberfusion.global/tratamiento-de-datos" target="_blank" rel="noopener">Tratamiento de Datos Personales</a>, y que CYBERFUSION me envíe este informe y avisos sobre la seguridad de mi sitio.</span></label>
+<label>NOMBRE<input type="text" name="nombre" autocomplete="name" required=""></label>
+<label>CORREO<input type="email" name="correo" autocomplete="email" inputmode="email" required=""></label>
+<label>EMPRESA<input type="text" name="empresa" autocomplete="organization" required=""></label>
+<label>CARGO<input type="text" name="cargo" autocomplete="organization-title" required=""></label>
+<label>TELÉFONO (OPCIONAL)<input type="tel" name="telefono" autocomplete="tel"></label>
+<label>PAÍS<select name="pais" required=""><option selected="">Perú</option><option>México</option><option>Colombia</option><option>Chile</option><option>Argentina</option><option>Ecuador</option><option>Bolivia</option><option>Brasil</option><option>Panamá</option><option>Costa Rica</option><option>Guatemala</option><option>República Dominicana</option><option>España</option><option>Estados Unidos</option><option>Canadá</option><option>Reino Unido</option><option>Australia</option><option>Nueva Zelanda</option><option>Otro</option></select></label>
+<label class="ck2 full"><input type="checkbox" name="acepto" required=""><span>Acepto la <a href="https://cyberfusion.global/politica-de-privacidad" target="_blank" rel="noopener">Política de Privacidad</a> y el <a href="https://cyberfusion.global/tratamiento-de-datos" target="_blank" rel="noopener">Tratamiento de Datos Personales</a>.</span></label>
 <div id="fe" class="fe full" role="alert"></div>
-<button class="full" type="submit" id="fb">DESCARGAR INFORME</button></form></div>
+<button class="full" type="submit">Descargar mi informe →</button></form></div>
 </div></section>
 </div>
 
-<section id="cyberfusion" class="sec" aria-labelledby="h-cf" style="background:#060203">
+<section id="cyberfusion" class="sec" aria-label="CYBERFUSION" style="background:#060203">
 <div class="wrap">
-<div class="eb" data-r="">CYBERFUSION</div>
-<h2 id="h-cf" data-r="" style="font-size:clamp(30px,4.6vw,66px);line-height:1;letter-spacing:-.04em;margin:20px 0 0;max-width:900px">Detrás del análisis existe una <span style="color:#E5161F">Firma de Protección.</span></h2>
-<p data-r="" style="font-size:18px;line-height:1.7;color:#C9BEBF;margin:28px 0 0;max-width:760px">CYBERFUSION ayuda a organizaciones de todo el mundo a identificar riesgos, validar exposiciones y fortalecer su capacidad de detección y respuesta frente a amenazas cibernéticas.</p>
-<p data-r="" style="font-weight:800;font-size:clamp(22px,2.6vw,34px);letter-spacing:-.02em;margin:24px 0 0;line-height:1.2">La seguridad no se supone.<br><span style="color:#fff;background:#E5161F;padding:0 10px">Se verifica.</span></p>
-<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:clamp(16px,3vw,40px);margin-top:clamp(36px,5vw,64px)">
+<h2 data-r="" style="font-size:clamp(26px,3.6vw,48px);line-height:1.05;letter-spacing:-.04em;max-width:820px">Detrás del análisis existe una <span style="color:#E5161F">Firma de Protección.</span></h2>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:clamp(12px,3vw,40px);margin-top:clamp(20px,3vw,36px)">
 <div class="ki" data-r=""><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 6L9 17l-5-5"></path></svg><b>8 servicios especializados</b></div>
-<div class="ki" data-r=""><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 6L9 17l-5-5"></path></svg><b>Atención internacional desde Perú</b></div>
-<div class="ki" data-r=""><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 6L9 17l-5-5"></path></svg><b>Red internacional de especialistas y socios estratégicos</b></div>
-<div class="ki" data-r=""><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 6L9 17l-5-5"></path></svg><b>Enfoque en detección, validación y respuesta</b></div></div>
-<p data-r="" style="font-size:14.5px;line-height:1.7;color:#9A8E90;margin:clamp(28px,4vw,48px) 0 0;max-width:820px;padding-top:20px;border-top:1px solid rgba(255,255,255,.1)">Todos los servicios son coordinados desde Perú y, cuando requisitos regulatorios, contractuales o de negocio lo requieren, son complementados mediante una red internacional de especialistas y socios estratégicos en el país del cliente.</p>
+<div class="ki" data-r=""><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 6L9 17l-5-5"></path></svg><b>Atención desde Perú</b></div>
+<div class="ki" data-r=""><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 6L9 17l-5-5"></path></svg><b>Detección, validación y respuesta</b></div></div>
 </div></section>
 </main>
-<footer style="background:#060203;border-top:1px solid rgba(255,255,255,.07)">
-<div style="padding:clamp(56px,7vw,96px) clamp(20px,6vw,96px) clamp(48px,6vw,80px)"><div class="fg wrap">
-<div><a class="logo" href="https://cyberfusion.global/" aria-label="CYBERFUSION, inicio" style="font-size:17px"><svg width="30" height="30" viewBox="0 0 100 100" aria-hidden="true"><path d="M8 20 L52 50 L8 80 M52 50 H94" fill="none" stroke="#E5161F" stroke-width="13" stroke-linecap="square"></path></svg>CYBERFUSION</a>
-<p style="font-size:15px;line-height:1.7;color:#B9AEB0;margin:24px 0 0;max-width:380px">Firma de Protección especializada en resiliencia digital, gestión del riesgo y ciberseguridad empresarial.</p></div>
-<nav aria-label="Menú del pie"><div class="mono" style="font-size:11px;letter-spacing:.2em;color:#FF2D2D">MENÚ</div>
-<div style="display:grid;gap:14px;margin-top:24px"><a class="fl" href="https://cyberfusion.global/">Inicio</a><a class="fl" href="https://cyberfusion.global/nosotros">Nosotros</a><a class="fl" href="https://cyberfusion.global/soluciones">Capacidades</a><a class="fl" href="https://cyberfusion.global/intelligence-center">Intelligence Center</a><a class="fl" href="https://cyberfusion.global/contacto">Contacto</a></div></nav>
-<nav aria-label="Información legal"><div class="mono" style="font-size:11px;letter-spacing:.2em;color:#FF2D2D">INFORMACIÓN LEGAL</div>
-<div style="display:grid;gap:14px;margin-top:24px"><a class="fl" href="https://cyberfusion.global/politica-de-privacidad">Política de Privacidad</a><a class="fl" href="https://cyberfusion.global/tratamiento-de-datos">Tratamiento de Datos Personales</a><a class="fl" href="https://cyberfusion.global/libro-de-reclamaciones">Libro de Reclamaciones</a><a class="fl" href="https://cyberfusion.global/terminos">Términos y Condiciones</a></div></nav>
-</div></div>
-<div style="border-top:1px solid rgba(255,255,255,.1);padding:24px clamp(20px,6vw,96px);background:linear-gradient(90deg,transparent,rgba(255,45,45,.05))">
-<div class="sf wrap">
-<div style="font-size:13px;line-height:1.6;color:#9A8E90"><span style="color:#D4C9C9;font-weight:600;letter-spacing:.04em">CYBERFUSION TECHNOLOGIES © 2026</span><br>Todos los derechos reservados.</div>
-<div style="display:flex;gap:10px">
-<a class="so" href="#" aria-label="LinkedIn"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9.5h4V21H3zM10 9.5h3.8v1.6h.1c.5-1 1.8-1.9 3.7-1.9 4 0 4.4 2.6 4.4 6V21h-4v-5c0-1.2 0-2.7-1.7-2.7s-1.9 1.3-1.9 2.6V21h-4z"></path></svg></a>
-<a class="so" href="#" aria-label="X"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 3h3.2l-7 8 8.2 10h-6.4l-5-6.1L4.7 21H1.5l7.5-8.6L1.1 3h6.5l4.5 5.6zM16.4 19h1.8L6.5 4.9H4.6z"></path></svg></a>
-<a class="so" href="#" aria-label="YouTube"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M22 8.2a3 3 0 0 0-2.1-2.1C18 5.6 12 5.6 12 5.6s-6 0-7.9.5A3 3 0 0 0 2 8.2C1.5 10 1.5 12 1.5 12s0 2 .5 3.8a3 3 0 0 0 2.1 2.1c1.9.5 7.9.5 7.9.5s6 0 7.9-.5a3 3 0 0 0 2.1-2.1c.5-1.8.5-3.8.5-3.8s0-2-.5-3.8zM10 15V9l5.2 3z"></path></svg></a>
-<a class="so" href="#" aria-label="Facebook"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M14 8.5V6.8c0-.8.2-1.3 1.4-1.3H17V2.2C16.7 2.1 15.8 2 14.8 2 12.5 2 11 3.4 11 6v2.5H8.5V12H11v10h3V12h2.5l.4-3.5z"></path></svg></a>
-<a class="so" href="#" aria-label="Instagram"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"></rect><circle cx="12" cy="12" r="4"></circle><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"></circle></svg></a>
-</div></div></div>
+<footer style="background:#060203;border-top:1px solid rgba(255,255,255,.07);padding:28px clamp(20px,6vw,96px)">
+<div class="wrap" style="display:flex;justify-content:space-between;align-items:center;gap:12px 28px;flex-wrap:wrap">
+<a class="logo" href="https://cyberfusion.global/" aria-label="CYBERFUSION, sitio principal"><svg width="26" height="26" viewBox="0 0 100 100" aria-hidden="true"><path d="M8 20 L52 50 L8 80 M52 50 H94" fill="none" stroke="#E5161F" stroke-width="13" stroke-linecap="square"></path></svg>CYBERFUSION</a>
+<nav aria-label="Información legal" style="display:flex;flex-wrap:wrap;gap:0 22px"><a class="fl" href="https://cyberfusion.global/politica-de-privacidad">Política de Privacidad</a><a class="fl" href="https://cyberfusion.global/tratamiento-de-datos">Tratamiento de Datos Personales</a><a class="fl" href="https://cyberfusion.global/libro-de-reclamaciones">Libro de Reclamaciones</a><a class="fl" href="https://cyberfusion.global/terminos">Términos y Condiciones</a></nav>
+<div style="font-size:13px;color:#B9AEB0;letter-spacing:.04em;width:100%">CYBERFUSION TECHNOLOGIES © 2026</div>
+</div>
 </footer>
+<div id="sticky"><a class="btn big" id="swa" data-wa="" data-from="sticky" href="https://wa.me/51976232501" target="_blank" rel="noopener">Hablar con Ann</a></div>
+<dialog id="pol" aria-labelledby="pt"><div class="eb">POLÍTICA DE USO</div><h2 id="pt" style="font-size:24px;letter-spacing:-.03em;margin-top:12px">Qué revisa el análisis</h2>
+<p style="font-size:15.5px;line-height:1.65;color:#D4C9C9;margin:14px 0 0">El análisis revisa solo información pública: certificado, DNS, cabeceras y rutas comunes. No explota vulnerabilidades, no prueba contraseñas, no accede a áreas protegidas ni modifica nada. Cada solicitud se registra con la IP y el dominio. Los resultados se conservan 24 horas. El análisis profundo requiere verificar antes la propiedad del dominio.</p>
+<button class="btn" id="pc" style="margin-top:22px;width:100%">Entendido</button></dialog>
 
-<div class="mo" id="mUso" role="dialog" aria-modal="true" aria-labelledby="mUsoT"><div class="mb">
-<div class="eb">POLÍTICA DE USO</div>
-<h3 id="mUsoT" style="font-size:26px;letter-spacing:-.03em;margin-top:12px">Qué hace y qué no hace el análisis</h3>
-<p>Al solicitar el análisis declaras que eres propietario del sitio, representante autorizado de la organización o que cuentas con autorización expresa. CYBERFUSION registra cada solicitud con su dirección IP y el dominio analizado, y puede rechazar dominios sobre los que haya dudas razonables de autorización.</p>
-<p><b>Revisa</b> solo información que el sitio publica: certificado TLS, registros DNS (SPF, DMARC, CAA, DNSSEC), cabeceras HTTP de seguridad, rutas comunes que no deberían ser públicas y el gestor de contenidos que el propio sitio declara.</p>
-<p><b>No</b> explota vulnerabilidades, no prueba contraseñas, no accede a áreas protegidas ni modifica nada. Las peticiones están limitadas en volumen. El escáner se identifica como <span class="mono" style="color:#FF2D2D">CyberfusionScanner/1.0</span> y puede bloquearse en cualquier momento.</p>
-<p>Los resultados se conservan 24 horas. El análisis profundo, que sí prueba vulnerabilidades conocidas, exige verificar antes la propiedad del dominio.</p>
-<button type="button" class="btn" data-close="" style="border:0;cursor:pointer;margin-top:8px">ENTENDIDO</button>
-</div></div>
 <script>
 (function(){
-/* Motor real. La URL de la API puede sobrescribirse definiendo
-   window.CF_API antes de este script (p. ej. para pruebas locales). */
+/* Integración: asignar funciones reales. analyze(domain)->Promise<Result>; submitLead(payload)->Promise<{leadId}>; getReport(leadId)->Promise<void> (PDF generado por el servidor). */
+var CONFIG={analyze:null,getReport:null,submitLead:null};
+/* Motor real. window.CF_API permite apuntar a otra API en pruebas.
+   Con ?demo=complete|blocked|error se usan los datos de ejemplo. */
 var API=(window.CF_API||'https://api.cyberfusion.pe').replace(/\/$/,'');
-var $=function(i){return document.getElementById(i)};
-var esc=function(s){return String(s==null?'':s).replace(/[<>&"]/g,function(c){return{'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c]})};
-
-var I18N={},JOB=null,R=null,busy=false;
-/* null = el servidor no exige captcha. "" = lo exige y falta resolverlo. */
-var CAPTCHA=null;
-
-var SEV={critical:'CRÍTICO',high:'ALTO',medium:'MEDIO',low:'BAJO'};
-var EFF={low:'ESFUERZO BAJO',medium:'ESFUERZO MEDIO',high:'ESFUERZO ALTO'};
-var COV={tls:'Certificado y cifrado',dns:'DNS y protección de correo',headers:'Cabeceras de seguridad',exposure:'Archivos expuestos',cms:'Gestor de contenidos',stack:'Software del servidor',app:'Vulnerabilidades conocidas'};
-/* Lo que se muestra mientras el motor trabaja. Avanza con el tiempo real
-   del sondeo: no es una animación con duración fija. */
-var STEPS=['Verificando certificado','Revisando DNS y correo','Evaluando cabeceras','Buscando archivos expuestos','Identificando el gestor de contenidos','Priorizando hallazgos'];
-var IOK='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6L9 17l-5-5"/></svg>';
-var IW='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 8v5M12 17v.5"/><path d="M10.3 3.9L2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>';
-var II='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.5v.5"/></svg>';
-var t=function(k,f){return I18N[k]||f||''};
-
-/* ---------- captcha (lo decide el servidor, no este archivo) ---------- */
-fetch(API+'/config').then(function(r){return r.json()}).then(function(cfg){
-  if(!cfg||!cfg.turnstile_site_key)return;
-  CAPTCHA='';
-  var box=$('cap');box.style.display='flex';
-  box.innerHTML='<div class="cf-turnstile" data-sitekey="'+esc(cfg.turnstile_site_key)+'" data-theme="dark" data-callback="cfCapOk" data-expired-callback="cfCapGone" data-error-callback="cfCapGone"></div>';
-  var s=document.createElement('script');s.src='https://challenges.cloudflare.com/turnstile/v0/api.js';s.async=true;s.defer=true;document.head.appendChild(s);
-}).catch(function(){});
-window.cfCapOk=function(tok){CAPTCHA=tok;$('er').textContent=''};
+var JOB=null,DL=null,CAPTCHA=null;   /* CAPTCHA: null = no se exige; '' = falta resolverlo */
+function apiErr(o,def){return new Error(typeof (o&&o.detail)==='string'?o.detail:def)}
+function resetCaptcha(){if(CAPTCHA!==null){CAPTCHA='';if(window.turnstile)try{window.turnstile.reset()}catch(e){}}}
+window.cfCapOk=function(t){CAPTCHA=t;var e=document.getElementById('er');if(e)e.textContent=''};
 window.cfCapGone=function(){CAPTCHA=''};
-
-/* ---------- modal de política de uso ---------- */
-document.addEventListener('click',function(e){
-  var a=e.target.closest('[data-modal]');
-  if(a){e.preventDefault();$(a.getAttribute('data-modal')).classList.add('on');return}
-  var m=e.target.closest('.mo');
-  if(m&&(e.target===m||e.target.closest('[data-close]')))m.classList.remove('on');
-});
-addEventListener('keydown',function(e){if(e.key==='Escape')[].forEach.call(document.querySelectorAll('.mo.on'),function(m){m.classList.remove('on')})});
-
-/* ---------- análisis ---------- */
-function norm(v){v=(v||'').trim();if(!v)return null;var u=v.replace(/^[a-z]+:\/\//i,'').split(/[\/?#]/)[0].toLowerCase();return /^([a-z0-9-]+\.)+[a-z]{2,}$/.test(u)?u:null}
+if(!new URLSearchParams(location.search).get('demo')){
+fetch(API+'/config').then(function(r){return r.json()}).then(function(cfg){
+  if(!cfg||!cfg.turnstile_site_key)return;CAPTCHA='';
+  var box=document.getElementById('cap');box.style.display='flex';
+  box.innerHTML='<div class="cf-turnstile" data-sitekey="'+String(cfg.turnstile_site_key).replace(/[^\w-]/g,'')+'" data-theme="dark" data-callback="cfCapOk" data-expired-callback="cfCapGone" data-error-callback="cfCapGone"></div>';
+  var sc=document.createElement('script');sc.src='https://challenges.cloudflare.com/turnstile/v0/api.js';sc.async=true;sc.defer=true;document.head.appendChild(sc);
+}).catch(function(){});
+CONFIG.analyze=async function(d){
+  var res=await fetch(API+'/scans',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:d,authorized:true,captcha:CAPTCHA||''})});
+  var st=await res.json().catch(function(){return{}});
+  if(!res.ok)throw apiErr(st,'No pudimos iniciar el análisis. Inténtalo de nuevo.');
+  JOB=st.id;
+  for(var i=0;i<60;i++){
+    await new Promise(function(r){setTimeout(r,2000)});
+    var x=await fetch(API+'/scans/'+JOB).then(function(r){return r.json()}).catch(function(){return{}});
+    if(x.status==='done'){var r=x.result||{};r.domain=r.domain||d;r.coverage=r.coverage||{determined:0,total:10};return r}
+    if(x.status==='error')throw new Error('El análisis falló. Inténtalo de nuevo en unos minutos.');
+  }
+  throw new Error('El análisis tardó demasiado. Inténtalo de nuevo en unos minutos.');
+};
+CONFIG.submitLead=async function(pl){
+  var res=await fetch(API+'/leads',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({job_id:JOB,name:pl.nombre,company:pl.empresa,role:pl.cargo,email:pl.correo,phone:pl.telefono||'',country:pl.pais,consent:true,
+      utm_source:pl.utm_source,utm_medium:pl.utm_medium,utm_campaign:pl.utm_campaign,utm_content:pl.utm_content})});
+  var out=await res.json().catch(function(){return{}});
+  if(!res.ok)throw apiErr(out,'No pudimos registrar tus datos.');
+  DL={url:API+out.download_url,name:out.filename||'Informe CYBERFUSION.pdf'};
+  /* Copia al plugin de WordPress (Leads Analyzer): avisa al correo configurado alli. */
+  fetch('/wp-json/cyberfusion/v1/lead',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({job_id:JOB,nombre:pl.nombre,empresa:pl.empresa,cargo:pl.cargo,correo:pl.correo,telefono:pl.telefono||'',pais:pl.pais})}).catch(function(){});
+  return {leadId:JOB};
+};
+/* Descarga sin ventana emergente: los navegadores bloquean window.open tras una espera. */
+CONFIG.getReport=async function(){
+  if(!DL)return;
+  try{var b=await fetch(DL.url).then(function(r){if(!r.ok)throw 0;return r.blob()});
+    var u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download=DL.name;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(u)},4000)}
+  catch(e){location.href=DL.url}
+};
+}
+var WHATSAPP_ANN='https://wa.me/51976232501?text=Hola%2C%20quiero%20hablar%20con%20un%20especialista';
+var $=function(i){return document.getElementById(i)};
+var NAMES=['Certificado y cifrado','DNS y protección de correo','Cabeceras de seguridad','Archivos sensibles expuestos','Gestor de contenidos y extensiones','Software del servidor','Vulnerabilidades conocidas','Reputación y listas negras','Dominio y marca','Superficie visible (subdominios)'];
+var STEPS=['Verificando certificado y cifrado','Revisando DNS y protección de correo','Evaluando cabeceras de seguridad','Buscando archivos sensibles expuestos','Identificando gestor de contenidos','Detectando software del servidor','Consultando reputación del dominio','Revisando dominio y marca','Revisando subdominios públicos'];
+var ST={ok:'CORRECTO',attention:'REQUIERE ATENCIÓN',undetermined:'NO DETERMINADO',needs_verification:'REQUIERE VERIFICAR PROPIEDAD'};
+var SEV={alto:'ALTO',medio:'MEDIO',bajo:'BAJO',observ:'OBSERV.'},SO={alto:0,medio:1,bajo:2,observ:3};
+var svg=function(p){return '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">'+p+'</svg>'};
+var IC={ok:svg('<path d="M20 6L9 17l-5-5"/>'),attention:svg('<path d="M12 8v5M12 17v.5"/><path d="M10.3 3.9L2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/>'),undetermined:svg('<circle cx="12" cy="12" r="9"/><path d="M8 12h8"/>'),needs_verification:svg('<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>')};
+var CHK='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M7.5 12.5l3 3 6-6.5"/></svg>';
+var DEMO={
+complete:{domain:'tuempresa.com',status:'complete',score:72,level:'medio',coverage:{determined:9,total:10},waf:{detected:false,product:null},
+layers:[{id:1,state:'ok'},{id:2,state:'attention',note:'No se encontró una política DMARC activa.'},{id:3,state:'attention',note:'Faltan 3 de 6 cabeceras recomendadas.'},{id:4,state:'ok'},{id:5,state:'ok',note:'No se detectó gestor de contenidos.'},{id:6,state:'ok'},{id:7,state:'needs_verification',note:'Requiere comprobar que el dominio es tuyo.'}],
+positives:[{title:'Certificado vigente',detail:'Válido y con renovación futura.'},{title:'HTTPS aplicado en todo el sitio',detail:'Las visitas HTTP se redirigen a HTTPS.'},{title:'Sin archivos sensibles expuestos',detail:'No se encontraron rutas comunes accesibles.'}],
+findings:[{severity:'bajo',title:'Cabecera Content-Security-Policy ausente',detail:''},{severity:'alto',title:'Sin política DMARC activa',detail:''},{severity:'observ',title:'Versión del servidor visible en las respuestas',detail:''},{severity:'medio',title:'Cabecera Strict-Transport-Security ausente',detail:''}]},
+blocked:{domain:'tuempresa.com',status:'blocked',score:92,level:'bajo',coverage:{determined:5,total:10},waf:{detected:true,product:'Cloudflare'},
+layers:[{id:1,state:'ok'},{id:2,state:'ok'},{id:3,state:'ok'},{id:4,state:'undetermined',note:'El firewall bloqueó las solicitudes de revisión.'},{id:5,state:'undetermined',note:'El firewall bloqueó las solicitudes de revisión.'},{id:6,state:'undetermined',note:'El servidor no responde fuera del firewall.'},{id:7,state:'needs_verification',note:'Requiere comprobar que el dominio es tuyo.'}],
+positives:[{title:'Certificado vigente',detail:'Válido y con cifrado moderno.'},{title:'SPF y DMARC configurados',detail:'El correo del dominio tiene protección activa.'},{title:'Cabeceras de seguridad presentes',detail:'En las respuestas que pudimos revisar.'}],findings:[]},
+error:{domain:'tuempresa.com',status:'error',score:null,level:null,coverage:{determined:0,total:10},waf:{detected:false,product:null},layers:[],positives:[],findings:[]}};
+var S={r:null,lead:null,busy:false};
+var qs=new URLSearchParams(location.search);
+['utm_source','utm_medium','utm_campaign','utm_content'].forEach(function(k){try{if(qs.get(k))sessionStorage.setItem(k,qs.get(k))}catch(e){}});
+function utm(){var o={};['utm_source','utm_medium','utm_campaign','utm_content'].forEach(function(k){try{o[k]=sessionStorage.getItem(k)||''}catch(e){o[k]=''}});return o}
+function track(ev,data){var o={event:ev};for(var k in data)o[k]=data[k];(window.dataLayer=window.dataLayer||[]).push(o);/* LinkedIn Insight Tag: if(window.lintrk)window.lintrk('track',{conversion_id:XXXXXXX}) en lead_submitted */}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function waUrl(m){return WHATSAPP_ANN.split('?')[0]+'?text='+encodeURIComponent(m)}
+function lvl(r){return r.level||(r.score>=80?'bajo':r.score>=55?'medio':'alto')}
+function waMsg(r){if(!r)return null;var n=r.coverage.determined;return r.status==='blocked'?'Hola Ann, mi sitio '+r.domain+' tiene un firewall que bloqueó el análisis ('+n+'/'+r.coverage.total+' capas). Quiero completar el análisis.':'Hola Ann, analicé '+r.domain+' en Cyberfusion y obtuve '+r.score+'/100 (riesgo '+lvl(r)+'). Quiero revisar los resultados.'}
+document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('[data-wa]');if(a)track('whatsapp_click',{state:S.r?S.r.status:'inicio',from:a.getAttribute('data-from')})});
+$('tk').innerHTML=['Sin costo','Resultados en minutos','Sin instalar nada'].map(function(t){return '<li>'+CHK+t+'</li>'}).join('');
 $('sl').innerHTML=STEPS.map(function(s){return '<li><i></i>'+s+'</li>'}).join('');
-
-function progress(d){
-  var lis=$('sl').children,i=0;
-  $('sc').classList.add('on');$('sd').textContent=d;$('pg').style.width='4%';
-  [].forEach.call(lis,function(l){l.classList.remove('on')});
-  var tm=setInterval(function(){if(i<lis.length-1){lis[i].classList.add('on');$('pg').style.width=Math.round((i+1)/lis.length*92)+'%';i++}},1600);
-  return function(){clearInterval(tm);[].forEach.call(lis,function(l){l.classList.add('on')});$('pg').style.width='100%'};
-}
-function idle(){busy=false;$('ab').disabled=false;$('ab').textContent='ANALIZAR SITIO WEB'}
-
-$('af').addEventListener('submit',function(e){
-  e.preventDefault();if(busy)return;
-  var d=norm($('dm').value);
-  if(!d){$('er').textContent='Ingresa una dirección válida, por ejemplo https://www.tusitio.com';$('dm').focus();return}
-  if(!$('ck').checked){$('er').textContent='Marca la declaración de autorización para continuar.';$('ck').focus();return}
-  if(CAPTCHA===''){$('er').textContent='Completa la verificación antirrobot.';return}
-  $('er').textContent='';busy=true;$('ab').disabled=true;$('ab').textContent='ANALIZANDO…';
-  analyze(d);
-});
-
-async function analyze(d){
-  var done=progress(d);
-  try{
-    if(!Object.keys(I18N).length)
-      I18N=await fetch(API+'/i18n/es.json').then(function(r){return r.json()}).catch(function(){return{}});
-    var res=await fetch(API+'/scans',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({url:$('dm').value.trim(),authorized:true,captcha:CAPTCHA||''})});
-    var st=await res.json().catch(function(){return{}});
-    if(!res.ok)throw new Error(typeof st.detail==='string'?st.detail:'No pudimos iniciar el análisis.');
-    JOB=st.id;
-    var data=null;
-    for(var n=0;n<90;n++){
-      await new Promise(function(r){setTimeout(r,2000)});
-      data=await fetch(API+'/scans/'+JOB).then(function(r){return r.json()});
-      if(data.status==='done')break;
-      if(data.status==='error')throw new Error(data.error||'El análisis falló.');
-    }
-    if(!data||data.status!=='done')throw new Error('El análisis tardó demasiado. Inténtalo de nuevo en unos minutos.');
-    done();
-    setTimeout(function(){idle();$('sc').classList.remove('on');show(data.result)},500);
-  }catch(err){
-    done();idle();$('sc').classList.remove('on');
-    $('er').textContent=err.message||'Algo falló. Inténtalo de nuevo.';
-    resetCaptcha();
-  }
-}
-
-/* Nivel de riesgo: lo marcan primero los hallazgos graves, luego la nota. */
-function level(r){
-  var c=r.counts||{};
-  if((c.critical||0)>0||r.score<55)return 2;
-  if((c.high||0)>0||r.score<80)return 1;
-  return 0;
-}
-
-var REASON={waf_blocked:'Un firewall de aplicación detuvo el análisis automatizado.',
-  access_denied:'El sitio rechazó las peticiones de nuestro escáner.',
-  rate_limited:'El sitio limitó nuestras peticiones durante el análisis.',
-  responds_200_to_everything:'El servidor responde afirmativamente a rutas que no existen, así que no podemos verificar hallazgos por HTTP.',
-  probe_failed:'No pudimos conectar con el sitio por HTTP.'};
-
-function card(cls,icon,title,label){
-  return '<div class="fd'+cls+'"><div class="ib">'+icon+'</div><div><h3>'+esc(title)+'</h3><span>'+label+'</span></div></div>';
-}
-
+var FW0=$('fw').innerHTML;
+$('po').onclick=function(){$('pol').showModal()};$('pc').onclick=function(){$('pol').close()};
+$('pol').addEventListener('click',function(e){if(e.target===this)this.close()});
+function norm(v){v=(v||'').trim();if(!v)return null;var u=v.replace(/^[a-z]+:\/\//i,'').split(/[\/?#]/)[0].toLowerCase().replace(/^www\./,'');return /^([a-z0-9-]+\.)+[a-z]{2,}$/.test(u)?u:null}
+function setCta(r){var s=$('sticky'),on=r&&r.status!=='error';s.classList.toggle('on',!!on);document.body.classList.toggle('sk-on',!!on);if(on)$('swa').href=waUrl(waMsg(r))}
+function ring(r){
+var blocked=r.score==null,L=lvl(r),ks={bajo:'BAJO',medio:'MEDIO',alto:'ALTO'},cs={bajo:'b',medio:'m',alto:'a'},i=['bajo','medio','alto'].indexOf(L);
+var h='<div class="gc"><div class="lab">PUNTAJE DE SEGURIDAD</div><svg viewBox="0 0 200 200" style="width:min(100%,240px);margin:16px auto 0;display:block" role="img" aria-label="'+(blocked?'Sin puntaje':'Puntaje '+r.score+' de 100')+'"><circle cx="100" cy="100" r="84" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="9"/>';
+if(blocked)h+='<text x="100" y="116" text-anchor="middle" fill="#B9AEB0" font-family="Manrope" font-weight="800" font-size="56">—</text></svg>';
+else h+='<circle id="ga" cx="100" cy="100" r="84" fill="none" stroke="#E5161F" stroke-width="9" stroke-linecap="round" stroke-dasharray="527.8" stroke-dashoffset="527.8" transform="rotate(-90 100 100)" style="filter:drop-shadow(0 0 8px rgba(255,45,45,.8));transition:stroke-dashoffset 1.6s cubic-bezier(.2,.7,.2,1)"/><text id="gn" x="100" y="108" text-anchor="middle" fill="#F4EFEE" font-family="Manrope" font-weight="800" font-size="60" letter-spacing="-2">0</text><text x="100" y="134" text-anchor="middle" fill="#B9AEB0" font-family="JetBrains Mono" font-size="12" letter-spacing="2">/ 100</text></svg><div><span class="rk '+cs[L]+'">RIESGO '+ks[L]+'</span></div><div class="lv" aria-hidden="true">'+[0,1,2].map(function(k){return '<i'+(k<=i?' class="on"':'')+'></i>'}).join('')+'</div>';
+h+='<div class="cov" aria-hidden="true">'+Array.apply(null,Array(r.coverage.total||10)).map(function(_,k){return '<i'+(k<r.coverage.determined?' class="on"':'')+'></i>'}).join('')+'</div><div class="lab" style="margin-top:10px">Cobertura: '+r.coverage.determined+' de '+(r.coverage.total||10)+' capas</div></div>';
+return h}
+function layers(r){return '<ul class="ly">'+NAMES.map(function(n,k){var l=(r.layers||[]).filter(function(x){return x.id===k+1||x.id==='L'+(k+1)})[0]||{state:'undetermined',note:'Sin datos del motor.'};var nm=l.name||n;
+return '<li class="'+l.state+'"><div class="ib">'+IC[l.state]+'</div><div><h3>'+esc(nm)+'</h3><span class="sl">'+ST[l.state]+'</span>'+(l.note&&l.state!=='ok'?'<p>'+esc(l.note)+'</p>':'')+'</div></li>'}).join('')+'</ul>'}
+function positives(r){var p=r.positives||[];return '<div class="pn ok"><h3>Lo que tu sitio hace bien</h3><ul>'+(p.length?p.slice(0,4).map(function(x){return '<li>'+svg('<path d="M20 6L9 17l-5-5"/>')+'<span><b>'+esc(x.title)+'</b>'+esc(x.detail)+'</span></li>'}).join(''):'<li>No se confirmaron aspectos correctos en esta revisión.</li>')+'</ul></div>'}
+function findings(r){var f=(r.findings||[]).slice().sort(function(a,b){return SO[a.severity]-SO[b.severity]});var more=Math.max(0,f.length-6);f=f.slice(0,6);return '<div class="pn"><h3>Hallazgos</h3><ul>'+(f.length?f.map(function(x){return '<li><span class="sv '+x.severity+'">'+SEV[x.severity]+'</span><span><b>'+esc(x.title)+'</b>'+esc(x.impact||x.detail)+'</span></li>'}).join(''):'<li>No se identificaron hallazgos en las capas revisadas.</li>')+'</ul><p style="margin:16px 0 0;font-size:14px;color:#B9AEB0">'+(more?'Y '+more+' hallazgo'+(more>1?'s':'')+' más. ':'')+'El detalle de cómo corregir cada hallazgo se entrega en el informe.</p></div>'}
+function waBtn(r,t,from){return '<a class="btn big" data-wa="" data-from="'+from+'" href="'+esc(waUrl(waMsg(r)))+'" target="_blank" rel="noopener">'+t+'</a>'}
 function show(r){
-  R=r;
-  var host=(r.target||'').replace(/^https?:\/\//,'').replace(/\/$/,'');
-  $('rd').textContent=host;
-  var cov=r.coverage||{},keys=Object.keys(cov);
-  var nOk=keys.filter(function(k){return cov[k].result==='ok'}).length;
-  var issues=(r.findings||[]).filter(function(f){return f.severity!=='info'});
-  var notes=(r.findings||[]).filter(function(f){return f.severity==='info'});
-  var ok=r.strengths||[];
-  var scored=r.score!==null&&r.score!==undefined;
-
-  /* Sin nota: lo decimos claro, sin vender el bloqueo como buena noticia. */
-  var nb=$('nb');
-  if(!scored){
-    var why=REASON[(r.integrity||{}).reason]||'No pudimos completar el análisis.';
-    nb.innerHTML='<b>No emitimos puntaje para este sitio.</b> '+esc(why)+' Abajo verás lo que sí pudimos comprobar desde fuera. Para un análisis completo, <a href="https://cyberfusion.global/contacto">escríbenos</a> y te indicamos qué IP autorizar.';
-    nb.style.display='block';
-  }else nb.style.display='none';
-
-  var ks=['BAJO','MEDIO','ALTO'],cs=['b','m','a'],rk=$('rk');
-  if(scored){var lv=level(r);rk.textContent=ks[lv];rk.className='rk '+cs[lv];
-    [].forEach.call($('lv').children,function(e,i){e.className=i<=lv?'on':''});
-  }else{rk.textContent='SIN PUNTAJE';rk.className='rk b';
-    [].forEach.call($('lv').children,function(e){e.className=''});}
-  $('cv').textContent=scored?('Calculado sobre '+nOk+' de '+keys.length+' capas analizadas'):('Se analizaron '+nOk+' de '+keys.length+' capas');
-
-  var html=issues.map(function(f){
-    return card(' w',IW,t(f.title_key,f.finding_key),(SEV[f.severity]||'REVISAR')+' · '+(EFF[f.effort]||'REQUIERE ATENCIÓN'));
-  }).join('');
-  html+=notes.map(function(f){return card(' n',II,t(f.title_key,f.finding_key),'OBSERVACIÓN')}).join('');
-  html+=ok.map(function(f){return card('',IOK,t(f.title_key,f.finding_key),'CORRECTO')}).join('');
-  $('fl').innerHTML=html||'<p style="color:#9A8E90">No hay hallazgos que mostrar.</p>';
-
-  /* Qué no se pudo ver, y por qué. Callarlo haría pasar "no lo vimos" por "está bien". */
-  var und=keys.filter(function(k){return cov[k].result!=='ok'});
-  $('cov').innerHTML=und.length?('<div class="cvb"><div class="mono" style="font-size:11px;letter-spacing:.2em;color:#9A8E90">CAPAS NO DETERMINADAS</div><p style="color:#9A8E90;font-size:14px;margin:8px 0 6px">No significa que estén bien: significa que no pudimos verlas.</p>'+
-    und.map(function(k){var c=cov[k];return '<div class="cvr"><b>'+esc(COV[k]||k)+'</b><span>'+esc(c.reason?t('coverage.reason.'+c.reason,''):'')+'</span></div>'}).join('')+'</div>'):'';
-
-  $('res').classList.add('on');
-  var ga=$('ga');ga.style.transition='none';ga.style.strokeDashoffset='527.8';$('gn').textContent=scored?'0':'—';
-  $('gs').textContent=scored?'/ 100':'';
-  void ga.getBoundingClientRect();ga.style.transition='';
-  var top=$('resultados').getBoundingClientRect().top+window.pageYOffset-68;window.scrollTo({top:top,behavior:'smooth'});
-  if(scored)setTimeout(function(){
-    ga.style.strokeDashoffset=String(527.8*(1-r.score/100));
-    var s=performance.now();(function f(n){var p=Math.min(1,(n-s)/1600);$('gn').textContent=Math.round(r.score*(1-Math.pow(1-p,3)));if(p<1)requestAnimationFrame(f)})(s);
-  },500);
-}
-
-function resetCaptcha(){if(CAPTCHA!==null){CAPTCHA='';if(window.turnstile)window.turnstile.reset()}}
-
-$('again').addEventListener('click',function(){
-  JOB=null;R=null;$('res').classList.remove('on');$('dm').value='';$('ck').checked=false;$('er').textContent='';
-  resetCaptcha();
-  if(!$('ff')){location.reload();return}
-  window.scrollTo({top:0,behavior:'smooth'});setTimeout(function(){$('dm').focus()},400);
-});
-
-/* ---------- formulario del informe ---------- */
+S.r=r;$('rd').textContent=r.domain;var h='';
+if(r.status==='error'){
+h='<div class="pn" style="margin-top:28px;max-width:640px"><h3 role="alert" style="font-size:22px;line-height:1.3">'+esc(r.message||'No pudimos analizar este dominio. Revisa que esté escrito correctamente y que el sitio esté en línea.')+'</h3><div style="display:flex;gap:8px 24px;align-items:center;flex-wrap:wrap;margin-top:22px"><button class="btn big" id="rt" type="button">Intentar de nuevo</button><a class="lnk" data-wa="" data-from="error" href="'+esc(WHATSAPP_ANN)+'" target="_blank" rel="noopener">Hablar con un especialista</a></div></div>';
+$('informe').style.display='none'}
+else{$('informe').style.display='';
+if(r.status==='blocked'){
+h='<div style="margin-top:28px;max-width:720px"><h3 style="font-size:clamp(24px,3vw,38px);letter-spacing:-.03em;line-height:1.1">Un firewall protege tu sitio.</h3><p style="font-size:17px;line-height:1.65;color:#D4C9C9;margin:14px 0 0">Es una buena señal, pero impidió que revisáramos todas las capas. '+(r.score!=null?'Calculamos tu puntaje con las '+r.coverage.determined+' de '+r.coverage.total+' capas que pudimos revisar desde fuera; el firewall suma a tu favor.':'No emitimos puntaje para no darte una lectura incompleta.')+'</p>'+(r.waf&&r.waf.detected&&r.waf.product?'<p class="lab" style="margin:14px 0 0;color:#5FCB8A">Protección detectada: '+esc(r.waf.product)+'</p>':'')+'</div>';
+h+='<div class="rg">'+ring(r)+layers(r)+'</div>'+((r.findings||[]).length?'<div class="g2b">'+findings(r)+'</div>':'')+'<div class="g2b">'+positives(r)+'<div class="pn" style="border-color:rgba(255,45,45,.35)"><h3>Cómo completar el análisis</h3><ul><li><span><b>1.</b> Verificamos que el dominio es tuyo.</span></li><li><span><b>2.</b> Habilitamos el escáner en tu firewall y analizamos las capas restantes.</span></li></ul><div style="display:flex;flex-direction:column;gap:4px;margin-top:22px;align-items:flex-start;width:100%">'+waBtn(r,'Completar el análisis con Ann','resultados')+'<a class="lnk" href="#informe">Recibir el informe de lo analizado</a></div></div></div>'}
+else{var L=lvl(r);
+h='<div class="rg">'+ring(r)+layers(r)+'</div><div class="g2b">'+positives(r)+findings(r)+'</div><div class="strip"><p>'+(L==='bajo'?'Tu sitio se ve bien en lo básico. El análisis profundo valida lo que no se ve desde fuera.':'Encontramos puntos que requieren atención. Un especialista puede validarlos y corregirlos.')+'</p>'+waBtn(r,'Hablar con Ann','resultados')+'</div>'}}
+$('rb').innerHTML=h;$('res').classList.add('on');$('fw').innerHTML=FW0;bindForm();setCta(r);
+if($('rt'))$('rt').onclick=reset;
+var ga=$('ga');
+setTimeout(function(){if(ga){ga.style.strokeDashoffset=String(527.8*(1-r.score/100));var s=performance.now();(function f(n){var p=Math.min(1,(n-s)/1600);$('gn').textContent=Math.round(r.score*(1-Math.pow(1-p,3)));if(p<1)requestAnimationFrame(f)})(s)}},500);
+var top=$('resultados').getBoundingClientRect().top+window.pageYOffset-68;window.scrollTo({top:top,behavior:'smooth'})}
+function reset(){resetCaptcha();$('res').classList.remove('on');setCta(null);S.r=null;window.scrollTo({top:0,behavior:'smooth'});$('dm').focus()}
+function run(d){
+var lis=$('sl').children,i=0,result=null;$('sc').classList.add('on');$('sd').textContent=d;$('pg').style.width='4%';
+[].forEach.call(lis,function(l){l.classList.remove('on')});
+var p;try{p=CONFIG.analyze?Promise.resolve(CONFIG.analyze(d)):Promise.resolve(demoFor(d))}catch(e){p=Promise.reject(e)}
+p.then(function(r){result=r},function(e){result={domain:d,status:'error',message:e&&e.message,score:null,level:null,coverage:{determined:0,total:10},layers:[]};resetCaptcha()});
+return new Promise(function(res){var t=setInterval(function(){
+if(i<lis.length-1||(result&&i<lis.length)){lis[i].classList.add('on');$('pg').style.width=Math.round((i+1)/lis.length*100)+'%';i++}
+else if(result){clearInterval(t);setTimeout(function(){res(result)},450)}},CONFIG.analyze?900:450)})}
+function demoFor(d){var k=qs.get('demo');var r=JSON.parse(JSON.stringify(DEMO[DEMO[k]?k:'complete']));r.domain=d;return r}
+function start(d){
+if(S.busy)return;S.busy=true;$('ab').disabled=true;$('ab').textContent='Analizando…';$('res').classList.remove('on');setCta(null);track('analysis_started',{domain:d});
+run(d).then(function(r){S.busy=false;$('ab').disabled=false;$('ab').textContent='Analizar sin costo →';$('sc').classList.remove('on');track('analysis_completed',{domain:d,status:r.status});show(r)})}
+$('af').addEventListener('submit',function(e){e.preventDefault();if(S.busy)return;var d=norm($('dm').value),er=$('er');
+if(!d){er.textContent='Ingresa una dirección válida, por ejemplo tuempresa.com';$('dm').focus();return}
+if(!$('cn').checked){er.textContent='Confirma que eres el propietario o tienes autorización.';$('cn').focus();return}
+if(CAPTCHA===''){er.textContent='Completa la verificación antirrobot.';return}
+er.textContent='';start(d)});
 var FREE=/@(gmail|hotmail|outlook|yahoo|live|icloud|proton|protonmail|msn|aol)\./i;
-$('ff').addEventListener('submit',async function(e){
-  e.preventDefault();
-  var fm=e.target,f={};
-  ['nombre','empresa','cargo','correo','telefono','pais'].forEach(function(k){f[k]=(fm.elements[k].value||'').trim()});
-  var m='';
-  if(Object.keys(f).some(function(k){return !f[k]}))m='Completa todos los campos.';
-  else if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(f.correo))m='Ingresa un correo válido.';
-  else if(FREE.test(f.correo))m='Usa tu correo corporativo.';
-  else if((f.telefono.match(/\d/g)||[]).length<7)m='Ingresa un teléfono válido.';
-  else if(!fm.elements.acepto.checked)m='Debes aceptar la Política de Privacidad y el Tratamiento de Datos Personales.';
-  else if(!JOB)m='Primero analiza un sitio.';
-  $('fe').textContent=m;if(m)return;
-  $('fb').disabled=true;$('fb').textContent='PREPARANDO…';
-  try{
-    var res=await fetch(API+'/leads',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({job_id:JOB,name:f.nombre,company:f.empresa,role:f.cargo,email:f.correo,phone:f.telefono,country:f.pais,consent:true})});
-    var out=await res.json().catch(function(){return{}});
-    if(!res.ok)throw new Error(typeof out.detail==='string'?out.detail:'No pudimos registrar tus datos.');
-    var url=API+out.download_url;
-    $('fw').innerHTML='<div class="ok2"><div class="eb">INFORME LISTO</div><h3 style="font-size:clamp(26px,3vw,40px);letter-spacing:-.035em;line-height:1.1;margin-top:16px">Gracias, '+esc(f.nombre)+'.</h3><p style="font-size:16.5px;line-height:1.65;color:#C9BEBF;margin:16px 0 0">'+
-      (out.email_sent?'Te enviamos el informe a <b style="color:#F4EFEE">'+esc(f.correo)+'</b>. También puedes descargarlo aquí. ':'Descarga tu informe aquí. ')+
-      'Un especialista de CYBERFUSION podrá ayudarte a interpretar los hallazgos.</p><div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:28px"><a class="btn" href="'+esc(url)+'" target="_blank" rel="noopener" style="font-size:15px;padding:16px 24px">DESCARGAR PDF</a><a class="btn ghost2" href="https://cyberfusion.global/contacto" style="font-size:15px;padding:16px 24px">HABLAR CON UN ESPECIALISTA</a></div></div>';
-    window.open(url,'_blank','noopener');
-  }catch(err){
-    $('fb').disabled=false;$('fb').textContent='DESCARGAR INFORME';$('fe').textContent=err.message;
-  }
-});
+function annCard(f){var r=S.r;return '<div class="ann"><div class="av" aria-hidden="true">A</div><div><b style="font-size:18px">Ann</b><div class="lab" style="margin-top:2px">Especialista en ventas y ciberseguridad</div><p style="margin:10px 0 0;font-size:15.5px;line-height:1.6;color:#D4C9C9">Si quieres, revisamos juntos los resultados.</p><div style="display:flex;gap:4px 22px;align-items:center;flex-wrap:wrap;margin-top:14px">'+waBtn(r,'Hablar con Ann','informe')+'<button class="lk" id="rd2" type="button" style="min-height:44px;font-weight:600">Descargar de nuevo</button></div></div></div>'}
+function getReport(id){return Promise.resolve(CONFIG.getReport?CONFIG.getReport(id):null).then(function(){track('report_downloaded',{leadId:id})})}
+function bindForm(){$('ff').addEventListener('submit',function(e){e.preventDefault();var fm=e.target,f={},r=S.r;if(!r)return;
+['nombre','correo','empresa','cargo','telefono','pais'].forEach(function(k){f[k]=(fm.elements[k].value||'').trim()});
+var m='';if(!f.nombre||!f.correo||!f.empresa||!f.cargo)m='Completa nombre, correo, empresa y cargo.';
+else if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(f.correo))m='Ingresa un correo válido.';
+else if(!fm.elements.acepto.checked)m='Debes aceptar la Política de Privacidad y el Tratamiento de Datos Personales.';
+$('fe').textContent=m;if(m)return;
+var u=utm(),pl={nombre:f.nombre,correo:f.correo,corporateEmail:!FREE.test(f.correo),empresa:f.empresa,cargo:f.cargo,pais:f.pais,dominio:r.domain,score:r.score,level:r.level,status:r.status,coverage:r.coverage,utm_source:u.utm_source,utm_medium:u.utm_medium,utm_campaign:u.utm_campaign,utm_content:u.utm_content};
+if(f.telefono)pl.telefono=f.telefono;
+var btn=fm.querySelector('button');btn.disabled=true;btn.textContent='Preparando…';
+Promise.resolve(CONFIG.submitLead?CONFIG.submitLead(pl):{leadId:'demo'}).then(function(x){var id=x&&x.leadId;S.lead=id;track('lead_submitted',{leadId:id,status:r.status,corporateEmail:pl.corporateEmail});
+$('fw').innerHTML='<div class="ok2" aria-live="polite"><div class="eb">INFORME LISTO</div><h3 style="font-size:clamp(26px,3vw,38px);letter-spacing:-.035em;line-height:1.1;margin-top:14px">Gracias, '+esc(f.nombre)+'. Tu informe se está descargando.</h3>'+annCard(f)+'</div>';
+$('rd2').onclick=function(){getReport(id)};return getReport(id)}).catch(function(e){btn.disabled=false;btn.textContent='Descargar mi informe →';$('fe').textContent=(e&&e.message)||'No pudimos enviar tus datos. Inténtalo de nuevo.'})})}
+$('hwa').href=WHATSAPP_ANN;
 
-/* ---------- aparición al hacer scroll (del diseño) ---------- */
+function beams(){var h=$('analizador'),r=h.getBoundingClientRect(),W=r.width,H=r.height,x=W/2,y=H-34,t=Math.max(H*.2,0);
+var D=[-.34,-.22,-.12,-.05,.0,.05,.12,.22,.34].map(function(k){return Math.max(-x,Math.min(x,k*Math.max(W,700)))});
+var o='<defs><linearGradient id="bv" gradientUnits="userSpaceOnUse" x1="0" y1="'+t+'" x2="0" y2="'+y+'"><stop offset="0" stop-color="#FF2D2D" stop-opacity="0"/><stop offset=".6" stop-color="#FF2D2D" stop-opacity=".75"/><stop offset="1" stop-color="#fff"/></linearGradient><linearGradient id="bk" gradientUnits="userSpaceOnUse" x1="0" y1="'+y+'" x2="0" y2="'+H+'"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#FF2D2D" stop-opacity=".5"/></linearGradient><radialGradient id="bo"><stop offset="0" stop-color="#fff"/><stop offset=".22" stop-color="#FF2D2D" stop-opacity=".8"/><stop offset="1" stop-color="#E5161F" stop-opacity="0"/></radialGradient><filter id="bf"><feGaussianBlur stdDeviation="10"/></filter></defs>';
+o+='<g class="pl" filter="url(#bf)" opacity=".5"><path d="M'+x+' '+t+'V'+y+'" stroke="#E5161F" stroke-width="30"/></g><path d="M'+x+' '+t+'V'+y+'" stroke="url(#bv)" stroke-width="2"/>';
+o+='<g fill="none">'+D.map(function(d,i){return '<path d="M'+x+' '+y+'L'+(x+d)+' '+(H+10)+'" stroke="'+(i%2?'#ff8a8a':'#FF2D2D')+'" stroke-opacity="'+(i%2?.5:.8)+'" stroke-width="'+(i%3==0?1.6:1)+'"/>'}).join('')+'</g>';
+o+='<path class="dr" d="M'+x+' '+t+'V'+y+'" stroke="#fff" stroke-width="1.2" fill="none" opacity=".4"/><circle class="pl" cx="'+x+'" cy="'+y+'" r="70" fill="url(#bo)" opacity=".8"/><circle cx="'+x+'" cy="'+y+'" r="6" fill="#fff"/>';
+$('hbs').innerHTML=o}
+beams();window.addEventListener('resize',beams);window.addEventListener('load',beams);if(window.ResizeObserver)new ResizeObserver(beams).observe($('analizador'));
+/* demo / reveal */
 var els=[].slice.call(document.querySelectorAll('[data-r]'));
 var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
-if(reduce||!('IntersectionObserver' in window))return;
+if(!(reduce||!('IntersectionObserver' in window))){
 els.forEach(function(e){e.style.opacity='0';e.style.transform='translateY(24px)';e.style.filter='blur(8px)';e.style.transition='opacity .8s cubic-bezier(.2,.7,.2,1),transform .8s cubic-bezier(.2,.7,.2,1),filter .8s cubic-bezier(.2,.7,.2,1)'});
-var io=new IntersectionObserver(function(en){en.forEach(function(x){if(x.isIntersecting){var el=x.target;el.style.transitionDelay=Math.min([].indexOf.call(el.parentNode.children,el),5)*80+'ms';el.style.opacity='1';el.style.transform='none';el.style.filter='none';setTimeout(function(){el.style.transitionDelay='0ms'},1200);io.unobserve(el)}})},{threshold:.12,rootMargin:'0px 0px -6% 0px'});
+var io=new IntersectionObserver(function(en){en.forEach(function(x){if(x.isIntersecting){var t=x.target;t.style.transitionDelay=Math.min([].indexOf.call(t.parentNode.children,t),5)*80+'ms';t.style.opacity='1';t.style.transform='none';t.style.filter='none';setTimeout(function(){t.style.transitionDelay='0ms'},1200);io.unobserve(t)}})},{threshold:.12,rootMargin:'0px 0px -6% 0px'});
 els.forEach(function(e){io.observe(e)});
-setTimeout(function(){els.forEach(function(el){el.style.opacity='1';el.style.transform='none';el.style.filter='none'})},2500);
+setTimeout(function(){els.forEach(function(t){t.style.opacity='1';t.style.transform='none';t.style.filter='none'})},2500)}
+if(qs.get('demo')&&DEMO[qs.get('demo')]){$('dm').value='tuempresa.com';$('cn').checked=true;setTimeout(function(){start('tuempresa.com')},400)}
 })();
 </script>
+
+
 </body></html>

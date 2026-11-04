@@ -1,28 +1,27 @@
-/* Identidad Cyberfusion. Un solo sitio para el PDF y la web del analyzer.
-   Si la marca cambia, se cambia aqui y no en dos plantillas distintas. */
+/* Identidad CYBERFUSION, alineada con la web (cyberfusion.global) y la
+   portada A4. Si la marca cambia, se cambia aqui. */
 :root {
-  /* Marca */
-  --cf-ink:        #08080b;   /* negro de portada */
-  --cf-ink-soft:   #16161c;
-  --cf-crimson:    #f63b2f;   /* rojo principal */
-  --cf-crimson-dp: #8b0d08;
+  --cf-ink:        #060203;   /* negro con matiz rojo de la web */
+  --cf-ink-2:      #0D0507;
+  --cf-wine:       #3a0a0f;   /* rojo oscuro de la portada */
+  --cf-wine-2:     #8f1220;
+  --cf-crimson:    #E5161F;   /* rojo principal de la web */
+  --cf-crimson-hi: #FF2D2D;
 
-  /* Interior del documento: claro, legible, imprimible */
   --cf-paper:      #ffffff;
-  --cf-paper-warm: #faf9f9;
-  --cf-text:       #17171c;
-  --cf-muted:      #6a6a76;
-  --cf-rule:       #e3e3e8;
+  --cf-paper-warm: #fbf7f7;
+  --cf-text:       #1a0508;
+  --cf-muted:      #6b5e60;
+  --cf-rule:       #ece4e4;
 
-  /* Severidades. Deliberadamente NO cinco rojos: el ojo debe
-     distinguir critico de bajo de un vistazo. */
-  --sev-critical:  #8b0d08;
-  --sev-high:      #f63b2f;
-  --sev-medium:    #b8730a;
-  --sev-low:       #7a7a86;
-  --sev-info:      #9b9ba6;
-  --sev-ok:        #1f7a4d;
+  /* Severidades: distinguibles de un vistazo, no cinco rojos iguales. */
+  --sev-alto:      #E5161F;
+  --sev-medio:     #c26a0c;
+  --sev-bajo:      #7a6e70;
+  --sev-observ:    #a69b9d;
+  --sev-ok:        #1e8e4e;
 
-  --font-body:     'Plus Jakarta Sans', sans-serif;
-  --font-display:  'Space Grotesk', sans-serif;
+  --font-body:     'Manrope', sans-serif;
+  --font-display:  'Manrope', sans-serif;
+  --font-mono:     'JetBrains Mono', monospace;
 }
