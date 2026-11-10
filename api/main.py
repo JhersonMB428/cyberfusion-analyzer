@@ -105,6 +105,41 @@ def _audit(ip, target, host, job_id, deep, utm, cached=False):
         "ip": ip, "target": target, "host": host, "deep": deep,
         "job_id": job_id, "cached": cached, **utm}))
     r.ltrim("audit:scans", -20000, -1)
+    # Redis Basic no guarda en disco: si Azure lo reinicia, se pierde.
+    # Copia permanente en el mismo volumen de los leads, sin la IP.
+    _append(SCANS_FILE, {"at": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),
+                         "host": host, "job_id": job_id, "cached": cached, **utm})
+
+
+def _append(path, obj):
+    try:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with path.open("a", encoding="utf-8") as fh:
+            fh.write(json.dumps(obj, ensure_ascii=False) + "\n")
+    except OSError as e:
+        print(f"[api] no se pudo escribir {path}: {e}", flush=True)
+
+
+def _read_jsonl(path):
+    out = []
+    if path.exists():
+        for line in path.read_text(encoding="utf-8").splitlines():
+            try:
+                out.append(json.loads(line))
+            except ValueError:
+                continue
+    return out
+
+
+SCANS_FILE = pathlib.Path(os.getenv("SCANS_PATH", "/data/scans.jsonl"))
+RESULTS_FILE = pathlib.Path(os.getenv("SCAN_RESULTS_PATH", "/data/scan_results.jsonl"))
+
+
+def _summary(res: dict) -> dict:
+    cov = res.get("coverage") or {}
+    return {"score": res.get("score"), "level": res.get("level"), "status": res.get("status"),
+            "coverage": f"{cov.get('determined', '')}/{cov.get('total', '')}" if cov else "",
+            "waf": (res.get("waf") or {}).get("product")}
 
 
 class ScanRequest(BaseModel):
@@ -190,7 +225,10 @@ def get_scan(job_id: str):
     raw = r.get(f"scan:{job_id}")
     if not raw:
         raise HTTPException(404, "No encontrado")
-    return json.loads(raw)
+    data = json.loads(raw)
+    if data.get("status") == "done" and data.get("result") and r.set(f"sumsaved:{job_id}", 1, nx=True, ex=7 * 86400):
+        _append(RESULTS_FILE, {"job_id": job_id, **_summary(data["result"])})
+    return data
 
 
 def _report_filename(job_id: str) -> str:
@@ -300,26 +338,32 @@ def export_leads(token: str = ""):
 
 def _scans(limit: int) -> list[dict]:
     """Webs que se pusieron a analizar, hayan llenado o no el formulario.
-    La IP del visitante no sale del registro antiabuso."""
+    Fuente: el archivo permanente; Redis completa lo anterior a el.
+    La IP del visitante nunca sale de aqui."""
     with_lead = {l.get("job_id") for l in _read_leads()}
-    rows = []
-    for raw in r.lrange("audit:scans", -limit, -1)[::-1]:
+    sums = {x.get("job_id"): x for x in _read_jsonl(RESULTS_FILE)}
+    entries = _read_jsonl(SCANS_FILE)
+    seen = {(e.get("job_id"), e.get("at")) for e in entries}
+    for raw in r.lrange("audit:scans", -20000, -1):
         try:
             a = json.loads(raw)
         except (ValueError, TypeError):
             continue
+        if (a.get("job_id"), a.get("at")) not in seen:
+            a.pop("ip", None)
+            entries.append(a)
+    entries.sort(key=lambda e: e.get("at") or "", reverse=True)
+    rows = []
+    for a in entries[:limit]:
         jid = a.get("job_id", "")
-        summ = r.get(f"scansum:{jid}")
-        if summ:
-            s = json.loads(summ)
-        else:                              # analisis de antes de este cambio
-            s = {}
+        s = sums.get(jid)
+        if s is None:
+            cached = r.get(f"scansum:{jid}")
+            s = json.loads(cached) if cached else None
+        if s is None:
             sc = r.get(f"scan:{jid}")
             res = (json.loads(sc).get("result") or {}) if sc else {}
-            if res:
-                cov = res.get("coverage") or {}
-                s = {"score": res.get("score"), "level": res.get("level"), "status": res.get("status"),
-                     "coverage": f"{cov.get('determined', '')}/{cov.get('total', '')}" if cov else ""}
+            s = _summary(res) if res else {}
         host = a.get("host") or (urlparse(a.get("target", "")).hostname or "")
         rows.append({"at": a.get("at"), "host": host, "job_id": jid, "cached": a.get("cached", False),
                      "score": s.get("score"), "level": s.get("level"), "status": s.get("status"),
@@ -333,7 +377,7 @@ def _scans(limit: int) -> list[dict]:
 def list_scans(request: Request, limit: int = 2000):
     _auth(request.headers.get("x-leads-token", ""))
     rows = _scans(min(max(limit, 1), 20000))
-    return {"total": r.llen("audit:scans"), "scans": rows}
+    return {"total": len(rows), "scans": rows}
 
 
 @app.get("/leads/scans.csv")
