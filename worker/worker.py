@@ -102,6 +102,21 @@ def _save(job_id: str, payload: dict, target: str) -> None:
         print(f"[worker] no se pudo guardar {target}: {e}", flush=True)
 
 
+def _save_summary(job_id: str, payload: dict) -> None:
+    """Resumen sin datos del sitio (solo puntaje y nivel) para el panel de
+    webs analizadas. Dura mas que el resultado completo (24 h)."""
+    res = payload.get("result") or {}
+    cov = res.get("coverage") or {}
+    summ = {"score": res.get("score"), "level": res.get("level"),
+            "status": res.get("status") or payload.get("status"),
+            "coverage": f"{cov.get('determined', '')}/{cov.get('total', '')}" if cov else "",
+            "waf": (res.get("waf") or {}).get("product")}
+    try:
+        _redis(r.set, f"scansum:{job_id}", json.dumps(summ), ex=400 * 86400)
+    except redis.exceptions.RedisError:
+        pass
+
+
 async def _handle(raw: bytes, sem: asyncio.Semaphore) -> None:
     try:
         job = json.loads(raw)
@@ -127,6 +142,7 @@ async def _handle(raw: bytes, sem: asyncio.Semaphore) -> None:
             print(f"[worker] fallo analizando {target}: {type(e).__name__}: {e}", flush=True)
             payload = {"status": "error", "error": "No pudimos completar el análisis."}
         await asyncio.to_thread(_save, job_id, payload, target)
+        await asyncio.to_thread(_save_summary, job_id, payload)
     except Exception as e:
         print(f"[worker] trabajo invalido: {type(e).__name__}: {e}", flush=True)
     finally:

@@ -94,12 +94,30 @@ RATE_PER_IP_PER_DAY = 3
 DOMAIN_COOLDOWN_S = 86400
 
 
+UTM_KEYS = ("utm_source", "utm_medium", "utm_campaign", "utm_content")
+
+
+def _audit(ip, target, host, job_id, deep, utm, cached=False):
+    """Registro antiabuso (si alguien reclama por un escaneo, hay
+    trazabilidad) y base del panel de "webs analizadas"."""
+    r.rpush("audit:scans", json.dumps({
+        "at": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),
+        "ip": ip, "target": target, "host": host, "deep": deep,
+        "job_id": job_id, "cached": cached, **utm}))
+    r.ltrim("audit:scans", -20000, -1)
+
+
 class ScanRequest(BaseModel):
     url: str
     captcha: str = ""
     authorized: bool = False
     force: bool = False   # ignora la cache de 24h. Solo para desarrollo.
     deep: bool = False    # escaneo ACTIVO con nuclei. Exige dominio verificado.
+    # Origen de la visita (campanas). Solo para el panel de "webs analizadas".
+    utm_source: str = ""
+    utm_medium: str = ""
+    utm_campaign: str = ""
+    utm_content: str = ""
 
 from worker.netguard import validar_o_fallar, DestinoNoPermitido, NoResuelve
 
@@ -150,19 +168,18 @@ def create_scan(req: ScanRequest, request: Request):
     # Cache: un escaneo por dominio cada 24h.
     # Protege de abuso en produccion, pero estorba al desarrollar:
     # por eso force=true la ignora.
+    utm = {k: (getattr(req, k) or "")[:100] for k in UTM_KEYS}
     if not req.force:
         cached = r.get(f"domain:{host}")
         if cached:
+            # Tambien se registra: otra persona pudo pedir el mismo dominio.
+            _audit(ip, target, host, cached.decode(), req.deep, utm, cached=True)
             return {"id": cached.decode(), "cached": True}
 
     job_id = uuid.uuid4().hex[:12]
     r.set(f"domain:{host}", job_id, ex=DOMAIN_COOLDOWN_S)
     r.set(f"scan:{job_id}", json.dumps({"status": "queued"}), ex=86400)
-    # Registro antiabuso: si alguien reclama por un escaneo, hay trazabilidad.
-    r.rpush("audit:scans", json.dumps({
-        "at": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),
-        "ip": ip, "target": target, "deep": req.deep, "job_id": job_id}))
-    r.ltrim("audit:scans", -20000, -1)
+    _audit(ip, target, host, job_id, req.deep, utm)
 
     r.rpush(QUEUE, json.dumps({"id": job_id, "target": target, "deep": req.deep}))
     return {"id": job_id, "cached": False}
@@ -279,6 +296,60 @@ def export_leads(token: str = ""):
         media_type="text/csv; charset=utf-8",
         headers={"Content-Disposition": 'attachment; filename="leads.csv"'},
     )
+
+
+def _scans(limit: int) -> list[dict]:
+    """Webs que se pusieron a analizar, hayan llenado o no el formulario.
+    La IP del visitante no sale del registro antiabuso."""
+    with_lead = {l.get("job_id") for l in _read_leads()}
+    rows = []
+    for raw in r.lrange("audit:scans", -limit, -1)[::-1]:
+        try:
+            a = json.loads(raw)
+        except (ValueError, TypeError):
+            continue
+        jid = a.get("job_id", "")
+        summ = r.get(f"scansum:{jid}")
+        if summ:
+            s = json.loads(summ)
+        else:                              # analisis de antes de este cambio
+            s = {}
+            sc = r.get(f"scan:{jid}")
+            res = (json.loads(sc).get("result") or {}) if sc else {}
+            if res:
+                cov = res.get("coverage") or {}
+                s = {"score": res.get("score"), "level": res.get("level"), "status": res.get("status"),
+                     "coverage": f"{cov.get('determined', '')}/{cov.get('total', '')}" if cov else ""}
+        host = a.get("host") or (urlparse(a.get("target", "")).hostname or "")
+        rows.append({"at": a.get("at"), "host": host, "job_id": jid, "cached": a.get("cached", False),
+                     "score": s.get("score"), "level": s.get("level"), "status": s.get("status"),
+                     "coverage": s.get("coverage", ""), "waf": s.get("waf"),
+                     "lead": jid in with_lead,
+                     **{k: a.get(k, "") for k in UTM_KEYS}})
+    return rows
+
+
+@app.get("/leads/scans.json")
+def list_scans(request: Request, limit: int = 2000):
+    _auth(request.headers.get("x-leads-token", ""))
+    rows = _scans(min(max(limit, 1), 20000))
+    return {"total": r.llen("audit:scans"), "scans": rows}
+
+
+@app.get("/leads/scans.csv")
+def export_scans(token: str = ""):
+    _auth(token)
+    import csv, io
+    cols = ["at", "host", "score", "level", "status", "coverage", "waf", "lead", "cached",
+            *UTM_KEYS, "job_id"]
+    buf = io.StringIO()
+    w = csv.DictWriter(buf, fieldnames=cols, extrasaction="ignore")
+    w.writeheader()
+    for row in _scans(20000):
+        row["lead"] = "si" if row["lead"] else "no"
+        w.writerow(row)
+    return Response(content="\ufeff" + buf.getvalue(), media_type="text/csv; charset=utf-8",
+                    headers={"Content-Disposition": 'attachment; filename="webs-analizadas.csv"'})
 
 
 @app.post("/leads")
