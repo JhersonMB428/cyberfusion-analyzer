@@ -213,7 +213,7 @@ window.CF_ANALYTICS={ga4:'',linkedin:'',linkedinConversions:{}};
 var CONFIG={analyze:null,getReport:null,submitLead:null};
 /* Motor real. window.CF_API permite apuntar a otra API en pruebas.
    Con ?demo=complete|blocked|error se usan los datos de ejemplo. */
-var API=(window.CF_API||'https://api.cyberfusion.pe').replace(/\/$/,'');
+var API=(window.CF_API||'https://api.cyberfusion.global').replace(/\/$/,'');
 var JOB=null,DL=null,CAPTCHA=null;   /* CAPTCHA: null = no se exige; '' = falta resolverlo */
 function apiErr(o,def){return new Error(typeof (o&&o.detail)==='string'?o.detail:def)}
 function resetCaptcha(){if(CAPTCHA!==null){CAPTCHA='';if(window.turnstile)try{window.turnstile.reset()}catch(e){}}}
