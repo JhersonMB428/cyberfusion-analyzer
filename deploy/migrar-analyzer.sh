@@ -12,8 +12,8 @@
 #
 #   bash deploy/migrar-analyzer.sh fase1   # mueve Redis y el almacenamiento (sin corte)
 #   bash deploy/migrar-analyzer.sh fase2   # crea red, IP fija, entorno y apps nuevas (sin corte)
-#   bash deploy/migrar-analyzer.sh fase3   # muestra los cambios de DNS para api.cyberfusion.pe
-#   bash deploy/migrar-analyzer.sh fase4   # enlaza api.cyberfusion.pe y su certificado a la API nueva
+#   bash deploy/migrar-analyzer.sh fase3   # muestra los cambios de DNS para el dominio de la API
+#   bash deploy/migrar-analyzer.sh fase4   # enlaza el dominio de la API y su certificado a la API nueva
 #   bash deploy/migrar-analyzer.sh fase5   # apaga y borra lo viejo (solo cuando todo funcione)
 set -euo pipefail
 set +H
@@ -34,7 +34,8 @@ STORAGE=stcyberfusion26891
 SHARE=leads
 ENVSTORAGE=leadsstore
 APPS="analyzer-api analyzer-worker"
-DOMINIO=api.cyberfusion.pe
+# El analizador es de cyberfusion.global: la API pasa a api.cyberfusion.global.
+DOMINIO=${DOMINIO:-api.cyberfusion.global}
 WORK=${WORK:-$HOME/migracion-analyzer}
 mkdir -p "$WORK"
 
@@ -175,9 +176,10 @@ fase3() {
         --query properties.customDomainConfiguration.customDomainVerificationId -o tsv)
   paso "Prueba directa de la API nueva"
   curl -s "https://$FQDN/config" && echo
-  paso "Cambios de DNS en la zona de cyberfusion.pe"
-  echo "  1) TXT   asuid.api   ->  $VID"
-  echo "  2) CNAME api         ->  $FQDN"
+  ZONA=${DOMINIO#*.}; SUB=${DOMINIO%%.*}
+  paso "Cambios de DNS en la zona de $ZONA (Zone Editor del cPanel)"
+  echo "  1) TXT   asuid.$SUB   ->  $VID"
+  echo "  2) CNAME $SUB         ->  $FQDN"
   echo
   echo "Haz primero el TXT. El CNAME, cuando vayas a correr la fase 4."
 }
@@ -187,6 +189,9 @@ fase4() {
   az containerapp hostname add -n analyzer-api -g $RG --subscription $DST --hostname $DOMINIO -o none
   az containerapp hostname bind -n analyzer-api -g $RG --subscription $DST --hostname $DOMINIO \
      --environment $ENVNAME --validation-method CNAME -o table
+  # Los enlaces de descarga de los correos usan este dominio.
+  az containerapp update -n analyzer-api -g $RG --subscription $DST \
+     --set-env-vars PUBLIC_API_URL="https://$DOMINIO" -o none
   curl -s "https://$DOMINIO/config" && echo
   echo "FASE 4 LISTA. Prueba un analisis completo y el formulario en la pagina."
 }
