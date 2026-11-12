@@ -76,7 +76,9 @@ fase2() {
      --subnet-name snet-apps --subnet-prefix 10.20.0.0/23 -o none
   az network public-ip create -g $RG -n $PIP --subscription $DST -l $LOC --sku Standard --allocation-method Static -o none
   az network nat gateway create -g $RG -n $NATGW --subscription $DST -l $LOC --public-ip-addresses $PIP --idle-timeout 10 -o none
-  az network vnet subnet update -g $RG --vnet-name $VNET -n snet-apps --subscription $DST --nat-gateway $NATGW -o none
+  # Los entornos actuales exigen la subred delegada a Container Apps.
+  az network vnet subnet update -g $RG --vnet-name $VNET -n snet-apps --subscription $DST \
+     --nat-gateway $NATGW --delegations Microsoft.App/environments -o none
   SUBNET_ID=$(az network vnet subnet show -g $RG --vnet-name $VNET -n snet-apps --subscription $DST --query id -o tsv)
   NUEVA_IP=$(az network public-ip show -g $RG -n $PIP --subscription $DST --query ipAddress -o tsv)
   echo "$NUEVA_IP" > "$WORK/ip-nueva.txt"
