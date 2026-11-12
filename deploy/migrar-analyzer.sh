@@ -203,10 +203,10 @@ fase5() {
   [ "$ok" = "BORRAR" ] || { echo "Cancelado"; exit 1; }
   for a in $APPS; do az containerapp delete -n $a -g $RG --subscription $SRC --yes; done
   az containerapp env delete -n $ENVNAME -g $RG --subscription $SRC --yes
-  az network vnet subnet update -g $RG --vnet-name $VNET -n snet-apps --subscription $SRC --nat-gateway "" -o none || true
+  # Orden: la red primero (suelta el NAT), luego el NAT (suelta la IP), luego la IP.
+  az network vnet delete -g $RG -n $VNET --subscription $SRC
   az network nat gateway delete -g $RG -n $NATGW --subscription $SRC
   az network public-ip delete -g $RG -n $PIP --subscription $SRC
-  az network vnet delete -g $RG -n $VNET --subscription $SRC
   rm -rf "$WORK"
   paso "Lo que queda en la suscripcion vieja (deberia estar vacio)"
   az resource list --subscription $SRC --query "[].{nombre:name,tipo:type,grupo:resourceGroup}" -o table
