@@ -21,7 +21,10 @@ set +H
 SRC=7401a050-63dc-431e-935b-d8bf6d6452d2      # Patrocinio de Microsoft Azure (pago por uso)
 DST=3c583f4d-e7f0-47d5-82c6-ff6d6e1dc2ae      # MCPP Subscription (creditos)
 RG=growvia-app-rg
-LOC=eastus
+# Region del entorno nuevo. La suscripcion nueva solo admite 1 entorno de
+# Container Apps por region y East US ya tiene el de Growvia: por eso eastus2.
+# Redis y el almacenamiento se quedan en eastus; la latencia entre ambas es minima.
+LOC=${LOC:-eastus2}
 ENVNAME=cae-analyzer
 VNET=vnet-analyzer
 NATGW=natgw-analyzer
@@ -71,7 +74,25 @@ fase2() {
   WSKEY=$(az monitor log-analytics workspace get-shared-keys -g $RG -n $WS --subscription $DST --query primarySharedKey -o tsv)
   echo "Workspace: $WS"
 
-  paso "Red con IP de salida fija"
+  paso "Comprobando que $LOC no tenga ya un entorno (limite: 1 por region)"
+  az containerapp env list --subscription $DST --query "[].{entorno:name,region:location}" -o table
+  OCUPADA=$(az containerapp env list --subscription $DST -o json \
+            | jq -r --arg l "$LOC" '.[] | select((.location|ascii_downcase|gsub(" ";""))==$l) | .name' | head -1)
+  if [ -n "$OCUPADA" ] && [ "$OCUPADA" != "$ENVNAME" ]; then
+    echo "La region $LOC ya tiene el entorno $OCUPADA. Elige otra, por ejemplo:"
+    echo "  LOC=centralus bash deploy/migrar-analyzer.sh fase2"
+    exit 1
+  fi
+
+  paso "Red con IP de salida fija en $LOC"
+  # Restos de un intento anterior en otra region: la red debe estar en la region del entorno.
+  OLDLOC=$(az network vnet show -g $RG -n $VNET --subscription $DST --query location -o tsv 2>/dev/null || true)
+  if [ -n "$OLDLOC" ] && [ "$OLDLOC" != "$LOC" ]; then
+    echo "Borrando la red de un intento anterior en $OLDLOC"
+    az network vnet delete -g $RG -n $VNET --subscription $DST
+    az network nat gateway delete -g $RG -n $NATGW --subscription $DST
+    az network public-ip delete -g $RG -n $PIP --subscription $DST
+  fi
   az network vnet create -g $RG -n $VNET --subscription $DST -l $LOC --address-prefix 10.20.0.0/16 \
      --subnet-name snet-apps --subnet-prefix 10.20.0.0/23 -o none
   az network public-ip create -g $RG -n $PIP --subscription $DST -l $LOC --sku Standard --allocation-method Static -o none
@@ -101,9 +122,9 @@ fase2() {
 
   for a in $APPS; do
     paso "Creando $a en el entorno nuevo"
-    python3 - "$WORK/$a.json" "$WORK/$a.secrets.json" "$ENV_ID" "$WORK/$a.yaml" "$WPROFILE" <<'PY'
+    python3 - "$WORK/$a.json" "$WORK/$a.secrets.json" "$ENV_ID" "$WORK/$a.yaml" "$WPROFILE" "$LOC" <<'PY'
 import json, sys, yaml
-app_p, sec_p, env_id, out, wprofile = sys.argv[1:]
+app_p, sec_p, env_id, out, wprofile, loc = sys.argv[1:]
 app = json.load(open(app_p))
 secrets = json.load(open(sec_p))
 p = app["properties"]
@@ -118,7 +139,7 @@ if ing:
         ing.pop(k, None)
 p["template"]["revisionSuffix"] = "m1"
 nuevo = {
-    "location": app["location"],
+    "location": loc,                      # la app va en la region del entorno nuevo
     "name": app["name"],
     "type": "Microsoft.App/containerApps",
     "properties": {
