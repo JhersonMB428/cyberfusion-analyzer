@@ -91,7 +91,7 @@ td a:hover{text-decoration:underline}
 <script>
 const API = window.CF_API || "https://api.cyberfusion.pe";
 const $ = id => document.getElementById(id);
-let LEADS = [], SCANS = [], VIEW = 'leads';
+let LEADS = [], SCANS = [], SCANS_ERR = '', VIEW = 'leads';
 
 const esc = s => String(s ?? "").replace(/[<>&"]/g,
   c => ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c]));
@@ -109,6 +109,9 @@ async function load(){
   LEADS = data.leads || [];
   const r2 = await fetch(`${API}/leads/scans.json`, {headers:{'X-Leads-Token': tok()}});
   SCANS = r2.ok ? ((await r2.json()).scans || []) : [];
+  SCANS_ERR = r2.ok ? '' : (r2.status === 404
+    ? 'La API todavía no tiene esta función: falta desplegar la versión 0.16.0 (API y worker).'
+    : `No se pudo cargar la lista (error ${r2.status}).`);
   render();
 }
 
@@ -126,6 +129,7 @@ function renderScans(){
     ['Sin formulario', sinForm]
   ].map(([l,v]) => `<div class="stat"><div class="l">${l}</div><div class="v">${v}</div></div>`).join('');
   $('csv').href = `${API}/leads/scans.csv?token=${encodeURIComponent(tok())}`;
+  if(SCANS_ERR){ $('tableWrap').innerHTML = `<div class="empty">${esc(SCANS_ERR)}</div>`; return; }
   if(!rows.length){
     $('tableWrap').innerHTML = `<div class="empty">${SCANS.length ? 'Ninguna web coincide con la búsqueda.' : 'Todavía nadie ha analizado su web.'}</div>`;
     return;

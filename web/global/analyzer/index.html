@@ -109,6 +109,21 @@ dialog::backdrop{background:rgba(6,2,3,.8);backdrop-filter:blur(6px)}
 .gc{position:static}.logo{font-size:14px}}
 @media(prefers-reduced-motion:reduce){.pl,.dr{animation:none}html{scroll-behavior:auto}*{transition-duration:.01ms!important}}
 </style>
+<script>
+/* Analitica de la campana. Rellenar los IDs y volver a subir la pagina.
+   ga4: ID de medicion de Google Analytics 4 (G-XXXXXXX).
+   linkedin: Partner ID del LinkedIn Insight Tag (solo numeros).
+   linkedinConversions: ID de conversion de LinkedIn por evento (opcional),
+   p. ej. {lead_submitted: 1234567, analysis_started: 7654321}. */
+window.CF_ANALYTICS={ga4:'',linkedin:'',linkedinConversions:{}};
+(function(a){
+  if(a.ga4){var g=document.createElement('script');g.async=true;g.src='https://www.googletagmanager.com/gtag/js?id='+encodeURIComponent(a.ga4);document.head.appendChild(g);
+    window.dataLayer=window.dataLayer||[];window.gtag=function(){dataLayer.push(arguments)};gtag('js',new Date());gtag('config',a.ga4);}
+  if(a.linkedin){window._linkedin_partner_id=String(a.linkedin);window._linkedin_data_partner_ids=window._linkedin_data_partner_ids||[];window._linkedin_data_partner_ids.push(window._linkedin_partner_id);
+    window.lintrk=window.lintrk||function(x,y){(window.lintrk.q=window.lintrk.q||[]).push([x,y])};
+    var l=document.createElement('script');l.async=true;l.src='https://snap.licdn.com/li.lms-analytics/insight.min.js';document.head.appendChild(l);}
+})(window.CF_ANALYTICS);
+</script>
 </head>
 <body>
 
@@ -266,7 +281,7 @@ var S={r:null,lead:null,busy:false};
 var qs=new URLSearchParams(location.search);
 ['utm_source','utm_medium','utm_campaign','utm_content'].forEach(function(k){try{if(qs.get(k))sessionStorage.setItem(k,qs.get(k))}catch(e){}});
 function utm(){var o={};['utm_source','utm_medium','utm_campaign','utm_content'].forEach(function(k){try{o[k]=sessionStorage.getItem(k)||''}catch(e){o[k]=''}});return o}
-function track(ev,data){var o={event:ev};for(var k in data)o[k]=data[k];(window.dataLayer=window.dataLayer||[]).push(o);/* LinkedIn Insight Tag: if(window.lintrk)window.lintrk('track',{conversion_id:XXXXXXX}) en lead_submitted */}
+function track(ev,data){var o={event:ev};for(var k in data)o[k]=data[k];(window.dataLayer=window.dataLayer||[]).push(o);try{if(window.gtag)window.gtag('event',ev,data||{});var c=(window.CF_ANALYTICS||{}).linkedinConversions||{};if(window.lintrk&&c[ev])window.lintrk('track',{conversion_id:c[ev]})}catch(e){}}
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
 function waUrl(m){return WHATSAPP_ANN.split('?')[0]+'?text='+encodeURIComponent(m)}
 function lvl(r){return r.level||(r.score>=80?'bajo':r.score>=55?'medio':'alto')}
