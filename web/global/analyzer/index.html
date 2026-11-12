@@ -212,7 +212,7 @@ fetch(API+'/config').then(function(r){return r.json()}).then(function(cfg){
   var sc=document.createElement('script');sc.src='https://challenges.cloudflare.com/turnstile/v0/api.js';sc.async=true;sc.defer=true;document.head.appendChild(sc);
 }).catch(function(){});
 CONFIG.analyze=async function(d){
-  var res=await fetch(API+'/scans',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:d,authorized:true,captcha:CAPTCHA||''})});
+  var res=await fetch(API+'/scans',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(Object.assign({url:d,authorized:true,captcha:CAPTCHA||''},typeof utm==='function'?utm():{}))});
   var st=await res.json().catch(function(){return{}});
   if(!res.ok)throw apiErr(st,'No pudimos iniciar el análisis. Inténtalo de nuevo.');
   JOB=st.id;
